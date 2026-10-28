@@ -223,6 +223,40 @@ Ideas conversadas y no implementadas:
 
 La entrada nueva va arriba.
 
+### 2026-10-28 (b) · los siete hitos reales y el topo de ruta
+
+- Los cuatro hitos genericos se reemplazan por los **siete reales** del
+  ascenso, con sus cotas. Su posicion ya no es un umbral afinado a mano: se
+  **calcula desde la altitud**, asi que corregir una cota mueve el hito solo.
+  Efecto secundario deseado: el ritmo queda irregular porque el cerro lo es.
+- Las cotas viven en `datos/agencia.json` bajo `rutaVillarrica`, marcadas
+  `altitudesConfirmadas: false`. Vienen de fuentes de terceros, no de la
+  agencia.
+- Cada hito deja una **marca sobre el trazo** que se enciende al pasarla, y
+  **escribe su nombre sobre el cerro**, como un topo de ruta. El contorno
+  oscuro bajo el texto (`paint-order: stroke`) lo hace legible igual sobre la
+  roca negra que sobre la nieve.
+- CONAF no lleva marca: es el control previo a caminar, y a 50 m del centro de
+  esqui las dos marcas se pisarian. Su texto si aparece como primer hito.
+- El punto naranja pasa a ser una **figura de guia** con mochila, piolet y
+  gorro. Va sobrescalada a proposito: a escala real sobre un volcan de 1000
+  unidades una persona es invisible.
+- La banda sube de 360vh a 560vh. Siete hitos en 360vh dejaban medio scroll de
+  pantalla para leer cada uno.
+
+Dos defectos corregidos, ambos cazados por el arnes:
+
+1. **Zona muerta al final de la pagina.** `v-revelar` usa
+   `rootMargin: '0px 0px -7%'` para no revelar justo al asomar. Efecto
+   secundario: lo que queda en esa franja en el scroll maximo no intersecta
+   nunca y se queda invisible para siempre. Con la pagina corta no se notaba;
+   basto subir la banda a 560vh para que el ultimo bloque del sitio no
+   apareciera. Se agrego una red de seguridad que revela lo pendiente al tocar
+   fondo.
+2. **El arnes no llegaba al fondo.** Avanzaba a pasos fijos de 320 px y se
+   quedaba a 209 px del final, de modo que daba por bueno un reveal que no
+   disparaba nunca. Ahora termina en el fondo exacto.
+
 ### 2026-10-28 · version inicial
 
 Pieza construida y verificada: 17/17 controles. Seis defectos encontrados y

@@ -13,6 +13,31 @@ const PASO_CASCADA = 0.09;
 
 let io = null;
 const grupos = new WeakSet();
+const pendientes = new Set();
+let redDeSeguridadPuesta = false;
+
+/* Red de seguridad para el final de la pagina.
+   `rootMargin` encoge la zona de observacion por abajo para que un elemento no
+   se revele justo al asomar. Efecto secundario: lo que queda en esa franja en
+   el scroll maximo NO llega a intersectar nunca, y se queda invisible para
+   siempre. Con paginas cortas no se nota; basto con subir la banda del ascenso
+   a 560vh para que el ultimo bloque del sitio no apareciera.
+   Al tocar fondo se revela lo que siga pendiente. */
+function ponerRedDeSeguridad() {
+  if (redDeSeguridadPuesta) return;
+  redDeSeguridadPuesta = true;
+  const alFondo = () => {
+    if (scrollY + innerHeight < document.documentElement.scrollHeight - 2) return;
+    for (const el of [...pendientes]) {
+      if (grupos.has(el)) el.querySelectorAll('[data-revelar]').forEach((h) => mostrar(h));
+      else mostrar(el);
+      io?.unobserve(el);
+      pendientes.delete(el);
+    }
+  };
+  addEventListener('scroll', alFondo, { passive: true });
+  addEventListener('resize', alFondo);
+}
 
 function mostrar(el, retardo = 0) {
   el.style.setProperty('--retardo', retardo + 's');
@@ -26,6 +51,7 @@ function observador() {
     for (const e of entradas) {
       if (!e.isIntersecting) continue;
       io.unobserve(e.target);
+      pendientes.delete(e.target);
       if (grupos.has(e.target)) {
         e.target.querySelectorAll('[data-revelar]').forEach((hijo, i) => {
           mostrar(hijo, Math.min(i * PASO_CASCADA, TOPE_CASCADA));
@@ -52,6 +78,8 @@ export default {
     }
     if (esGrupo) grupos.add(el);
     observador().observe(el);
+    pendientes.add(el);
+    ponerRedDeSeguridad();
   },
-  unmounted(el) { io?.unobserve(el); },
+  unmounted(el) { io?.unobserve(el); pendientes.delete(el); },
 };

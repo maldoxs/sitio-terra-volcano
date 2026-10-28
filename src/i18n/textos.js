@@ -21,12 +21,17 @@ export default {
     },
     ascenso:{
       etiqueta:'Altitud',
-      hitos:[
-        { titulo:'Centro de esquí', texto:'Acá empieza la caminata. Se reparte el equipo y se revisa el pronóstico.' },
-        { titulo:'Límite de nieve',  texto:'Se calzan los crampones. A partir de acá el piolet no se guarda.' },
-        { titulo:'Pala final',       texto:'La pendiente llega a 35°. Es el tramo que define si el grupo sigue.' },
-        { titulo:'Cráter',           texto:'Azufre, vapor y el lago abajo. Se baja antes del mediodía.' },
-      ],
+      /* Un hito por entrada de datos/agencia.json, en el mismo orden.
+         La posicion de cada uno la calcula el componente desde su altitud. */
+      hitos:{
+        'conaf':        { titulo:'Control de CONAF',   texto:'Los guardaparques revisan los permisos de la agencia y el equipamiento técnico. Sin eso, nadie sube.' },
+        'centro-esqui': { titulo:'Centro de esquí',    texto:'Empieza el sendero a pie. Se reparte el equipo y se revisa el pronóstico.' },
+        'andarivel':    { titulo:'Fin del andarivel',  texto:'Donde desembarcas si tomaste el telesilla. Ahorra cerca de una hora sobre arena volcánica y roca suelta.' },
+        'capilla':      { titulo:'La Capilla',         texto:'Parada técnica entre las estructuras de un andarivel abandonado. Acá se come, se hidrata y se calzan los crampones.' },
+        'espolones':    { titulo:'Espolones de roca',  texto:'Salientes que parten los tramos de nieve. Los guías las usan para resguardar del viento antes de la pendiente mayor.' },
+        'plateau':      { titulo:'Falsa cumbre',       texto:'Una planicie que engaña: la pendiente hace creer que llegaste. Es el último respiro antes del tramo vertical.' },
+        'crater':       { titulo:'Borde del cráter',   texto:'Máscara de gas obligatoria por las fumarolas. Desde acá se ven los lagos y el Lanín. Se baja antes del mediodía.' },
+      },
     },
     catalogo:{
       cejilla:'Catálogo', titulo:'Cinco formas de conocer la Araucanía.',
@@ -78,12 +83,15 @@ export default {
     },
     ascenso:{
       etiqueta:'Altitude',
-      hitos:[
-        { titulo:'Ski centre',   texto:'The walk starts here. Gear is handed out and the forecast checked.' },
-        { titulo:'Snow line',    texto:'Crampons go on. From here the ice axe stays in hand.' },
-        { titulo:'Final headwall', texto:'The slope reaches 35°. This pitch decides whether the group continues.' },
-        { titulo:'Crater',       texto:'Sulphur, steam, and the lake below. We descend before noon.' },
-      ],
+      hitos:{
+        'conaf':        { titulo:'CONAF checkpoint',  texto:'Rangers check the agency permits and the technical gear. Without that, nobody climbs.' },
+        'centro-esqui': { titulo:'Ski centre',        texto:'The walking trail starts here. Gear is handed out and the forecast checked.' },
+        'andarivel':    { titulo:'End of the chairlift', texto:'Where you get off if you took the lift. It saves close to an hour over volcanic sand and loose rock.' },
+        'capilla':      { titulo:'La Capilla',        texto:'Technical stop among the frames of an abandoned lift. Here you eat, drink and put the crampons on.' },
+        'espolones':    { titulo:'Rock spurs',        texto:'Outcrops that split the snow sections. Guides use them to shelter from the wind before the steepest pitch.' },
+        'plateau':      { titulo:'False summit',      texto:'A plateau that deceives: the slope makes you believe you have arrived. It is the last breath before the vertical stretch.' },
+        'crater':       { titulo:'Crater rim',        texto:'Gas masks are mandatory because of the fumaroles. From here you see the lakes and Lanin. We descend before noon.' },
+      },
     },
     catalogo:{
       cejilla:'Catalogue', titulo:'Five ways to know the Araucanía.',

@@ -49,6 +49,11 @@ const scrollProgresivo = async (page, paso = 320, espera = 90) => {
     await page.evaluate((v) => scrollTo(0, v), y);
     await page.waitForTimeout(espera);
   }
+  /* Terminar en el fondo EXACTO. Avanzando a pasos fijos se queda corto, y
+     entonces nunca se comprueba lo que solo ocurre al tocar fondo: fue asi
+     como este arnes dio por bueno un reveal que no disparaba nunca. */
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForTimeout(espera * 3);
 };
 
 const servidor = servir();
