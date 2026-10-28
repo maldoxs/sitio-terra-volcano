@@ -23,6 +23,16 @@ const { t, agencia } = useIdioma();
 const seccion = ref(null);
 const ruta    = ref(null);
 const escalador = ref(null);
+/* La cordada. El guia va adelante y tres clientes detras, desfasados sobre el
+   mismo trazo: es la ratio 1:3 mostrada en vez de explicada, que es el
+   diferenciador de la agencia y hoy solo vivia en el texto. */
+const cordada = ref([]);
+/* Separacion calibrada contra el largo del trazo: con desfases de 0.022 las
+   cuatro figuras se encimaban y la cordada se leia como una mancha. Cada
+   una figura mide unas 22 unidades del viewBox y el trazo entero 479, asi que
+   hacen falta al menos 0.07 entre una y otra para que no se toquen. Quedan
+   estiradas sobre la cuesta, que es como va una cordada de verdad. */
+const DESFASES = [0.085, 0.155, 0.225];
 const cielo   = ref(null);
 const estrellas = ref(null);
 
@@ -128,6 +138,15 @@ function pintar(p) {
   } else {
     escalador.value.setAttribute('opacity', '0');
   }
+
+  /* Los clientes van sobre el mismo trazo, detras del guia. Se les pide el
+     punto a la ruta igual que a el, asi nunca se despegan del camino. */
+  cordada.value = DESFASES.map((d) => {
+    const q = p - d;
+    if (q <= 0) return null;
+    const pt = ruta.value.getPointAtLength(LARGO * q);
+    return { x: +pt.x.toFixed(1), y: +pt.y.toFixed(1), o: limita01(q * 14) };
+  }).filter(Boolean);
 
   // 3 · altímetro
   altitud.value = Math.round(BASE + (CUMBRE - BASE) * p);
@@ -338,6 +357,29 @@ onScroll(() => {
             </radialGradient>
           </defs>
 
+          <!-- LOS TRES CLIENTES. Silueta simplificada y en tono apagado: el
+               guia tiene que seguir siendo el que se lee. Van delante en el
+               codigo y detras en el dibujo. -->
+          <g class="cordada">
+            <g v-for="(c, i) in cordada" :key="i"
+               :transform="`translate(${c.x} ${c.y})`" :opacity="c.o * 0.82">
+              <g transform="translate(0 2) scale(0.82)">
+                <path d="M-9.5 -19 L-15 -1" stroke="#E6DFD2" stroke-width="1.4"
+                      stroke-linecap="round" opacity=".5"/>
+                <path d="M-1 -13.5 L-5 -7 L-8 -0.8" fill="none" stroke="var(--cliente)"
+                      stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M-6 -27 a3 3 0 0 1 2.8 -2.8 L1 -29 L2.4 -16.5
+                         L-2.6 -15.8 a3 3 0 0 1 -3.2 -2.7 Z" fill="var(--cliente-pack)"/>
+                <path d="M1.6 -28.5 L6.6 -27 L3.2 -13.8 L-0.9 -15 Z" fill="var(--cliente)"/>
+                <path d="M2.2 -14.2 L6 -8 L8.4 -0.8" fill="none" stroke="var(--cliente)"
+                      stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 -27 L-1.5 -20 L-9.5 -19" fill="none" stroke="var(--cliente)"
+                      stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="8.2" cy="-30" r="3.2" fill="var(--cliente)"/>
+              </g>
+            </g>
+          </g>
+
           <!-- EL GUIA.
                A escala real sobre un volcan de 1000 unidades una persona seria
                invisible, asi que va sobrescalado: lo que se lee a esta
@@ -438,7 +480,10 @@ onScroll(() => {
 /* El guia lleva su propio color, distinto al de la ruta. Si los dos son lava,
    la figura se funde con el trazo que esta recorriendo y deja de leerse como
    alguien sobre un camino. Una variable para cambiarlo de un solo lugar. */
-.ascenso{--guia:var(--lago)}
+/* El guia lleva --lago; los clientes un tono apagado que los deja presentes
+   sin competir. Tres figuras del mismo color que el guia convertirian la
+   cordada en una mancha. */
+.ascenso{--guia:var(--lago); --cliente:#96a6bd; --cliente-pack:#b09a78}
 
 .ruta{fill:none;stroke:var(--lava);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
 .ruta-fantasma{fill:none;stroke:rgba(242,237,230,.17);stroke-width:5;

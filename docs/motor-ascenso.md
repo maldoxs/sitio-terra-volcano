@@ -223,6 +223,25 @@ Ideas conversadas y no implementadas:
 
 La entrada nueva va arriba.
 
+### 2026-10-28 (f) · la cordada
+
+Tres clientes siguen al guia sobre el mismo trazo, desfasados. Es la **ratio
+1:3 mostrada en vez de explicada**: el diferenciador de la agencia vivia solo
+en el texto del panel.
+
+- Se posicionan con `getPointAtLength` igual que el guia, asi nunca se
+  despegan del camino.
+- **Silueta mas simple, 82% del tamano y tono apagado**: el guia tiene que
+  seguir siendo el que se lee. Tres figuras del mismo color lo habrian
+  convertido en una fila indistinguible.
+- Dos calibraciones del desfase. Con `0.022` las cuatro figuras se encimaban
+  y la cordada era una mancha; con `0.055` seguian tocandose. La cuenta: una
+  figura mide unas 22 unidades del viewBox y el trazo entero 479, asi que
+  hacen falta al menos `0.07` entre una y otra. Quedo en `0.085 / 0.155 /
+  0.225`, estiradas sobre la cuesta como va una cordada de verdad.
+- Cuatro llamadas a `getPointAtLength` por frame en vez de una: sin efecto
+  medible, el arnes sigue dando 60 fps.
+
 ### 2026-10-28 (e) · el guia
 
 - La figura pasa de bloques a **pictograma de montanista**: inclinado hacia
