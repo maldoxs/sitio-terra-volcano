@@ -223,6 +223,39 @@ Ideas conversadas y no implementadas:
 
 La entrada nueva va arriba.
 
+### 2026-10-28 (c) · el ambiente amanece
+
+El escenario deja de ser un volcan sobre un degradado y pasa a ser una hora
+del dia que avanza. Todo entra como una curva mas sobre el mismo `p`, sin
+tocar lo que ya estaba.
+
+| Elemento | Curva | Lectura |
+|---|---|---|
+| Luna menguante | `1 - p * 2.6` | se pone antes que las estrellas |
+| Estrellas | `1 - p * 2.1` | ya existia |
+| Nubes | `(p - 0.42) / 0.33` | llegan con la luz |
+| Sol | `(p - 0.62) / 0.28` | bajo y al costado: es un amanecer |
+| Araucarias | color, no opacidad | siempre estan; pasan de silueta a verde |
+| Fumarola | `(p - 0.86) / 0.14` | se gana al llegar al borde |
+
+- **La paleta del cielo se rehizo.** La anterior terminaba en gris-violeta
+  arriba y dorado abajo, y el punto medio del degradado daba un cafe sucio. Un
+  amanecer real no pasa por el cafe: el cielo alto se abre a azul mientras el
+  horizonte se enciende. La fila del dia sube el azul en vez de apagarlo.
+- **La fumarola es una columna**, cinco elipses que crecen y derivan con el
+  viento, en vez de dos circulos.
+- **El guia crece 25%** y su sombra pasa a degradado radial: una elipse solida
+  se leia como mancha sobre la nieve de la cumbre.
+- Cuatro choques de composicion corregidos: la etiqueta de la cumbre partia al
+  guia (ahora va a la derecha como las demas), las nubes cruzaban por detras
+  del texto del panel, la luna chocaba con el altimetro, y las araucarias de
+  noche eran tan oscuras como el cerro y desaparecian.
+
+Un defecto del propio arnes, cazado por el arnes: el control del guia usaba
+`g[transform]`, que agarra el primer grupo transformado del SVG. Basto agregar
+las araucarias antes del guia para que midiera el arbol equivocado. Ahora
+selecciona por clase.
+
 ### 2026-10-28 (b) · los siete hitos reales y el topo de ruta
 
 - Los cuatro hitos genericos se reemplazan por los **siete reales** del

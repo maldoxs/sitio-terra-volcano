@@ -29,6 +29,13 @@ const estrellas = ref(null);
 const altitud = ref(0);
 const opFumarola = ref(0);
 const opEstrellas = ref(1);
+const opLuna = ref(1);
+const opNubes = ref(0);
+const opSol = ref(0);
+/* Las araucarias no aparecen ni desaparecen: estan siempre. Lo que cambia es
+   su color, de silueta negra contra el cielo nocturno a verde encendido al
+   amanecer. Es el arbol de la Araucania y da el nombre al token de la paleta. */
+const tonoAraucaria = ref('rgb(30,38,50)');
 const anchoVara = ref('0%');
 const hito = shallowRef(null);
 
@@ -62,6 +69,13 @@ const MARCABLES = HITOS.filter((h) => h.id !== 'conaf');
    garantizado por el método en vez de ser algo que haya que comprobar. */
 const D_RUTA = 'M210 506 L295 472 L348 439 L375 405 L375 372 L397 338 L420 304 L458 271 L485 237 L496 204 L500 166';
 
+/* Araucarias al pie del cerro. Posicion y escala fijas: un bosque aleatorio
+   cambiaria entre cargas y haria incomparables las capturas del arnes. */
+const araucarias = [
+  { x:  78, e: 1.15 }, { x: 140, e: 0.85 }, { x: 196, e: 1.0 },
+  { x: 812, e: 0.95 }, { x: 876, e: 1.2 },  { x: 934, e: 0.8 },
+];
+
 /* Campo de estrellas determinista (sin Math.random): dos cargas se ven igual,
    así una captura de pantalla es comparable entre ejecuciones. */
 let semilla = 7;
@@ -71,11 +85,18 @@ const puntosEstrella = Array.from({ length: 70 }, (_, i) => ({
   r: +(rnd() * 1.3 + 0.4).toFixed(2), o: +(rnd() * 0.6 + 0.25).toFixed(2),
 }));
 
-/* Paletas del cielo: noche → azul de amanecer → dorado de cumbre. */
+/* Paletas del cielo: noche → azul previo al alba → amanecer.
+   Cada fila son las TRES paradas del gradiente, de arriba hacia el horizonte.
+
+   La version anterior terminaba en gris-violeta arriba y dorado abajo, y el
+   punto medio del degradado daba un cafe sucio. Un amanecer real no pasa por
+   el cafe: el cielo alto se abre a azul mientras el horizonte se enciende, y
+   entre medio aparece el durazno. Por eso la fila del dia sube el azul arriba
+   en vez de apagarlo. */
 const CIELOS = [
-  [[11, 18, 32], [27, 36, 52], [43, 42, 46]],
-  [[24, 34, 61], [58, 70, 96], [120, 96, 84]],
-  [[58, 52, 74], [150, 104, 78], [232, 179, 60]],
+  [[ 10,  16,  30], [ 20,  28,  46], [ 32,  36,  50]],   // noche cerrada
+  [[ 28,  42,  76], [ 86,  82, 110], [160, 104,  88]],   // azul previo al alba
+  [[ 74, 116, 170], [220, 150, 112], [242, 188,  98]],   // amanecer
 ];
 const mez = (a, b, k) => `rgb(${Math.round(a[0] + (b[0] - a[0]) * k)},${Math.round(a[1] + (b[1] - a[1]) * k)},${Math.round(a[2] + (b[2] - a[2]) * k)})`;
 
@@ -117,7 +138,16 @@ function pintar(p) {
   s.setProperty('--c3', mez(A[2], B[2], k));
   opEstrellas.value = limita01(1 - p * 2.1);
 
-  // 5 · fumarola: sólo al llegar
+  /* Cada elemento del ambiente es una curva mas sobre el mismo numero. Eso es
+     lo que permite agregarlos sin tocar nada de lo que ya estaba. */
+  opLuna.value  = limita01(1 - p * 2.6);            // se pone antes que las estrellas
+  opNubes.value = limita01((p - 0.42) / 0.33);      // llegan con la luz
+  opSol.value   = limita01((p - 0.62) / 0.28);      // ultimo en salir
+  /* De noche NO son negras: contra un cerro casi negro desaparecerian. Van un
+     punto mas claras, lo justo para leerse como siluetas. */
+  tonoAraucaria.value = mez([30, 38, 50], [47, 93, 74], limita01(p * 1.5));
+
+  // 5 · fumarola: se gana al llegar al borde del crater
   opFumarola.value = limita01((p - 0.86) / 0.14);
 
   // 6 · hitos: cambian al cruzar su altitud, no en cada frame
@@ -141,18 +171,20 @@ onMounted(() => {
   ruta.value.style.strokeDasharray = `${LARGO} ${LARGO + 1}`;
   ruta.value.style.strokeDashoffset = LARGO;
 
-  marcas.value = MARCABLES.map((h, i) => {
+  marcas.value = MARCABLES.map((h) => {
     const pt = ruta.value.getPointAtLength(LARGO * h.p);
     /* La etiqueta va a la derecha, que es ladera abierta: la ruta sube por el
        flanco izquierdo. La cumbre es la excepcion, ahi no queda cerro a la
        derecha y el nombre se pone arriba, centrado. */
-    const esCumbre = i === MARCABLES.length - 1;
+    /* Todas a la derecha, que es ladera abierta: la ruta sube por el flanco
+       izquierdo. La cumbre tambien: encima esta el guia, y centrar ahi su
+       nombre lo partia en dos. */
     return {
       ...h,
       x: +pt.x.toFixed(1), y: +pt.y.toFixed(1),
-      lx: esCumbre ? +pt.x.toFixed(1) : +(pt.x + 15).toFixed(1),
-      ly: esCumbre ? +(pt.y - 22).toFixed(1) : +(pt.y + 4.5).toFixed(1),
-      anclaje: esCumbre ? 'middle' : 'start',
+      lx: +(pt.x + 16).toFixed(1),
+      ly: +(pt.y + 4.5).toFixed(1),
+      anclaje: 'start',
     };
   });
   // Sin scrub se entrega la cumbre: nadie scrollea tres pantallas de nada.
@@ -178,9 +210,65 @@ onScroll(() => {
         </svg>
 
         <svg class="escena" viewBox="0 0 1000 620" aria-hidden="true">
+          <!-- CIELO: luna, sol y nubes van detras del volcan. -->
+
+          <!-- Luna menguante. El recorte es otra circunferencia desplazada:
+               una menguante no es un gajo simetrico. -->
+          <g :opacity="opLuna">
+            <defs>
+              <mask id="menguante">
+                <circle cx="336" cy="84" r="26" fill="#fff"/>
+                <circle cx="324" cy="76" r="24" fill="#000"/>
+              </mask>
+            </defs>
+            <circle cx="336" cy="84" r="26" fill="#F2EDE6" mask="url(#menguante)" opacity=".92"/>
+            <circle cx="336" cy="84" r="40" fill="#F2EDE6" opacity=".07"/>
+          </g>
+
+          <!-- Sol, bajo y al costado: es un amanecer, no un mediodia. -->
+          <g :opacity="opSol">
+            <circle cx="840" cy="236" r="78" fill="var(--azufre)" opacity=".13"/>
+            <circle cx="840" cy="236" r="44" fill="var(--azufre)" opacity=".22"/>
+            <circle cx="840" cy="236" r="25" fill="#FFE9B0"/>
+          </g>
+
+          <!-- Nubes: bandas horizontales, no algodones. A esta distancia y con
+               el volcan de por medio, lo que se lee es el estrato. -->
+          <g :opacity="opNubes" fill="#F2EDE6">
+            <!-- Ninguna nube baja de y=170 por la izquierda: esa franja la ocupa
+                 el panel de altitud y el texto del hito. -->
+            <g opacity=".26">
+              <rect x="300" y="104" width="210" height="13" rx="6.5"/>
+              <rect x="360" y="124" width="130" height="10" rx="5"/>
+            </g>
+            <g opacity=".2">
+              <rect x="640" y="150" width="250" height="12" rx="6"/>
+              <rect x="700" y="170" width="150" height="9"  rx="4.5"/>
+            </g>
+            <g opacity=".15">
+              <rect x="560" y="206" width="170" height="10" rx="5"/>
+            </g>
+          </g>
+
           <path fill="#0d1117" d="M0 620V548l150-36 180-108 100-152 70-102 70 102 100 152 180 108 150 36v72z"/>
           <path fill="#F2EDE6" opacity=".92" d="M432 248L500 150l68 98-32 14-36-16-34 17z"/>
           <ellipse cx="500" cy="153" rx="15" ry="5.5" fill="#0d1117" opacity=".85"/>
+          <!-- ARAUCARIAS. El arbol de la Araucania, y el token que da nombre
+               a su color en la paleta. Tronco recto y copa en candelabro: a
+               esta distancia es la silueta lo que las identifica.
+               No aparecen ni desaparecen, estan siempre; lo que cambia es el
+               tono, de negro contra el cielo nocturno a verde al amanecer. -->
+          <g :fill="tonoAraucaria">
+            <g v-for="a in araucarias" :key="a.x"
+               :transform="`translate(${a.x} 596) scale(${a.e})`">
+              <rect x="-2.2" y="-46" width="4.4" height="46"/>
+              <path d="M-21 -46 L0 -52 L21 -46 L12 -43 L0 -47 L-12 -43 Z"/>
+              <path d="M-17 -56 L0 -61 L17 -56 L10 -53 L0 -56.5 L-10 -53 Z"/>
+              <path d="M-12 -65 L0 -70 L12 -65 L7 -62 L0 -65 L-7 -62 Z"/>
+              <path d="M-7 -73 L0 -78 L7 -73 L0 -75 Z"/>
+            </g>
+          </g>
+
           <path class="ruta-fantasma" :d="D_RUTA"/>
           <path ref="ruta" class="ruta" :d="D_RUTA"/>
 
@@ -196,6 +284,13 @@ onScroll(() => {
             </g>
           </g>
 
+          <defs>
+            <radialGradient id="sombraGuia">
+              <stop offset="0%"   stop-color="#000" stop-opacity=".5"/>
+              <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
           <!-- EL GUIA.
                A escala real sobre un volcan de 1000 unidades una persona seria
                invisible, asi que va sobrescalado: lo que se lee a esta
@@ -203,9 +298,11 @@ onScroll(() => {
                El grupo se posiciona con getPointAtLength y la figura se dibuja
                con los PIES en el origen, de modo que PISA el trazo en vez de
                flotar sobre el. -->
-          <g ref="escalador" opacity="0">
-            <ellipse rx="24" ry="8" cy="2" fill="var(--obsidiana)" opacity=".4"/>
-            <g class="guia" transform="translate(0 2)">
+          <g ref="escalador" class="guia-grupo" opacity="0">
+            <!-- La sombra es un degradado radial, no una elipse solida: sobre
+                 la nieve de la cumbre una elipse opaca se leia como mancha. -->
+            <ellipse rx="26" ry="9" cy="3" fill="url(#sombraGuia)"/>
+            <g class="guia" transform="translate(0 2) scale(1.25)">
               <!-- piolet, clavado adelante en la pendiente -->
               <path d="M11 -30 L13.5 -5" stroke="#F2EDE6" stroke-width="1.8"
                     stroke-linecap="round" opacity=".8"/>
@@ -230,9 +327,19 @@ onScroll(() => {
               <path d="M-5.1 -34.8 a4.6 4.6 0 0 1 9.2 0 z" fill="var(--azufre)"/>
             </g>
           </g>
-          <g :opacity="opFumarola">
-            <circle cx="500" cy="150" r="32" fill="var(--azufre)" opacity=".2"/>
-            <circle cx="500" cy="150" r="13" fill="var(--azufre)" opacity=".5"/>
+          <!-- FUMAROLA. Columna que sale del crater y se desarma con el
+               viento, en vez de dos circulos. El brillo de la boca queda
+               debajo del penacho para que se lea como fuente de la columna. -->
+          <g :opacity="opFumarola" class="fumarola">
+            <circle cx="500" cy="150" r="19" fill="var(--azufre)" opacity=".22"/>
+            <circle cx="500" cy="150" r="8"  fill="#FFE9B0" opacity=".55"/>
+            <g fill="#F2EDE6">
+              <ellipse cx="502" cy="132" rx="13" ry="10" opacity=".5"/>
+              <ellipse cx="509" cy="110" rx="18" ry="13" opacity=".42"/>
+              <ellipse cx="521" cy="86"  rx="24" ry="16" opacity=".32"/>
+              <ellipse cx="539" cy="60"  rx="31" ry="19" opacity=".22"/>
+              <ellipse cx="563" cy="34"  rx="38" ry="22" opacity=".13"/>
+            </g>
           </g>
         </svg>
 

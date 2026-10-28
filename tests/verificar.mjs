@@ -153,7 +153,10 @@ try {
   /* El escalador tiene que ir SOBRE el trazo, no cerca. */
   const sobreRuta = await page.evaluate(() => {
     const r = document.querySelector('#ascenso .ruta');
-    const g = document.querySelector('#ascenso g[transform]');
+    /* Por clase, no por posicion: `g[transform]` agarraba el primer grupo
+       transformado del SVG, y basto agregar las araucarias antes del guia
+       para que el control midiera el arbol equivocado. */
+    const g = document.querySelector('#ascenso .guia-grupo');
     const m = /translate\(([\d.]+) ([\d.]+)\)/.exec(g?.getAttribute('transform') || '');
     if (!m) return null;
     const fin = r.getPointAtLength(r.getTotalLength());
