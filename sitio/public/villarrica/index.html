@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Terra Volcano — Expediciones en la Araucanía andina</title>
+<meta name="description" content="Ascensos guiados al Villarrica, Lanín, Quetrupillán, Sollipulli y Mocho-Choshuenco. Un guía cada tres personas. Reserva directa con Richard, sin intermediarios." />
+<style>
+  /* Paleta: produccion/brand-kit.md. El fondo de la página DEBE ser el mismo
+     valor que el fondo de las escenas o se ve la caja del diorama. */
+  :root, .sw-root {
+    --obsidiana:#14110F; --lava:#D64A1E; --azufre:#E8B33C;
+    --araucaria:#2F5D4A; --lago:#3A7CA5; --nieve:#F2EDE6;
+    --sw-bg:#F2EDE6; --sw-ink:#14110F; --sw-ink-soft:#6b625a; --sw-accent:#D64A1E;
+    --sw-font-display:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    --sw-font-body:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--sw-bg); color:var(--sw-ink);
+         font-family:var(--sw-font-body); -webkit-font-smoothing:antialiased; }
+
+  .aviso { background:var(--obsidiana); color:var(--nieve); font-size:13px;
+           padding:10px 16px; text-align:center; line-height:1.5; }
+  .aviso b { color:var(--azufre); }
+
+  /* Posición peleada: arriba a la derecha tapaba el último ítem del nav, y
+     abajo a la izquierda tapaba los botones del CTA final. Debajo del nav y
+     por encima del riel de ruta es el único hueco libre en todo el scroll. */
+  .idioma { position:fixed; top:84px; right:16px; z-index:60; display:flex; gap:2px;
+            background:rgba(242,237,230,.85); backdrop-filter:blur(8px);
+            border:1px solid rgba(20,17,15,.14); border-radius:999px; padding:3px; }
+  .idioma button { border:0; background:transparent; color:var(--sw-ink-soft);
+                   font:600 12px/1 var(--sw-font-body); letter-spacing:.06em;
+                   padding:7px 11px; border-radius:999px; cursor:pointer; }
+  .idioma button[aria-pressed="true"] { background:var(--obsidiana); color:var(--nieve); }
+
+  /* El motor fija TODAS sus capas al viewport (.sw-sky, .sw-stage, .sw-copylayer,
+     .sw-route, .sw-hint, .sw-topbar) y nunca las suelta, porque está pensado para
+     una página que es solo el vuelo. Acá hay contenido debajo, así que al salir
+     de la banda del vuelo las apagamos. La clase la pone sitio.js. */
+  body.fuera-del-vuelo .sw-sky, body.fuera-del-vuelo .sw-stage,
+  body.fuera-del-vuelo .sw-copylayer, body.fuera-del-vuelo .sw-route,
+  body.fuera-del-vuelo .sw-hint, body.fuera-del-vuelo .sw-topbar,
+  body.fuera-del-vuelo .sw-scrollbar {
+    opacity:0; visibility:hidden; transition:opacity .3s ease, visibility 0s .3s;
+  }
+  .sw-sky, .sw-stage, .sw-copylayer, .sw-route, .sw-hint, .sw-topbar, .sw-scrollbar {
+    transition:opacity .3s ease;
+  }
+
+  .bloque { max-width:1080px; margin:0 auto; padding:88px 24px; }
+  .bloque h2 { font:700 clamp(28px,4.2vw,44px)/1.1 var(--sw-font-display);
+               margin:0 0 10px; letter-spacing:-.02em; }
+  .bloque .sub { color:var(--sw-ink-soft); font-size:17px; margin:0 0 40px; max-width:62ch; line-height:1.6; }
+  .cejilla { font:700 12px/1 var(--sw-font-body); letter-spacing:.16em;
+             text-transform:uppercase; color:var(--lava); margin:0 0 14px; }
+
+  table.exigencia { width:100%; border-collapse:collapse; font-size:15px; }
+  table.exigencia th, table.exigencia td { text-align:left; padding:15px 12px;
+    border-bottom:1px solid rgba(20,17,15,.1); vertical-align:top; }
+  table.exigencia th { font-size:12px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--sw-ink-soft); font-weight:700; }
+  table.exigencia td:first-child { font-weight:700; }
+  .nivel { display:inline-block; font-size:12px; font-weight:700; padding:4px 10px;
+           border-radius:999px; white-space:nowrap; }
+  .n1 { background:rgba(47,93,74,.14); color:var(--araucaria); }
+  .n2 { background:rgba(232,179,60,.22); color:#8a6410; }
+  .n3 { background:rgba(214,74,30,.14); color:var(--lava); }
+
+  .guia { display:grid; grid-template-columns:minmax(0,320px) minmax(0,1fr); gap:44px; align-items:start; }
+  .retrato { margin:0; }
+  .retrato img { width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:3px; display:block; }
+  .retrato figcaption { margin-top:10px; font-size:12px; line-height:1.5;
+                        color:var(--sw-ink-soft); }
+  .banda { margin:0; }
+  .banda img { width:100%; max-height:62vh; object-fit:cover; display:block; }
+  .guia p { font-size:17px; line-height:1.65; margin:0 0 18px; max-width:60ch; }
+  .credenciales { list-style:none; padding:0; margin:26px 0 0; display:grid; gap:12px; }
+  .credenciales li { padding-left:26px; position:relative; font-size:15px; line-height:1.5; }
+  .credenciales li::before { content:"—"; position:absolute; left:0; color:var(--lava); font-weight:700; }
+
+  .reserva { background:var(--obsidiana); color:var(--nieve); }
+
+  /* Comparación de precio. El argumento del análisis es que hoy el visitante
+     que quiere saber cuánto cuesta se va a la OTA, y ahí la agencia paga
+     20-30% de comisión. Esto lo ataca mostrando las dos cifras juntas. */
+  .comparacion { display:grid; grid-template-columns:1.25fr .85fr; gap:18px;
+                 align-items:stretch; margin:0 0 20px; }
+  .tarjeta { border-radius:5px; padding:26px 26px 24px; position:relative; }
+  .tarjeta .etiqueta { font:700 11px/1 var(--sw-font-body); letter-spacing:.14em;
+                       text-transform:uppercase; margin:0 0 16px; display:block; }
+  .tarjeta .cifra { font:700 clamp(40px,6.4vw,66px)/1 var(--sw-font-display);
+                    letter-spacing:-.03em; display:block; }
+  .tarjeta .unidad { font-size:14px; margin:8px 0 0; }
+
+  .directa { background:var(--nieve); color:var(--obsidiana);
+             box-shadow:0 0 0 2px var(--lava), 0 18px 44px rgba(0,0,0,.34); }
+  .directa .etiqueta { color:var(--lava); }
+  .directa .unidad { color:#6b625a; }
+  .incluye { list-style:none; padding:0; margin:22px 0 24px; display:grid; gap:9px; }
+  .incluye li { padding-left:25px; position:relative; font-size:14.5px; line-height:1.45; }
+  .incluye li::before { content:"✓"; position:absolute; left:0; top:-1px;
+                        color:var(--araucaria); font-weight:700; }
+
+  .ota { background:rgba(242,237,230,.055); border:1px solid rgba(242,237,230,.16);
+         color:rgba(242,237,230,.72); display:flex; flex-direction:column; }
+  .ota .etiqueta { color:rgba(242,237,230,.5); }
+  .ota .cifra { color:rgba(242,237,230,.5); text-decoration:line-through;
+                text-decoration-thickness:2px; }
+  .ota .nota { font-size:13px; line-height:1.6; margin:auto 0 0;
+               color:rgba(242,237,230,.5); }
+
+  .ahorro { display:inline-flex; align-items:center; gap:9px; background:rgba(232,179,60,.14);
+            border:1px solid rgba(232,179,60,.4); color:var(--azufre);
+            border-radius:999px; padding:10px 18px; font-weight:700; font-size:14.5px;
+            margin:0 0 30px; }
+
+  .tarifas { width:100%; border-collapse:collapse; font-size:14.5px; margin:34px 0 0; }
+  .tarifas caption { text-align:left; font:700 11px/1 var(--sw-font-body);
+    letter-spacing:.14em; text-transform:uppercase; color:var(--azufre); padding:0 0 14px; }
+  .tarifas th, .tarifas td { text-align:left; padding:13px 10px;
+    border-bottom:1px solid rgba(242,237,230,.14); }
+  .tarifas th { font-size:11px; letter-spacing:.09em; text-transform:uppercase;
+                color:rgba(242,237,230,.5); font-weight:700; }
+  .tarifas td:first-child { font-weight:700; color:var(--nieve); }
+  .tarifas td:last-child { text-align:right; font-weight:700; white-space:nowrap; }
+
+  @media (max-width:760px) {
+    .comparacion { grid-template-columns:1fr; }
+    .ota { order:2; }
+    .tarifas th:nth-child(2), .tarifas td:nth-child(2) { display:none; }
+  }
+  .reserva .bloque { padding:92px 24px; }
+  .reserva h2 { color:var(--nieve); }
+  .reserva .sub { color:rgba(242,237,230,.68); }
+  .precio { display:flex; flex-wrap:wrap; gap:14px; align-items:baseline; margin:0 0 10px; }
+  .precio .monto { font:700 clamp(42px,7vw,76px)/1 var(--sw-font-display); letter-spacing:-.03em; }
+  .precio .por { color:rgba(242,237,230,.62); font-size:15px; }
+  .ahorro { color:var(--azufre); font-weight:700; font-size:15px; margin:0 0 34px; }
+  .botones { display:flex; flex-wrap:wrap; gap:12px; }
+  .btn { display:inline-block; padding:16px 28px; border-radius:3px; text-decoration:none;
+         font-weight:700; font-size:15px; }
+  .btn-1 { background:var(--lava); color:#fff; }
+  .btn-2 { border:1px solid rgba(242,237,230,.3); color:var(--nieve); }
+  .promesa { margin:30px 0 0; font-size:14px; color:rgba(242,237,230,.72); line-height:1.6; max-width:56ch; }
+
+  /* Entrada al scroll. La clase `anim` la pone animacion.js solo si el
+     visitante no pidió menos movimiento: sin JS o con reduced-motion, todo
+     queda visible y nada depende de que la animación corra. */
+  .anim .revelar { opacity:0; transform:translateY(18px);
+    transition:opacity .62s cubic-bezier(.22,.61,.36,1),
+               transform .62s cubic-bezier(.22,.61,.36,1); }
+  .anim .revelar.visible { opacity:1; transform:none; }
+  .anim tr.revelar { transform:translateY(10px); }
+
+  /* Micro-interacciones. Solo opacity y transform: corren en el compositor. */
+  .btn, .tarjeta { transition:transform .28s cubic-bezier(.22,.61,.36,1),
+                              box-shadow .28s ease, background-color .2s ease; }
+  .btn-1:hover { transform:translateY(-2px); }
+  .btn-1:active { transform:translateY(0) scale(.985); }
+  .directa:hover { transform:translateY(-4px);
+                   box-shadow:0 0 0 2px var(--lava), 0 26px 58px rgba(0,0,0,.42); }
+  .tarifas tbody tr { transition:background-color .2s ease; }
+  .tarifas tbody tr:hover { background:rgba(242,237,230,.05); }
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .tarjeta, .tarifas tbody tr { transition:none; }
+  }
+
+  footer { padding:44px 24px 64px; text-align:center; font-size:13px;
+           color:var(--sw-ink-soft); line-height:1.8; }
+
+  @media (max-width:760px) {
+    .guia { grid-template-columns:1fr; gap:28px; }
+    .retrato { max-width:260px; }
+    .bloque { padding:64px 20px; }
+    table.exigencia th:nth-child(3), table.exigencia td:nth-child(3) { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="aviso" id="aviso"></div>
+
+<nav class="idioma" aria-label="Idioma">
+  <button type="button" data-lang="es" aria-pressed="true">ES</button>
+  <button type="button" data-lang="en" aria-pressed="false">EN</button>
+</nav>
+
+<div id="top"></div>
+<div id="world"></div>
+
+<section class="bloque" id="exigencia">
+  <p class="cejilla" data-t="exigencia.cejilla"></p>
+  <h2 data-t="exigencia.titulo"></h2>
+  <p class="sub" data-t="exigencia.sub"></p>
+  <p class="cejilla" style="margin-top:46px" data-t="exigencia.subtabla"></p>
+  <table class="exigencia"><thead><tr>
+    <th data-t="exigencia.th1"></th><th data-t="exigencia.th2"></th>
+    <th data-t="exigencia.th3"></th><th data-t="exigencia.th4"></th>
+  </tr></thead><tbody id="filas-exigencia"></tbody></table>
+</section>
+
+<figure class="banda">
+  <img src="../media/fotos/fumarola.jpg" alt="El Villarrica desde el aire, con su fumarola" />
+</figure>
+
+<section class="bloque" id="guia">
+  <div class="guia">
+    <figure class="retrato">
+        <img src="../media/fotos/centro-esqui.jpg" alt="Base del volcán Villarrica" />
+        <figcaption data-t="guia.foto"></figcaption>
+      </figure>
+    <div>
+      <p class="cejilla" data-t="guia.cejilla"></p>
+      <h2 data-t="guia.titulo"></h2>
+      <p data-t="guia.p1"></p>
+      <p data-t="guia.p2"></p>
+      <ul class="credenciales" id="credenciales"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="reserva" id="reservar">
+  <div class="bloque">
+    <p class="cejilla" style="color:var(--azufre)" data-t="reserva.cejilla"></p>
+    <h2 data-t="reserva.titulo"></h2>
+    <p class="sub" data-t="reserva.sub"></p>
+
+    <div class="comparacion">
+      <div class="tarjeta directa">
+        <span class="etiqueta" data-t="reserva.etiq_directa"></span>
+        <span class="cifra" data-t="reserva.monto"></span>
+        <p class="unidad" data-t="reserva.por"></p>
+        <ul class="incluye" id="incluye"></ul>
+        <a class="btn btn-1" href="#CONFIRMAR-WHATSAPP" data-t="reserva.btn1"></a>
+      </div>
+      <div class="tarjeta ota">
+        <span class="etiqueta" data-t="reserva.etiq_ota"></span>
+        <span class="cifra" data-t="reserva.monto_ota"></span>
+        <p class="unidad" data-t="reserva.por_ota"></p>
+        <p class="nota" data-t="reserva.nota_ota"></p>
+      </div>
+    </div>
+
+    <p class="ahorro" data-t="reserva.ahorro"></p>
+    <p class="promesa" data-t="reserva.promesa"></p>
+
+    <table class="tarifas">
+      <caption data-t="reserva.tarifas_tit"></caption>
+      <thead><tr>
+        <th data-t="reserva.th_tour"></th>
+        <th data-t="reserva.th_dur"></th>
+        <th style="text-align:right" data-t="reserva.th_precio"></th>
+      </tr></thead>
+      <tbody id="filas-tarifas"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div data-t="pie.legal"></div>
+  <div data-t="pie.nota"></div>
+</footer>
+
+<script src="../media/js/contenido.js"></script>
+<script src="../media/js/textos.js"></script>
+<script src="../media/js/scrub-engine.js"></script>
+<script src="../media/js/sitio.js"></script>
+<script src="../media/js/animacion.js"></script>
+</body>
+</html>

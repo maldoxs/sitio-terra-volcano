@@ -1,0 +1,6 @@
+produccion/.tmp/
+.DS_Store
+__pycache__/
+sistema/terravolcano.db
+sistema/*.db
+.claude/skills/ui-ux-pro-max/**/__pycache__/

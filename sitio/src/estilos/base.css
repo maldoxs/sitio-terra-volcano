@@ -1,0 +1,87 @@
+/* ============================================================================
+   Tokens y base. Paleta y tono: produccion/brand-kit.md
+   Un solo lugar para los valores: si un color cambia, cambia acá y en ningún
+   otro archivo. Es la misma regla de «un dato, un solo lugar» del repositorio.
+   ========================================================================== */
+:root{
+  --obsidiana:#14110F; --lava:#D64A1E; --azufre:#E8B33C;
+  --araucaria:#2F5D4A; --lago:#3A7CA5; --nieve:#F2EDE6;
+
+  --tinta:var(--obsidiana);
+  --tinta-suave:#6b625a;
+  --papel:var(--nieve);
+
+  --display:'Archivo',system-ui,sans-serif;
+  --texto:'Public Sans',system-ui,sans-serif;
+
+  --gutter:clamp(20px,5vw,72px);
+  --maxw:1180px;
+
+  /* Una sola curva de aceleración en todo el sitio. Es lo que hace que las
+     piezas se sientan parte de lo mismo. No agregar otras sin discutirlo. */
+  --ease:cubic-bezier(.22,.8,.24,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--papel);color:var(--tinta);
+  font:400 17px/1.6 var(--texto);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:clip;
+}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.025em;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+.seccion{padding:clamp(86px,13vh,152px) 0}
+
+.cejilla{
+  font:700 11px/1 var(--texto);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--lava);margin:0 0 18px;display:block;
+}
+.titulo{font-weight:800;font-size:clamp(2rem,5.2vw,3.5rem);line-height:1.04;max-width:19ch;margin:0 0 20px}
+.sub{color:var(--tinta-suave);max-width:58ch;font-size:1.05rem}
+
+.btn{
+  display:inline-flex;align-items:center;gap:.6em;
+  padding:14px 24px;border-radius:2px;text-decoration:none;border:0;cursor:pointer;
+  font:700 13px/1 var(--texto);letter-spacing:.08em;text-transform:uppercase;
+  transition:transform .3s var(--ease),background-color .3s var(--ease),box-shadow .3s var(--ease);
+}
+.btn--lava{background:var(--lava);color:#fff;box-shadow:0 8px 24px rgba(214,74,30,.26)}
+.btn--lava:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(214,74,30,.34)}
+.btn--lava:active{transform:translateY(0) scale(.99)}
+.btn--linea{border:1px solid rgba(20,17,15,.26)}
+.btn--linea:hover{background:var(--obsidiana);color:var(--nieve);border-color:var(--obsidiana)}
+
+/* Marcador de texto cuyo ancho sigue al scroll. Lo maneja v-marcador. */
+.marca-texto{
+  background-image:linear-gradient(transparent 52%, rgba(214,74,30,.26) 52%);
+  background-repeat:no-repeat;background-size:0% 100%;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  padding:0 .06em;
+}
+
+/* Entrada al viewport. El estado oculto SOLO existe si hay JS: si el script
+   falla, el contenido se ve igual. Lo pone main.js antes de montar. */
+.js [data-revelar]{
+  opacity:0;transform:var(--desde,translateY(40px));
+  transition:opacity .75s ease-out,transform .9s var(--ease);
+  transition-delay:var(--retardo,0s);will-change:opacity,transform;
+}
+.js [data-revelar="izq"]{--desde:translateX(-56px)}
+.js [data-revelar="der"]{--desde:translateX(56px)}
+.js [data-revelar="zoom"]{--desde:translateY(26px) scale(.94)}
+.js [data-revelar].visible{opacity:1;transform:none}
+.js [data-revelar].listo{will-change:auto}
+
+@media (max-width:900px){
+  .js [data-revelar="izq"],.js [data-revelar="der"]{--desde:translateY(40px)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js [data-revelar]{opacity:1;transform:none;transition:none}
+  .marca-texto{background-size:100% 100%}
+}

@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Terra Volcano — Expediciones en la Araucanía andina</title>
+<meta name="description" content="Ascensos guiados al Villarrica desde Pucón. Un guía cada tres personas. Reserva directa, sin comisión de intermediarios.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;700&display=swap">
+<style>
+/* ============================================================================
+   MAQUETA — home de Terra Volcano
+   Paleta y tono: produccion/brand-kit.md. Datos: claude/ESTADO-ACTUAL.md.
+   Sin fotografías a propósito: ninguna imagen del repo tiene licencia resuelta
+   (LICENCIAS-PENDIENTES.md). Todo lo visual es SVG y gradientes.
+   ========================================================================== */
+
+:root{
+  --obsidiana:#14110F; --lava:#D64A1E; --azufre:#E8B33C;
+  --araucaria:#2F5D4A; --lago:#3A7CA5; --nieve:#F2EDE6;
+
+  --tinta:var(--obsidiana);
+  --tinta-suave:#6b625a;
+  --papel:var(--nieve);
+  --papel-2:#E9E2D8;
+
+  --display:'Archivo',system-ui,sans-serif;
+  --texto:'Public Sans',system-ui,sans-serif;
+
+  --gutter:clamp(20px,5vw,72px);
+  --maxw:1180px;
+
+  /* Una sola curva en todo el sitio. Es lo que lo hace sentir una pieza. */
+  --ease:cubic-bezier(.22,.8,.24,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--papel);color:var(--tinta);
+  font:400 17px/1.6 var(--texto);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:clip;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.025em;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+
+.cejilla{
+  font:700 11px/1 var(--texto);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--lava);margin:0 0 18px;display:block;
+}
+
+/* ---------------------------------------------------------------- navegación */
+.nav{
+  position:fixed;inset:0 0 auto;z-index:50;
+  display:flex;align-items:center;gap:28px;
+  padding:18px var(--gutter);
+  transition:background-color .5s var(--ease),box-shadow .5s var(--ease),padding .5s var(--ease);
+}
+.nav.pegado{
+  background:rgba(242,237,230,.88);backdrop-filter:blur(14px);
+  box-shadow:0 1px 0 rgba(20,17,15,.1);padding-top:12px;padding-bottom:12px;
+}
+.marca{font:800 17px/1 var(--display);letter-spacing:-.02em;text-decoration:none;margin-right:auto}
+.marca em{font-style:normal;color:var(--lava)}
+.nav__links{display:flex;gap:22px}
+.nav a.ln{
+  text-decoration:none;font:500 14px/1 var(--texto);padding-bottom:4px;
+  background-image:linear-gradient(var(--lava),var(--lava));
+  background-repeat:no-repeat;background-position:0 100%;background-size:0 1.5px;
+  transition:background-size .45s var(--ease);
+}
+.nav a.ln:hover{background-size:100% 1.5px}
+.idioma{display:flex;gap:2px;background:rgba(20,17,15,.07);border-radius:999px;padding:3px}
+.idioma button{
+  border:0;background:transparent;color:var(--tinta-suave);cursor:pointer;
+  font:700 11px/1 var(--texto);letter-spacing:.08em;padding:7px 10px;border-radius:999px;
+  transition:background-color .35s var(--ease),color .35s var(--ease);
+}
+.idioma button[aria-pressed="true"]{background:var(--obsidiana);color:var(--nieve)}
+
+.btn{
+  display:inline-flex;align-items:center;gap:.6em;
+  padding:14px 24px;border-radius:2px;text-decoration:none;border:0;cursor:pointer;
+  font:700 13px/1 var(--texto);letter-spacing:.08em;text-transform:uppercase;
+  transition:transform .3s var(--ease),background-color .3s var(--ease),box-shadow .3s var(--ease);
+}
+.btn--lava{background:var(--lava);color:#fff;box-shadow:0 8px 24px rgba(214,74,30,.26)}
+.btn--lava:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(214,74,30,.34)}
+.btn--lava:active{transform:translateY(0) scale(.99)}
+.btn--linea{border:1px solid rgba(20,17,15,.26)}
+.btn--linea:hover{background:var(--obsidiana);color:var(--nieve);border-color:var(--obsidiana)}
+.nav .btn{padding:11px 18px}
+
+/* -------------------------------------------------------------------- hero */
+.hero{position:relative;min-height:100svh;display:grid;align-items:end;overflow:hidden}
+.cielo{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(120% 70% at 72% 14%, rgba(232,179,60,.5), transparent 58%),
+    linear-gradient(176deg,#F7F2EA 0%, var(--nieve) 38%, #EADFD0 74%, #E2D2BE 100%);
+}
+/* El volcán: tres capas que se mueven a distinta velocidad con el scroll.
+   El parallax lo escribe JS en --py de cada capa; el CSS solo lo consume. */
+.capa{position:absolute;left:0;right:0;bottom:0;z-index:1;will-change:transform;
+      transform:translate3d(0,var(--py,0px),0)}
+.capa svg{display:block;width:100%;height:auto}
+.humo{
+  position:absolute;z-index:2;left:50%;bottom:34%;width:min(42vw,420px);aspect-ratio:1;
+  background:radial-gradient(circle at 50% 70%, rgba(242,237,230,.8), transparent 62%);
+  filter:blur(22px);transform:translate(-50%,0);opacity:.75;
+  animation:derivar 14s ease-in-out infinite alternate;
+}
+@keyframes derivar{from{transform:translate(-54%,6px) scale(1)}to{transform:translate(-44%,-22px) scale(1.14)}}
+
+.hero__texto{position:relative;z-index:3;padding-bottom:clamp(56px,11vh,120px);padding-top:140px}
+.hero h1{
+  font-weight:800;font-size:clamp(2.9rem,8.2vw,6.4rem);line-height:.95;
+  max-width:16ch;margin:0 0 22px;
+}
+.hero .bajada{font-size:clamp(1.05rem,2.1vw,1.3rem);max-width:46ch;color:#3f3730;margin:0 0 34px}
+.hero__acciones{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* la señal de scroll: barrita que respira */
+.pista{
+  position:absolute;left:50%;bottom:22px;z-index:4;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+  font:700 10px/1 var(--texto);letter-spacing:.22em;text-transform:uppercase;color:var(--tinta-suave);
+  transition:opacity .5s var(--ease);
+}
+.pista i{display:block;width:1px;height:38px;background:linear-gradient(var(--tinta-suave),transparent);
+  animation:caer 2.1s var(--ease) infinite}
+@keyframes caer{0%{transform:scaleY(0);transform-origin:top}
+  45%{transform:scaleY(1);transform-origin:top}
+  46%{transform:scaleY(1);transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ------------------------------------------------- marcador atado al scroll */
+.marca-texto{
+  background-image:linear-gradient(transparent 52%, rgba(214,74,30,.26) 52%);
+  background-repeat:no-repeat;background-size:0% 100%;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  padding:0 .06em;
+}
+.no-js .marca-texto,.quieto .marca-texto{background-size:100% 100%}
+
+/* ------------------------------------------------------------------ cifras */
+.cifras{background:var(--obsidiana);color:var(--nieve)}
+.cifras .wrap{padding:clamp(54px,8vw,84px) var(--gutter);
+  display:grid;gap:34px;grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
+.cifra b{display:block;font:800 clamp(2.4rem,5.4vw,3.6rem)/1 var(--display);
+  letter-spacing:-.04em;color:var(--azufre);font-variant-numeric:tabular-nums}
+.cifra span{display:block;margin-top:10px;font-size:14px;color:rgba(242,237,230,.68);line-height:1.5}
+
+/* ----------------------------------------------------------------- secciones */
+section{padding:clamp(86px,13vh,152px) 0}
+.titulo{font-weight:800;font-size:clamp(2rem,5.2vw,3.5rem);line-height:1.04;max-width:19ch;margin:0 0 20px}
+.sub{color:var(--tinta-suave);max-width:58ch;font-size:1.05rem}
+
+/* --------------------------------------------------------- catálogo en 3D */
+.catalogo{position:relative;height:clamp(330px,46vw,460px);margin-top:clamp(40px,6vw,64px)}
+.tour{
+  position:absolute;left:50%;top:0;width:clamp(230px,27vw,320px);margin:0;cursor:pointer;
+  transition:transform .66s var(--ease),opacity .66s var(--ease),filter .66s var(--ease);
+}
+.tour__card{
+  aspect-ratio:3/4;border-radius:4px;padding:24px;display:flex;flex-direction:column;
+  justify-content:flex-end;color:var(--nieve);position:relative;overflow:hidden;
+  background:linear-gradient(170deg,#1d2b24,#0f1613);
+}
+.tour__card::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(90% 60% at 50% 0%, rgba(232,179,60,.3), transparent 62%)}
+.tour__card > *{position:relative;z-index:1}
+.tour:nth-child(2) .tour__card{background:linear-gradient(170deg,#3a2118,#14110F)}
+.tour:nth-child(3) .tour__card{background:linear-gradient(170deg,#1b3242,#0e1920)}
+.tour:nth-child(4) .tour__card{background:linear-gradient(170deg,#3d2e14,#17120a)}
+.tour:nth-child(5) .tour__card{background:linear-gradient(170deg,#2a2033,#120e16)}
+.tour h3{font-size:1.45rem;font-weight:700;line-height:1.1}
+.tour .meta{margin-top:9px;font-size:13px;color:rgba(242,237,230,.7)}
+.nivel{align-self:flex-start;margin-bottom:auto;font:700 10px/1 var(--texto);
+  letter-spacing:.14em;text-transform:uppercase;padding:7px 11px;border-radius:999px;
+  background:rgba(242,237,230,.14);border:1px solid rgba(242,237,230,.22)}
+.catalogo__puntos{display:flex;gap:7px;justify-content:center;margin-top:30px}
+.catalogo__puntos button{width:30px;height:30px;padding:0;border:0;background:none;
+  cursor:pointer;display:grid;place-items:center}
+.catalogo__puntos button::after{content:"";width:24px;height:2px;border-radius:99px;
+  background:rgba(20,17,15,.2);transition:background-color .4s var(--ease)}
+.catalogo__puntos button[aria-selected="true"]::after{background:var(--lava)}
+
+/* --------------------------------------------------------------- comparación */
+.precio{background:var(--obsidiana);color:var(--nieve)}
+.precio .titulo{color:var(--nieve)}
+.precio .sub{color:rgba(242,237,230,.66)}
+.versus{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:46px}
+.caja{border-radius:5px;padding:30px}
+.caja .etiq{font:700 10px/1 var(--texto);letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:18px}
+.caja .monto{font:800 clamp(2.6rem,6.4vw,4.2rem)/1 var(--display);letter-spacing:-.04em;display:block;
+  font-variant-numeric:tabular-nums}
+.caja .unidad{font-size:13.5px;margin-top:9px}
+.directa{background:var(--nieve);color:var(--obsidiana);box-shadow:0 0 0 2px var(--lava),0 20px 50px rgba(0,0,0,.4)}
+.directa .etiq{color:var(--lava)}
+.directa .unidad{color:var(--tinta-suave)}
+.incluye{list-style:none;padding:0;margin:24px 0 26px;display:grid;gap:10px}
+.incluye li{padding-left:24px;position:relative;font-size:14.5px;line-height:1.45}
+.incluye li::before{content:"✓";position:absolute;left:0;color:var(--araucaria);font-weight:700}
+.via-ota{background:rgba(242,237,230,.05);border:1px solid rgba(242,237,230,.16);
+  color:rgba(242,237,230,.68);display:flex;flex-direction:column}
+.via-ota .etiq{color:rgba(242,237,230,.46)}
+.via-ota .monto{color:rgba(242,237,230,.46);text-decoration:line-through;text-decoration-thickness:2px}
+.via-ota .nota{font-size:13px;line-height:1.6;margin-top:auto;color:rgba(242,237,230,.46)}
+.pendiente{display:inline-block;font:700 9.5px/1 var(--texto);letter-spacing:.1em;
+  text-transform:uppercase;padding:5px 8px;border-radius:3px;vertical-align:middle;
+  background:rgba(232,179,60,.16);color:var(--azufre);border:1px solid rgba(232,179,60,.36)}
+
+/* ------------------------------------------------------------------ richard */
+.richard{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(34px,6vw,70px);align-items:center}
+.retrato{aspect-ratio:4/5;border-radius:4px;position:relative;overflow:hidden;
+  background:linear-gradient(165deg,var(--araucaria),#16261f)}
+.retrato::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(80% 55% at 50% 12%, rgba(232,179,60,.26), transparent 60%)}
+.retrato figcaption{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:20px;
+  font-size:12.5px;color:rgba(242,237,230,.76);line-height:1.5;
+  background:linear-gradient(transparent,rgba(0,0,0,.6))}
+.credenciales{list-style:none;padding:0;margin:28px 0 0;display:grid;gap:13px}
+.credenciales li{padding-left:26px;position:relative;font-size:15.5px;line-height:1.5}
+.credenciales li::before{content:"—";position:absolute;left:0;color:var(--lava);font-weight:700}
+
+/* --------------------------------------------------------------------- cta */
+.cierre{background:linear-gradient(170deg,#1d1512,var(--obsidiana));color:var(--nieve);text-align:center}
+.cierre .titulo{color:var(--nieve);margin:0 auto 20px;max-width:15ch}
+.cierre .sub{color:rgba(242,237,230,.66);margin:0 auto 36px}
+.cierre .acciones{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cierre .btn--linea{border-color:rgba(242,237,230,.3);color:var(--nieve)}
+.cierre .btn--linea:hover{background:var(--nieve);color:var(--obsidiana)}
+
+footer{padding:40px var(--gutter) 60px;text-align:center;font-size:13px;color:var(--tinta-suave);line-height:1.8}
+
+/* ===========================================================================
+   EL ASCENSO — la pieza firma.
+   Una sección alta que fija un escenario con position:sticky. El progreso del
+   scroll dentro de esa banda (0→1) maneja TODO: el trazo de la ruta, la
+   posición del escalador sobre la ruta, el altímetro, el color del cielo y
+   los hitos. Es una función pura del progreso: render(p). Para depurar se
+   llama render(.42) y se ve ese instante exacto.
+   =========================================================================== */
+.ascenso{position:relative;background:var(--obsidiana);padding:0}
+.ascenso__pista{height:360vh}                 /* la pista de scroll */
+.ascenso__fijo{position:sticky;top:0;height:100svh;overflow:hidden;
+  display:grid;place-items:center}
+.ascenso__cielo{position:absolute;inset:0;z-index:0;
+  background:linear-gradient(176deg,var(--c1,#0b1220) 0%,var(--c2,#1b2434) 54%,var(--c3,#2b2a2e) 100%)}
+.ascenso__estrellas{position:absolute;inset:0;z-index:1;opacity:var(--estrellas,1);
+  transition:opacity .2s linear}
+/* Sangra a los bordes y se ancla al piso: si se centra con un ancho máximo,
+   la base del volcán se lee como una caja flotando sobre el fondo. */
+.ascenso__svg{position:absolute;left:0;right:0;bottom:0;z-index:2;width:100%;height:auto}
+.ruta{fill:none;stroke:var(--lava);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.ruta-fantasma{fill:none;stroke:rgba(242,237,230,.17);stroke-width:5;
+  stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:2 11}
+
+/* panel de datos, arriba a la izquierda */
+.hud{position:absolute;z-index:3;left:var(--gutter);top:clamp(84px,14vh,130px);
+  color:var(--nieve);pointer-events:none}
+.hud__alt{font:800 clamp(2.8rem,8vw,5.2rem)/1 var(--display);letter-spacing:-.05em;
+  font-variant-numeric:tabular-nums;display:block}
+.hud__alt small{font-size:.32em;font-weight:700;letter-spacing:.04em;margin-left:.18em;
+  color:var(--azufre)}
+.hud__et{display:block;font:700 10px/1 var(--texto);letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(242,237,230,.5);margin-bottom:12px}
+.hud__hito{display:block;margin-top:16px;min-height:2.6em;
+  font:500 15px/1.4 var(--texto);color:rgba(242,237,230,.8);max-width:22ch}
+.hud__hito b{display:block;font:700 12px/1 var(--texto);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--azufre);margin-bottom:7px}
+
+/* barra de progreso del ascenso, abajo */
+.vara{position:absolute;z-index:3;left:var(--gutter);right:var(--gutter);bottom:36px;
+  height:2px;background:rgba(242,237,230,.16)}
+.vara i{display:block;height:100%;width:var(--p,0%);background:var(--lava);
+  transform-origin:left}
+
+@media (max-width:760px){
+  .ascenso__pista{height:300vh}
+  .hud{top:auto;bottom:70px}
+  .hud__hito{max-width:16ch}
+}
+/* Sin scrub: se muestra el estado final y la banda deja de ser alta, así
+   nadie queda scrolleando tres pantallas de nada. */
+.quieto .ascenso__pista{height:auto}
+.quieto .ascenso__fijo{position:relative;height:auto;padding:clamp(80px,12vh,130px) 0}
+
+/* ------------------------------------------------------------------ reveals */
+.js .rv{opacity:0;transform:var(--from,translateY(40px));
+  transition:opacity .75s ease-out,transform .9s var(--ease);
+  transition-delay:var(--d,0s);will-change:opacity,transform}
+.js .rv[data-rv="izq"]{--from:translateX(-56px)}
+.js .rv[data-rv="der"]{--from:translateX(56px)}
+.js .rv[data-rv="zoom"]{--from:translateY(26px) scale(.94)}
+.js .rv.visible{opacity:1;transform:none}
+.js .rv.listo{will-change:auto}
+
+@media (max-width:900px){
+  .versus{grid-template-columns:1fr}.via-ota{order:2}
+  .richard{grid-template-columns:1fr}
+  .js .rv[data-rv="izq"],.js .rv[data-rv="der"]{--from:translateY(40px)}
+  .nav__links{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .rv{opacity:1;transform:none;transition:none}
+  .marca-texto{background-size:100% 100%}
+  .humo,.pista i{animation:none}
+  .tour{transition:none}
+  .capa{transform:none !important}
+}
+</style>
+</head>
+<body class="no-js">
+
+<nav class="nav" id="nav">
+  <a class="marca" href="#top">Terra<em>·</em>Volcano</a>
+  <div class="nav__links">
+    <a class="ln" href="#catalogo" data-t="nav.tours"></a>
+    <a class="ln" href="#precio" data-t="nav.precio"></a>
+    <a class="ln" href="#richard" data-t="nav.quienes"></a>
+  </div>
+  <div class="idioma">
+    <button type="button" data-lang="es" aria-pressed="true">ES</button>
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+  </div>
+  <a class="btn btn--lava" href="#reservar" data-t="nav.cta"></a>
+</nav>
+
+<header class="hero" id="top">
+  <div class="cielo"></div>
+
+  <!-- Cordillera de fondo: se mueve poco -->
+  <div class="capa" data-vel="0.06" style="z-index:1">
+    <svg viewBox="0 0 1440 340" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#CBBBA4" d="M0 340V214l118-62 96 44 128-78 142 84 118-54 146 72 134-86 152 92 104-48 102 58v104z"/>
+    </svg>
+  </div>
+  <!-- El Villarrica: protagonista -->
+  <div class="capa" data-vel="0.14" style="z-index:2">
+    <svg viewBox="0 0 1440 420" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#8E7A63" d="M0 420V352l286-96 160-150 72-66 74 68 158 150 288 94 202 58v20z"/>
+      <path fill="#F2EDE6" d="M518 40l74 68 76 72-66 24-84-30-72 28-60-26 70-66z" opacity=".92"/>
+      <path fill="#D64A1E" d="M560 44l32-4 34 38-36 14-40-12z" opacity=".85"/>
+    </svg>
+  </div>
+  <div class="humo" aria-hidden="true"></div>
+  <!-- Bosque en primer plano: se mueve más -->
+  <div class="capa" data-vel="0.26" style="z-index:3">
+    <svg viewBox="0 0 1440 190" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#2F5D4A" d="M0 190V96l70-34 54 30 78-44 66 40 84-46 72 44 90-50 76 48 88-44 74 42 86-48 78 46 92-42 70 40 76-38 86 46v134z"/>
+      <path fill="#1E3E31" d="M0 190v-54l96 26 92-34 104 38 96-30 110 36 98-32 112 38 96-30 108 36 98-28 106 34 124-38v38z" opacity=".86"/>
+    </svg>
+  </div>
+
+  <div class="wrap hero__texto">
+    <span class="cejilla" data-t="hero.cejilla"></span>
+    <h1><span data-t="hero.t1"></span> <span class="marca-texto" data-mark data-t="hero.t2"></span></h1>
+    <p class="bajada" data-t="hero.bajada"></p>
+    <div class="hero__acciones">
+      <a class="btn btn--lava" href="#reservar" data-t="hero.cta1"></a>
+      <a class="btn btn--linea" href="#catalogo" data-t="hero.cta2"></a>
+    </div>
+  </div>
+
+  <div class="pista" id="pista"><span data-t="hero.pista"></span><i></i></div>
+</header>
+
+<!-- ------------------------------------------------------------- cifras -->
+<section class="cifras" style="padding:0">
+  <div class="wrap">
+    <div class="cifra rv" data-rv="zoom"><b data-cuenta="4.8" data-dec="1">0</b><span data-t="cifra.google"></span></div>
+    <div class="cifra rv" data-rv="zoom"><b data-cuenta="141">0</b><span data-t="cifra.opiniones"></span></div>
+    <div class="cifra rv" data-rv="zoom"><b data-cuenta="1" data-pre="#">0</b><span data-t="cifra.tripadvisor"></span></div>
+    <div class="cifra rv" data-rv="zoom"><b data-texto="1:3">1:3</b><span data-t="cifra.ratio"></span></div>
+    <div class="cifra rv" data-rv="zoom"><b data-cuenta="2015">0</b><span data-t="cifra.desde"></span></div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------ catálogo -->
+<section id="catalogo">
+  <div class="wrap">
+    <span class="cejilla rv" data-t="cat.cejilla"></span>
+    <h2 class="titulo rv" data-t="cat.titulo"></h2>
+    <p class="sub rv" data-t="cat.sub"></p>
+
+    <div class="catalogo" id="catalogo">
+      <figure class="tour"><div class="tour__card"><span class="nivel" data-t="cat.n3"></span>
+        <h3>Villarrica</h3><p class="meta" data-t="cat.m1"></p></div></figure>
+      <figure class="tour"><div class="tour__card"><span class="nivel" data-t="cat.n3"></span>
+        <h3>Lanín</h3><p class="meta" data-t="cat.m2"></p></div></figure>
+      <figure class="tour"><div class="tour__card"><span class="nivel" data-t="cat.n2"></span>
+        <h3>Ski touring</h3><p class="meta" data-t="cat.m3"></p></div></figure>
+      <figure class="tour"><div class="tour__card"><span class="nivel" data-t="cat.n1"></span>
+        <h3>Rafting</h3><p class="meta" data-t="cat.m4"></p></div></figure>
+      <figure class="tour"><div class="tour__card"><span class="nivel" data-t="cat.n2"></span>
+        <h3>Canyoning</h3><p class="meta" data-t="cat.m5"></p></div></figure>
+      <div class="catalogo__puntos" role="tablist"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------- ascenso -->
+<section class="ascenso" id="ascenso" aria-label="El ascenso al Villarrica">
+ <div class="ascenso__pista">
+  <div class="ascenso__fijo">
+    <div class="ascenso__cielo" id="cielo-asc"></div>
+    <svg class="ascenso__estrellas" id="estrellas" aria-hidden="true"></svg>
+
+    <svg class="ascenso__svg" viewBox="0 0 1000 620" aria-hidden="true">
+      <!-- silueta: un solo contorno, sin capas que sobresalgan -->
+      <path fill="#0d1117" d="M0 620V548l150-36 180-108 100-152 70-102 70 102 100 152 180 108 150 36v72z"/>
+      <!-- nieve: apoyada exactamente sobre las mismas pendientes del cono -->
+      <path fill="#F2EDE6" opacity=".92" d="M432 248L500 150l68 98-32 14-36-16-34 17z"/>
+      <!-- cráter -->
+      <ellipse cx="500" cy="153" rx="15" ry="5.5" fill="#0d1117" opacity=".85"/>
+      <!-- la ruta: fantasma debajo, trazo real encima -->
+      <path class="ruta-fantasma" id="ruta-g" d="M210 506 L295 472 L348 439 L375 405 L375 372 L397 338 L420 304 L458 271 L485 237 L496 204 L500 166"/>
+      <path class="ruta" id="ruta" d="M210 506 L295 472 L348 439 L375 405 L375 372 L397 338 L420 304 L458 271 L485 237 L496 204 L500 166"/>
+      <!-- el escalador -->
+      <g id="escalador" opacity="0">
+        <circle r="17" fill="var(--lava)" opacity=".26"/>
+        <circle r="7.5" fill="var(--lava)" stroke="#F2EDE6" stroke-width="2.5"/>
+      </g>
+      <!-- fumarola del cráter, aparece al final -->
+      <g id="fumarola" opacity="0">
+        <circle cx="500" cy="150" r="32" fill="var(--azufre)" opacity=".2"/>
+        <circle cx="500" cy="150" r="13" fill="var(--azufre)" opacity=".5"/>
+      </g>
+    </svg>
+
+    <div class="hud">
+      <span class="hud__et" data-t="asc.et"></span>
+      <span class="hud__alt"><span id="altimetro">1.400</span><small>m</small></span>
+      <span class="hud__hito" id="hito"></span>
+    </div>
+    <div class="vara"><i id="vara"></i></div>
+  </div>
+ </div>
+</section>
+
+<!-- ------------------------------------------------------------- precio -->
+<section class="precio" id="precio">
+  <div class="wrap">
+    <span class="cejilla rv" style="color:var(--azufre)" data-t="pre.cejilla"></span>
+    <h2 class="titulo rv"><span data-t="pre.t1"></span> <span class="marca-texto" data-mark data-t="pre.t2"></span></h2>
+    <p class="sub rv" data-t="pre.sub"></p>
+
+    <div class="versus">
+      <div class="caja directa rv" data-rv="izq">
+        <span class="etiq" data-t="pre.etiq_dir"></span>
+        <span class="monto">US$<span data-cuenta="160">0</span> <span class="pendiente">por confirmar</span></span>
+        <p class="unidad" data-t="pre.por"></p>
+        <ul class="incluye">
+          <li data-t="pre.i1"></li><li data-t="pre.i2"></li>
+          <li data-t="pre.i3"></li><li data-t="pre.i4"></li>
+        </ul>
+        <a class="btn btn--lava" href="#reservar" data-t="pre.btn"></a>
+      </div>
+      <div class="caja via-ota rv" data-rv="der">
+        <span class="etiq" data-t="pre.etiq_ota"></span>
+        <span class="monto">US$190–208</span>
+        <p class="unidad" data-t="pre.por_ota"></p>
+        <p class="nota" data-t="pre.nota_ota"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------- richard -->
+<section id="richard">
+  <div class="wrap richard">
+    <figure class="retrato rv" data-rv="izq" style="margin:0">
+      <figcaption data-t="ric.foto"></figcaption>
+    </figure>
+    <div class="rv" data-rv="der">
+      <span class="cejilla" data-t="ric.cejilla"></span>
+      <h2 class="titulo" data-t="ric.titulo"></h2>
+      <p class="sub" data-t="ric.p1"></p>
+      <ul class="credenciales">
+        <li data-t="ric.c1"></li><li data-t="ric.c2"></li><li data-t="ric.c3"></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ----------------------------------------------------------------- cta -->
+<section class="cierre" id="reservar">
+  <div class="wrap">
+    <span class="cejilla rv" style="color:var(--azufre)" data-t="cta.cejilla"></span>
+    <h2 class="titulo rv" data-t="cta.titulo"></h2>
+    <p class="sub rv" data-t="cta.sub"></p>
+    <div class="acciones rv">
+      <a class="btn btn--lava" href="https://wa.me/56983388317" data-t="cta.wa"></a>
+      <a class="btn btn--linea" href="#catalogo" data-t="cta.ver"></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div data-t="pie.dir"></div>
+  <div data-t="pie.nota"></div>
+</footer>
+
+<script>
+/* ============================================================================
+   Cero dependencias. IntersectionObserver + un rAF compartido.
+   ========================================================================== */
+document.body.classList.replace('no-js','js');
+
+var QUIETO = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (QUIETO) document.documentElement.classList.add('quieto');
+
+var clamp01 = function(v){ return v<0?0:v>1?1:v; };
+
+/* ---------------------------------------------------------------- textos */
+var T = {
+  es:{
+    'nav.tours':'Expediciones','nav.precio':'Precio','nav.quienes':'Quiénes somos','nav.cta':'Reservar',
+    'hero.cejilla':'Pucón · Araucanía andina',
+    'hero.t1':'El Villarrica no es una postal.','hero.t2':'Está vivo.',
+    'hero.bajada':'Ascensos guiados al cráter de un volcán activo. Un guía cada tres personas, siempre.',
+    'hero.cta1':'Reservar directo','hero.cta2':'Ver expediciones','hero.pista':'Scroll',
+    'cifra.google':'Google, verificado el 26-10-2026','cifra.opiniones':'Opiniones publicadas',
+    'cifra.tripadvisor':'En Pucón, según Tripadvisor','cifra.ratio':'Guía por pasajeros, siempre',
+    'cifra.desde':'Fundada por Richard Díaz',
+    'asc.et':'Altitud',
+    'asc.h0':'Centro de esquí|Acá empieza la caminata. Se reparte el equipo y se revisa el pronóstico.',
+    'asc.h1':'Límite de nieve|Se calzan los crampones. A partir de acá el piolet no se guarda.',
+    'asc.h2':'Pala final|La pendiente llega a 35°. Es el tramo que define si el grupo sigue.',
+    'asc.h3':'Cráter|Azufre, vapor y el lago abajo. Se baja antes del mediodía.',
+    'cat.cejilla':'Catálogo','cat.titulo':'Cinco formas de conocer la Araucanía.',
+    'cat.sub':'Todas salen de Pucón. Todas con equipo incluido y guía certificado.',
+    'cat.n1':'Accesible','cat.n2':'Exigente','cat.n3':'Alta montaña',
+    'cat.m1':'2.847 m · 1 día · crampones y piolet',
+    'cat.m2':'3.747 m · 2 días · campamento de altura',
+    'cat.m3':'Villarrica, Quetrupillán, Lanín, Lonquimay',
+    'cat.m4':'Río Trancura · medio día','cat.m5':'Descenso en cascadas · medio día',
+    'pre.cejilla':'Reserva directa','pre.t1':'El mismo ascenso.','pre.t2':'Sin comisión.',
+    'pre.sub':'Cuando reservas por una plataforma, entre el 20 y el 30% de lo que pagas no llega a la agencia.',
+    'pre.etiq_dir':'Directo con Terra Volcano','pre.por':'por persona · equipo incluido',
+    'pre.i1':'Crampones, piolet y casco','pre.i2':'Guía certificado, ratio 1:3',
+    'pre.i3':'Traslado desde Pucón','pre.i4':'Reprogramación gratis por clima',
+    'pre.btn':'Reservar por WhatsApp','pre.etiq_ota':'Vía plataforma','pre.por_ota':'por persona',
+    'pre.nota_ota':'Rango publicado por las OTAs. La diferencia es la comisión del intermediario.',
+    'ric.cejilla':'Quiénes somos','ric.titulo':'Richard conoce este volcán hace más de treinta años.',
+    'ric.p1':'Terra Volcano es una empresa familiar fundada en 2015 por Richard Díaz, escalador chileno. No subcontrata guías: sube él o sube alguien de su equipo.',
+    'ric.c1':'Turismo Aventura Richard Díaz Suazo EIRL',
+    'ric.c2':'Av. Bernardo O’Higgins 717, Local 4 — Boulevard Patagonia, Pucón',
+    'ric.c3':'Registro de pasajeros conforme al Decreto 19/2018',
+    'ric.foto':'Espacio reservado para fotografía propia. Ninguna imagen del repositorio tiene licencia resuelta.',
+    'cta.cejilla':'Cupos por fecha','cta.titulo':'¿Subimos?',
+    'cta.sub':'Escríbele a Richard. Responde él, no un bot.',
+    'cta.wa':'WhatsApp +56 9 8338 8317','cta.ver':'Ver expediciones',
+    'pie.dir':'Av. Bernardo O’Higgins 717, Local 4 · Boulevard Patagonia, Pucón, Chile',
+    'pie.nota':'Maqueta de trabajo. Precios y cifras marcados «por confirmar» esperan validación de la agencia.',
+  },
+  en:{
+    'nav.tours':'Expeditions','nav.precio':'Pricing','nav.quienes':'About us','nav.cta':'Book',
+    'hero.cejilla':'Pucón · Andean Araucanía',
+    'hero.t1':'Villarrica is not a postcard.','hero.t2':'It is alive.',
+    'hero.bajada':'Guided ascents to the crater of an active volcano. One guide per three climbers, always.',
+    'hero.cta1':'Book direct','hero.cta2':'See expeditions','hero.pista':'Scroll',
+    'cifra.google':'Google, verified 2026-10-26','cifra.opiniones':'Published reviews',
+    'cifra.tripadvisor':'In Pucón, per Tripadvisor','cifra.ratio':'Guide to climbers, always',
+    'cifra.desde':'Founded by Richard Díaz',
+    'asc.et':'Altitude',
+    'asc.h0':'Ski centre|The walk starts here. Gear is handed out and the forecast checked.',
+    'asc.h1':'Snow line|Crampons go on. From here the ice axe stays in hand.',
+    'asc.h2':'Final headwall|The slope reaches 35°. This pitch decides whether the group continues.',
+    'asc.h3':'Crater|Sulphur, steam, and the lake below. We descend before noon.',
+    'cat.cejilla':'Catalogue','cat.titulo':'Five ways to know the Araucanía.',
+    'cat.sub':'All depart from Pucón. All include gear and a certified guide.',
+    'cat.n1':'Accessible','cat.n2':'Demanding','cat.n3':'High mountain',
+    'cat.m1':'2,847 m · 1 day · crampons and ice axe',
+    'cat.m2':'3,747 m · 2 days · high camp',
+    'cat.m3':'Villarrica, Quetrupillán, Lanín, Lonquimay',
+    'cat.m4':'Trancura river · half day','cat.m5':'Waterfall descent · half day',
+    'pre.cejilla':'Direct booking','pre.t1':'Same climb.','pre.t2':'No commission.',
+    'pre.sub':'When you book through a platform, 20 to 30% of what you pay never reaches the agency.',
+    'pre.etiq_dir':'Direct with Terra Volcano','pre.por':'per person · gear included',
+    'pre.i1':'Crampons, ice axe and helmet','pre.i2':'Certified guide, 1:3 ratio',
+    'pre.i3':'Transfer from Pucón','pre.i4':'Free rescheduling for weather',
+    'pre.btn':'Book on WhatsApp','pre.etiq_ota':'Via platform','pre.por_ota':'per person',
+    'pre.nota_ota':'Range published by the OTAs. The gap is the intermediary’s commission.',
+    'ric.cejilla':'About us','ric.titulo':'Richard has known this volcano for over thirty years.',
+    'ric.p1':'Terra Volcano is a family business founded in 2015 by Richard Díaz, a Chilean climber. Guides are never subcontracted: he climbs, or someone from his own team does.',
+    'ric.c1':'Turismo Aventura Richard Díaz Suazo EIRL',
+    'ric.c2':'Av. Bernardo O’Higgins 717, Local 4 — Boulevard Patagonia, Pucón',
+    'ric.c3':'Passenger registry compliant with Decree 19/2018',
+    'ric.foto':'Reserved for the agency’s own photography. No image in the repository has its licence resolved.',
+    'cta.cejilla':'Limited spots per date','cta.titulo':'Shall we climb?',
+    'cta.sub':'Message Richard. He answers, not a bot.',
+    'cta.wa':'WhatsApp +56 9 8338 8317','cta.ver':'See expeditions',
+    'pie.dir':'Av. Bernardo O’Higgins 717, Local 4 · Boulevard Patagonia, Pucón, Chile',
+    'pie.nota':'Working mock-up. Figures marked “por confirmar” await the agency’s validation.',
+  }
+};
+
+function pintar(lang){
+  var d = T[lang];
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var v = d[el.dataset.t]; if (v != null) el.textContent = v;
+  });
+  document.documentElement.lang = lang === 'en' ? 'en' : 'es';
+  document.querySelectorAll('.idioma button').forEach(function(b){
+    b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  });
+}
+document.querySelectorAll('.idioma button').forEach(function(b){
+  b.addEventListener('click', function(){ pintar(b.dataset.lang); });
+});
+// Detección automática: el cliente de la agencia es mayoritariamente extranjero.
+pintar((navigator.language || 'es').toLowerCase().indexOf('es') === 0 ? 'es' : 'en');
+
+/* ------------------------------------------------- reveals con escalonado */
+(function(){
+  var todos = [].slice.call(document.querySelectorAll('.rv'));
+  var mostrar = function(el, d){
+    el.style.setProperty('--d', d + 's');
+    el.classList.add('visible');
+    el.addEventListener('transitionend', function(){ el.classList.add('listo'); }, {once:true});
+  };
+  if (QUIETO || !('IntersectionObserver' in window)) { todos.forEach(function(e){mostrar(e,0)}); return; }
+
+  var io = new IntersectionObserver(function(ents){
+    ents.forEach(function(e){
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      mostrar(e.target, 0);
+    });
+  }, {threshold:.12, rootMargin:'0px 0px -7% 0px'});
+
+  // Los grupos revelan a sus hijos en cascada, con tope: una fila larga no
+  // puede hacer esperar al visitante hasta el último elemento.
+  var grupos = [].slice.call(document.querySelectorAll('.cifras .wrap, .versus'));
+  var ioG = new IntersectionObserver(function(ents){
+    ents.forEach(function(e){
+      if (!e.isIntersecting) return;
+      ioG.unobserve(e.target);
+      [].slice.call(e.target.querySelectorAll('.rv')).forEach(function(el,i){
+        mostrar(el, Math.min(i * .09, .36));
+      });
+    });
+  }, {threshold:.15});
+  grupos.forEach(function(g){ ioG.observe(g); });
+
+  todos.filter(function(el){ return !el.closest('.cifras .wrap, .versus'); })
+       .forEach(function(el){ io.observe(el); });
+})();
+
+/* -------------------- un solo rAF para parallax, marcador, nav y pista --- */
+(function(){
+  var capas  = [].slice.call(document.querySelectorAll('.capa'));
+  var marcas = [].slice.call(document.querySelectorAll('[data-mark]'));
+  var nav    = document.getElementById('nav');
+  var pista  = document.getElementById('pista');
+  var pend = false;
+
+  function pasada(){
+    pend = false;
+    var y = window.scrollY, vh = innerHeight;
+
+    if (!QUIETO) {
+      // Parallax: cada capa a su velocidad. translate3d -> compositor.
+      for (var i=0;i<capas.length;i++){
+        capas[i].style.setProperty('--py', (y * +capas[i].dataset.vel).toFixed(1) + 'px');
+      }
+      // Marcador: el ancho sigue la posición, no se dispara de golpe.
+      for (var j=0;j<marcas.length;j++){
+        var r = marcas[j].getBoundingClientRect();
+        var p = clamp01((vh * .86 - r.top) / (vh * .30));
+        marcas[j].style.backgroundSize = (p*100).toFixed(2) + '% 100%';
+      }
+    }
+    nav.classList.toggle('pegado', y > 40);
+    if (pista) pista.style.opacity = y > 120 ? 0 : 1;
+  }
+  addEventListener('scroll', function(){ if(!pend){ pend=true; requestAnimationFrame(pasada);} }, {passive:true});
+  addEventListener('resize', pasada);
+  pasada();
+})();
+
+/* ------------------------------------------------------ contador de cifras */
+(function(){
+  var nums = [].slice.call(document.querySelectorAll('[data-cuenta]'));
+  if (!nums.length) return;
+  var pintarNum = function(el, v){
+    var dec = +(el.dataset.dec || 0);
+    el.textContent = (el.dataset.pre || '') + v.toFixed(dec);
+  };
+  if (QUIETO || !('IntersectionObserver' in window)) {
+    nums.forEach(function(el){ pintarNum(el, +el.dataset.cuenta); }); return;
+  }
+  var io = new IntersectionObserver(function(ents){
+    ents.forEach(function(e){
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      var el = e.target, fin = +el.dataset.cuenta, t0 = performance.now(), DUR = 1100;
+      (function paso(now){
+        var k = clamp01((now - t0) / DUR);
+        pintarNum(el, fin * (1 - Math.pow(1 - k, 3)));   // easeOutCubic
+        if (k < 1) requestAnimationFrame(paso);
+      })(t0);
+    });
+  }, {threshold:.6});
+  nums.forEach(function(el){ io.observe(el); });
+})();
+
+/* ===========================================================================
+   EL ASCENSO · render(p) — función pura del progreso de scroll
+   ---------------------------------------------------------------------------
+   p = 0 -> base del volcán, de noche.  p = 1 -> cráter, luz de amanecer.
+   Todo lo que se mueve sale de p: el trazo de la ruta, el escalador sobre la
+   ruta, el altímetro, los tres colores del cielo, las estrellas y los hitos.
+
+   Por qué sticky y no un pin con librería: `position:sticky` lo resuelve el
+   compositor del navegador, sin JS por frame y sin tocar el layout. Un pin
+   hecho a mano cambia la altura del documento y pelea con el scroll del
+   trackpad; sticky no.
+   =========================================================================== */
+(function(){
+  var sec = document.getElementById('ascenso');
+  if (!sec) return;
+  var ruta  = document.getElementById('ruta');
+  var esc   = document.getElementById('escalador');
+  var alti  = document.getElementById('altimetro');
+  var hito  = document.getElementById('hito');
+  var vara  = document.getElementById('vara');
+  var cielo = document.getElementById('cielo-asc');
+  var estr  = document.getElementById('estrellas');
+  var fuma  = document.getElementById('fumarola');
+
+  var LARGO = ruta.getTotalLength();
+  ruta.style.strokeDasharray  = LARGO + ' ' + (LARGO + 1);
+  ruta.style.strokeDashoffset = LARGO;
+
+  // ALTITUDES [POR CONFIRMAR] — el protocolo del repo pide marcarlas.
+  var BASE = 1400, CUMBRE = 2847;
+
+  // Paletas de cielo: noche -> azul de amanecer -> dorado de cumbre.
+  var CIELOS = [
+    [[11,18,32],[27,36,52],[43,42,46]],
+    [[24,34,61],[58,70,96],[120,96,84]],
+    [[58,52,74],[150,104,78],[232,179,60]]
+  ];
+  var mez = function(a,b,t){ return 'rgb('+
+    Math.round(a[0]+(b[0]-a[0])*t)+','+
+    Math.round(a[1]+(b[1]-a[1])*t)+','+
+    Math.round(a[2]+(b[2]-a[2])*t)+')'; };
+
+  var HITOS = [ {p:.08,k:'asc.h0'}, {p:.34,k:'asc.h1'}, {p:.64,k:'asc.h2'}, {p:.92,k:'asc.h3'} ];
+  var hitoActual = -1;
+
+  // Campo de estrellas: una sola vez, determinista (sin Math.random, para que
+  // dos cargas se vean igual y una captura sea comparable).
+  (function(){
+    var ns='http://www.w3.org/2000/svg', semilla=7;
+    var rnd=function(){ semilla=(semilla*16807)%2147483647; return semilla/2147483647; };
+    for (var i=0;i<70;i++){
+      var c=document.createElementNS(ns,'circle');
+      c.setAttribute('cx',(rnd()*100).toFixed(2)+'%');
+      c.setAttribute('cy',(rnd()*62).toFixed(2)+'%');
+      c.setAttribute('r',(rnd()*1.3+.4).toFixed(2));
+      c.setAttribute('fill','#F2EDE6');
+      c.setAttribute('opacity',(rnd()*.6+.25).toFixed(2));
+      estr.appendChild(c);
+    }
+  })();
+
+  function render(p){
+    p = clamp01(p);
+
+    // 1 · la ruta se dibuja
+    ruta.style.strokeDashoffset = LARGO * (1 - p);
+
+    // 2 · el escalador va sobre la ruta — misma técnica que la firma de Artina
+    if (p > 0) {
+      var pt = ruta.getPointAtLength(LARGO * p);
+      esc.setAttribute('transform', 'translate(' + pt.x.toFixed(1) + ' ' + pt.y.toFixed(1) + ')');
+      esc.setAttribute('opacity', String(clamp01(p * 14)));
+    } else {
+      esc.setAttribute('opacity', '0');
+    }
+
+    // 3 · altímetro
+    var m = BASE + (CUMBRE - BASE) * p;
+    alti.textContent = Math.round(m).toLocaleString('es-CL');
+
+    // 4 · cielo: dos tramos interpolados, noche -> amanecer -> cumbre
+    var t = p < .5 ? p/.5 : (p-.5)/.5;
+    var A = p < .5 ? CIELOS[0] : CIELOS[1];
+    var B = p < .5 ? CIELOS[1] : CIELOS[2];
+    cielo.style.setProperty('--c1', mez(A[0],B[0],t));
+    cielo.style.setProperty('--c2', mez(A[1],B[1],t));
+    cielo.style.setProperty('--c3', mez(A[2],B[2],t));
+    estr.style.opacity = String(clamp01(1 - p*2.1));   // se apagan al amanecer
+
+    // 5 · fumarola: solo al llegar
+    fuma.setAttribute('opacity', String(clamp01((p - .86) / .14)));
+
+    // 6 · hitos: cambia solo cuando cruza un umbral, no en cada frame
+    var idx = -1;
+    for (var i=0;i<HITOS.length;i++) if (p >= HITOS[i].p) idx = i;
+    if (idx !== hitoActual) {
+      hitoActual = idx;
+      if (idx < 0) hito.innerHTML = '';
+      else {
+        var partes = (T[document.documentElement.lang === 'en' ? 'en' : 'es'][HITOS[idx].k] || '').split('|');
+        hito.innerHTML = '<b></b><span></span>';
+        hito.querySelector('b').textContent = partes[0] || '';
+        hito.querySelector('span').textContent = partes[1] || '';
+      }
+    }
+
+    vara.style.setProperty('--p', (p*100).toFixed(1) + '%');
+  }
+
+  if (QUIETO) { render(1); return; }   // sin scrub: se entrega la cumbre
+
+  var pend = false;
+  function medir(){
+    pend = false;
+    var r = sec.getBoundingClientRect();
+    // progreso dentro de la banda: 0 cuando su techo toca el techo del viewport,
+    // 1 cuando su piso llega al piso del viewport.
+    var total = sec.offsetHeight - innerHeight;
+    render(total > 0 ? (-r.top) / total : 0);
+  }
+  addEventListener('scroll', function(){ if(!pend){ pend=true; requestAnimationFrame(medir);} }, {passive:true});
+  addEventListener('resize', medir);
+  // si cambian el idioma, el hito se repinta
+  document.querySelectorAll('.idioma button').forEach(function(b){
+    b.addEventListener('click', function(){ hitoActual = -1; medir(); });
+  });
+  render(0); medir();
+})();
+
+/* ------------------------------------------------------- catálogo en 3D */
+(function(){
+  var raiz = document.getElementById('catalogo');
+  if (!raiz) return;
+  var cards = [].slice.call(raiz.querySelectorAll('.tour'));
+  var wrapP = raiz.querySelector('.catalogo__puntos');
+  var n = cards.length, activo = 0, timer = 0, INTERVALO = 3000;
+
+  var puntos = cards.map(function(c,i){
+    var b = document.createElement('button');
+    b.type='button'; b.setAttribute('role','tab');
+    b.setAttribute('aria-label', c.querySelector('h3').textContent);
+    b.addEventListener('click', function(){ ir(i); reiniciar(); });
+    wrapP.appendChild(b); return b;
+  });
+
+  function acomodar(){
+    cards.forEach(function(c,i){
+      var o = ((i - activo) % n + n) % n;
+      if (o >= n/2) o -= n;
+      var abs = Math.abs(o);
+      var esc = abs===0 ? 1 : abs===1 ? .74 : .52;
+      c.style.transform = 'translateX(calc(-50% + ' + (o*84) + '%)) translateY(' + (abs?8:0) + '%) scale(' + esc + ')';
+      c.style.zIndex = 10 - abs;
+      c.style.opacity = abs>1 ? 0 : abs===1 ? .62 : 1;
+      c.style.filter = abs ? 'saturate(.75) brightness(.9)' : 'none';
+      c.style.pointerEvents = abs>1 ? 'none' : '';
+      c.setAttribute('aria-hidden', String(o!==0));
+      puntos[i].setAttribute('aria-selected', String(o===0));
+    });
+  }
+  function ir(i){ activo = (i+n)%n; acomodar(); }
+  var parar = function(){ clearInterval(timer); };
+  var reiniciar = function(){ parar(); if(!QUIETO) timer = setInterval(function(){ ir(activo+1); }, INTERVALO); };
+
+  cards.forEach(function(c,i){ c.addEventListener('click', function(){ if(i!==activo){ ir(i); reiniciar(); } }); });
+
+  var x0 = null;
+  raiz.addEventListener('pointerdown', function(e){ x0 = e.clientX; });
+  raiz.addEventListener('pointerup', function(e){
+    if (x0===null) return;
+    var dx = e.clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) { ir(activo + (dx<0?1:-1)); reiniciar(); }
+  });
+  // Solo corre mientras se ve: no gasta CPU de fondo.
+  new IntersectionObserver(function(e){ e[0].isIntersecting ? reiniciar() : parar(); }).observe(raiz);
+  acomodar();
+})();
+</script>
+</body>
+</html>
