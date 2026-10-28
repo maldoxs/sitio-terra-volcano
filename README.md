@@ -195,15 +195,16 @@ python3 herramientas/generar_clips.py    # regenera los .mp4 desde las fotos
 
 ---
 
-## ⚠️ Antes de publicar el sitio
+## Fotografías
 
-**Ninguna de las fotografías de este repositorio es de Terra Volcano.** Llegaron
-como referencia visual para construir y evaluar el sitio, **no para
-publicarlo**. Afecta a las 6 imágenes de `herramientas/referencias/`, a los 4
-videos generados desde ellas y a las fotos de `public/media/`.
+Las fotografías del repositorio están **aprobadas para publicar** (confirmado
+por la agencia el 2026-10-28). Afecta a las imágenes de
+`herramientas/referencias/`, a los cuatro videos generados desde ellas y a las
+fotos de `public/media/`.
 
-El home en Vue está limpio: no tiene ni una fotografía, todo es SVG. La landing
+Hasta esa fecha estaban bloqueadas y el detalle vivía en
+`LICENCIAS-PENDIENTES.md`, en el repositorio de documentación. Ese archivo
+quedó desactualizado y hay que corregirlo allá.
+
+El home en Vue no usa ninguna fotografía: todo lo visual es SVG. La landing
 `/villarrica/` sí las usa.
-
-El detalle completo y los pasos para resolverlo están en
-`LICENCIAS-PENDIENTES.md`, en el repositorio privado de documentación.

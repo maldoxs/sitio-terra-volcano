@@ -223,6 +223,26 @@ Ideas conversadas y no implementadas:
 
 La entrada nueva va arriba.
 
+### 2026-10-28 (d) · el cerro deja de ser un triangulo
+
+La silueta exterior NO se toco: la ruta se genero contra ella y sus once
+vertices dependen de esas pendientes. Todo el detalle entro por dentro.
+
+- **Quebradas**: tres aristas finas que bajan de la cumbre. La primera version
+  usaba cunas anchas y se leian como error de relleno, no como relieve.
+- **Nieve con borde irregular**, bajando por las quebradas y retirandose en
+  las aristas. Dos intentos: con rectas quedaba un zigzag de dientes iguales,
+  y algunos dientes llegaban a desprenderse del cuerpo. Con curvas cuadraticas
+  queda en lobulos, que es como se ve de verdad.
+- **Espolones de roca** asomando entre la nieve, como poligonos irregulares.
+  Los primeros eran rombos simetricos y parecian adorno geometrico. No son
+  decoracion: el hito «espolones» cae en esa zona.
+- **El crater es truncado**, no una punta. Es lo que distingue al Villarrica
+  de un cono generico.
+- **La nieve recibe la luz** como las araucarias: gris azulado de noche, hueso
+  al amanecer. Una nieve blanca constante contra un cielo que cambia es lo que
+  hace que una escena se vea pegada.
+
 ### 2026-10-28 (c) · el ambiente amanece
 
 El escenario deja de ser un volcan sobre un degradado y pasa a ser una hora

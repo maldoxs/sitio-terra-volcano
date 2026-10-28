@@ -36,6 +36,10 @@ const opSol = ref(0);
    su color, de silueta negra contra el cielo nocturno a verde encendido al
    amanecer. Es el arbol de la Araucania y da el nombre al token de la paleta. */
 const tonoAraucaria = ref('rgb(30,38,50)');
+/* La nieve tampoco es blanca de noche: a esa hora es un gris azulado y solo
+   al amanecer se acerca al hueso de la paleta. Una nieve blanca constante
+   contra un cielo que cambia es lo que hace que una escena se vea pegada. */
+const tonoNieve = ref('rgb(74,88,112)');
 const anchoVara = ref('0%');
 const hito = shallowRef(null);
 
@@ -146,6 +150,7 @@ function pintar(p) {
   /* De noche NO son negras: contra un cerro casi negro desaparecerian. Van un
      punto mas claras, lo justo para leerse como siluetas. */
   tonoAraucaria.value = mez([30, 38, 50], [47, 93, 74], limita01(p * 1.5));
+  tonoNieve.value = mez([74, 88, 112], [242, 237, 230], limita01(p * 1.3));
 
   // 5 · fumarola: se gana al llegar al borde del crater
   opFumarola.value = limita01((p - 0.86) / 0.14);
@@ -250,9 +255,51 @@ onScroll(() => {
             </g>
           </g>
 
+          <!-- EL CERRO.
+               La silueta exterior no se toca: la ruta se genero contra ella y
+               sus once vertices dependen de esas pendientes. Todo el detalle
+               va por DENTRO. -->
           <path fill="#0d1117" d="M0 620V548l150-36 180-108 100-152 70-102 70 102 100 152 180 108 150 36v72z"/>
-          <path fill="#F2EDE6" opacity=".92" d="M432 248L500 150l68 98-32 14-36-16-34 17z"/>
-          <ellipse cx="500" cy="153" rx="15" ry="5.5" fill="#0d1117" opacity=".85"/>
+
+          <!-- Quebradas. Aristas finas que bajan de la cumbre, no cunas: una
+               cuna ancha se lee como error de relleno, no como relieve. -->
+          <g fill="#151c26">
+            <path d="M500 152 L516 236 L540 330 L556 420 L540 356 L512 254 L503 182 z"/>
+            <path d="M500 152 L488 230 L468 320 L450 404 L466 338 L492 240 L498 180 z" opacity=".75"/>
+            <path d="M500 152 L530 262 L566 392 L548 348 L516 232 z" opacity=".45"/>
+          </g>
+
+          <!-- NIEVE. El borde inferior baja por las quebradas y se retira en
+               las aristas, con amplitudes distintas: un zigzag de dientes
+               iguales es lo que mas delata un dibujo. -->
+          <path :fill="tonoNieve" opacity=".95"
+                d="M392 310 L500 150 L608 310
+                   Q598 288 584 312
+                   Q568 340 554 304
+                   Q538 320 524 296
+                   Q510 332 496 302
+                   Q480 316 466 294
+                   Q450 328 436 300
+                   Q420 314 406 298
+                   Q398 306 392 310 Z"/>
+
+          <!-- Espolones de roca asomando entre la nieve. Poligonos irregulares,
+               no rombos: la simetria los convertia en adorno geometrico.
+               No son decoracion, el hito «espolones» cae en esta zona. -->
+          <g fill="#0d1117" opacity=".8">
+            <path d="M524 206 L536 214 L541 228 L530 234 L519 222 z"/>
+            <path d="M471 236 L484 241 L487 256 L474 259 L466 247 z"/>
+            <path d="M549 252 L561 259 L558 272 L545 270 L542 260 z"/>
+            <path d="M497 188 L506 193 L504 203 L494 201 z"/>
+            <path d="M440 288 L452 294 L449 305 L437 301 z"/>
+            <path d="M568 296 L579 303 L574 313 L564 307 z"/>
+          </g>
+
+          <!-- Crater: el Villarrica es un cono TRUNCADO, no una punta. -->
+          <ellipse cx="500" cy="152" rx="17" ry="6" fill="#0d1117" opacity=".9"/>
+          <path d="M483 152 a17 6 0 0 0 34 0" fill="none"
+                stroke="#0d1117" stroke-width="2.5" opacity=".6"/>
+
           <!-- ARAUCARIAS. El arbol de la Araucania, y el token que da nombre
                a su color en la paleta. Tronco recto y copa en candelabro: a
                esta distancia es la silueta lo que las identifica.
