@@ -364,8 +364,8 @@ onScroll(() => {
             <g v-for="(c, i) in cordada" :key="i"
                :transform="`translate(${c.x} ${c.y})`" :opacity="c.o * 0.82">
               <g transform="translate(0 2) scale(0.82)">
-                <path d="M-9.5 -19 L-15 -1" stroke="#E6DFD2" stroke-width="1.4"
-                      stroke-linecap="round" opacity=".5"/>
+                <path d="M9.5 -19 L13.5 -1" stroke="#E6DFD2" stroke-width="1.4"
+                      stroke-linecap="round" opacity=".55"/>
                 <path d="M-1 -13.5 L-5 -7 L-8 -0.8" fill="none" stroke="var(--cliente)"
                       stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M-6 -27 a3 3 0 0 1 2.8 -2.8 L1 -29 L2.4 -16.5
@@ -373,7 +373,7 @@ onScroll(() => {
                 <path d="M1.6 -28.5 L6.6 -27 L3.2 -13.8 L-0.9 -15 Z" fill="var(--cliente)"/>
                 <path d="M2.2 -14.2 L6 -8 L8.4 -0.8" fill="none" stroke="var(--cliente)"
                       stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 -27 L-1.5 -20 L-9.5 -19" fill="none" stroke="var(--cliente)"
+                <path d="M5.4 -26 L8 -22.5 L9.5 -19" fill="none" stroke="var(--cliente)"
                       stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="8.2" cy="-30" r="3.2" fill="var(--cliente)"/>
               </g>
@@ -399,17 +399,16 @@ onScroll(() => {
                    Dibujado con los pies en y=0, asi la figura PISA el trazo
                    cuando el grupo se posiciona con getPointAtLength. -->
 
-              <!-- bastones, por detras del cuerpo -->
+              <!-- Un solo baston, el clavado adelante. El trasero salia por
+                   detras de la mochila y se leia como una linea suelta. -->
               <path d="M13.5 -21.5 L18.5 -1" stroke="#E6DFD2" stroke-width="1.6"
                     stroke-linecap="round" opacity=".9"/>
-              <path d="M-2.5 -20.5 L-11 -1" stroke="#E6DFD2" stroke-width="1.6"
-                    stroke-linecap="round" opacity=".7"/>
 
               <!-- pierna de atras, empujando -->
               <path d="M-0.5 -14.5 L-5 -7.5 L-8.5 -0.8" fill="none" stroke="var(--guia)"
                     stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <!-- brazo de atras, hacia el baston que queda detras -->
-              <path d="M3 -28.5 L0 -24 L-2.5 -20.5" fill="none" stroke="var(--guia)"
+              <!-- brazo de atras, colgando con el impulso del paso -->
+              <path d="M3 -28.5 L0.5 -23.5 L-1.5 -19" fill="none" stroke="var(--guia)"
                     stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"/>
 
               <!-- mochila: bulto rectangular de esquinas blandas, no un globo -->

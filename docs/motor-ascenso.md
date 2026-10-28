@@ -223,6 +223,13 @@ Ideas conversadas y no implementadas:
 
 La entrada nueva va arriba.
 
+### 2026-10-28 (g) · un solo baston
+
+Guia y clientes pasan a llevar un unico baston, el clavado adelante. El
+trasero salia por detras de la mochila y se leia como una linea suelta
+cruzando la figura, no como equipo. El brazo que lo sostenia ahora cuelga con
+el impulso del paso.
+
 ### 2026-10-28 (f) · la cordada
 
 Tres clientes siguen al guia sobre el mismo trazo, desfasados. Es la **ratio
