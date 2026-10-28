@@ -161,6 +161,10 @@ función `pintar(p)`: el trazo de la ruta, el escalador sobre ella con
 `getPointAtLength`, el altímetro, los colores del cielo, las estrellas y la
 fumarola del cráter.
 
+Referencia técnica completa, con los parámetros literales, la fórmula de la
+ruta y los dos intentos que fallaron: [`docs/motor-ascenso.md`](docs/motor-ascenso.md).
+Leerla antes de modificar la animación.
+
 Es una función pura del progreso. En desarrollo queda expuesta en la consola
 del navegador:
 
