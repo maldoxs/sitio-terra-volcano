@@ -14,7 +14,7 @@ animación**.
 
 ```bash
 git clone https://github.com/maldoxs/sitio-terra-volcano.git
-cd sitio-terra-volcano/sitio
+cd sitio-terra-volcano
 npm install
 npm run dev
 ```
@@ -24,7 +24,7 @@ Se abre en `http://localhost:5173`.
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | desarrollo, con recarga en caliente |
-| `npm run build` | compila a `sitio/dist/` |
+| `npm run build` | compila a `dist/` |
 | `npm run preview` | sirve `dist/` como lo verá el visitante |
 
 **Requiere Node 20 o superior.** Verifícalo con `node -v`.
@@ -82,16 +82,17 @@ qué pasa.
 ## Cómo está armado
 
 ```
-sitio/                    la aplicación Vue
-  src/componentes/          un archivo por sección
-  src/composables/          useIdioma, useScrollRaf
-  src/directivas/           v-revelar, v-marcador
-  src/estilos/base.css      tokens: colores, tipografías, --ease
-  src/i18n/textos.js        copy ES/EN. SOLO texto, cero datos
-  public/media/             videos, fotos y el motor de la landing
-  public/villarrica/        la landing del Villarrica, en /villarrica/
+src/                      la aplicación Vue
+  componentes/              un archivo por sección
+  composables/              useIdioma, useScrollRaf
+  directivas/               v-revelar, v-marcador
+  estilos/base.css          tokens: colores, tipografías, --ease
+  i18n/textos.js            copy ES/EN. SOLO texto, cero datos
+public/
+  media/                    videos, fotos y el motor de la landing
+  villarrica/               la landing del Villarrica, en /villarrica/
 datos/agencia.json        LA FUENTE ÚNICA DE VERDAD de los datos
-produccion/               las herramientas que generan el material del sitio
+herramientas/             los scripts que generan el material del sitio
 .github/workflows/        el despliegue a GitHub Pages
 ```
 
@@ -114,7 +115,7 @@ lo que hace que el sitio se sienta una pieza y no componentes sueltos.
 
 ## La pieza central
 
-`sitio/src/componentes/SeccionAscenso.vue` — **el ascenso al Villarrica atado
+`src/componentes/SeccionAscenso.vue` — **el ascenso al Villarrica atado
 al scroll**. Una banda de 360vh fija su escenario con `position: sticky`, y el
 progreso del scroll dentro de esa banda (0→1) maneja todo desde una sola
 función `pintar(p)`: el trazo de la ruta, el escalador sobre ella con
@@ -142,12 +143,12 @@ Los cuatro `.mp4` del vuelo salen de fotografías con movimiento de cámara
 aplicado con ffmpeg. **Cero AI.**
 
 ```bash
-python3 produccion/escenas.py          # regenera el contenido bilingüe
-python3 produccion/generar_clips.py    # regenera los .mp4 desde las fotos
+python3 herramientas/escenas.py          # regenera el contenido bilingüe
+python3 herramientas/generar_clips.py    # regenera los .mp4 desde las fotos
 ```
 
 `escenas.py` es la fuente del contenido de la landing: **nunca edites su salida**
-(`sitio/public/media/js/contenido.js`) — edita el script y vuelve a correrlo.
+(`public/media/js/contenido.js`) — edita el script y vuelve a correrlo.
 
 ---
 
@@ -155,8 +156,8 @@ python3 produccion/generar_clips.py    # regenera los .mp4 desde las fotos
 
 **Ninguna de las fotografías de este repositorio es de Terra Volcano.** Llegaron
 como referencia visual para construir y evaluar el sitio, **no para
-publicarlo**. Afecta a las 6 imágenes de `produccion/referencias/`, a los 4
-videos generados desde ellas y a las fotos de `sitio/public/media/`.
+publicarlo**. Afecta a las 6 imágenes de `herramientas/referencias/`, a los 4
+videos generados desde ellas y a las fotos de `public/media/`.
 
 El home en Vue está limpio: no tiene ni una fotografía, todo es SVG. La landing
 `/villarrica/` sí las usa.

@@ -1,4 +1,4 @@
-/* GENERADO por produccion/escenas.py — no editar a mano. */
+/* GENERADO por herramientas/escenas.py — no editar a mano. */
 window.TV_CONTENIDO = {
   "marca": {
     "es": {

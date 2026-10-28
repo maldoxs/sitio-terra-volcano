@@ -27,30 +27,23 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: sitio/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Instalar dependencias
-        working-directory: sitio
         run: npm ci
 
       - name: Construir el sitio
-        working-directory: sitio
         run: npm run build
 
       - uses: actions/configure-pages@v5
 
-      # Se publica SÓLO sitio/dist. Antes iba `path: .`, que subía a internet
-      # el repositorio completo: claude/ (la memoria del proyecto),
-      # produccion/ (los análisis de negocio) y .claude/ (4,8 MB de
-      # herramientas). Nada de eso es el sitio.
-      #
-      # Vite copia sitio/public/ a dist/, así que los videos y la landing del
-      # Villarrica (/villarrica/) quedan publicados igual.
-      # Ojo: Pages NO resuelve punteros de Git LFS, así que los .mp4 van como
-      # objetos normales del repositorio.
+      # Vite copia public/ a dist/, así que los videos y la landing del
+      # Villarrica (/villarrica/) se publican junto con la app.
+      # Ojo: Pages NO resuelve punteros de Git LFS, así que los .mp4 tienen que
+      # ir como objetos normales del repositorio.
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: sitio/dist
+          path: dist
 
       - id: deployment
         uses: actions/deploy-pages@v4

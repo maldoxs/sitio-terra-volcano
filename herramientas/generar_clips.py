@@ -7,9 +7,9 @@ de las páginas scroll-through de Apple: el video está pre-renderizado, el scro
 solo mueve el tiempo.
 
 Cuando haya metraje de drone real —que es el objetivo— se reemplazan los .mp4
-de sitio/public/media/vid/ con los mismos nombres y la página no cambia una línea.
+de public/media/vid/ con los mismos nombres y la página no cambia una línea.
 
-Uso:  python3 produccion/generar_clips.py
+Uso:  python3 herramientas/generar_clips.py
 """
 
 import pathlib
@@ -19,8 +19,8 @@ import sys
 from PIL import Image
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
-REF = RAIZ / "produccion" / "referencias"
-sys.path.insert(0, str(RAIZ / "produccion"))
+REF = RAIZ / "herramientas" / "referencias"
+sys.path.insert(0, str(RAIZ / "herramientas"))
 from escenas import ESCENAS  # noqa: E402
 
 W, H = 1280, 720          # el material de origen no da para 1080p honesto
@@ -73,9 +73,9 @@ def ff(args):
 
 
 def main():
-    sd = RAIZ / "sitio" / "public" / "media" / "stills"
-    vd = RAIZ / "sitio" / "public" / "media" / "vid"
-    tmp = RAIZ / "produccion" / ".tmp"
+    sd = RAIZ / "public" / "media" / "stills"
+    vd = RAIZ / "public" / "media" / "vid"
+    tmp = RAIZ / "herramientas" / ".tmp"
     for p in (sd, vd, tmp):
         p.mkdir(parents=True, exist_ok=True)
     for viejo in list(sd.glob("*")) + list(vd.glob("*")):

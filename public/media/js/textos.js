@@ -3,7 +3,7 @@
 
    TODO ANTES DE PUBLICAR: cada dato marcado [POR CONFIRMAR] sale de OTAs o de
    reseñas de clientes, no de Terra Volcano. Validar con Richard y borrar las
-   marcas. Ver produccion/analisis-competitivo.md. */
+   marcas. Ver el análisis competitivo en el repositorio de documentación. */
 
 window.TV_TEXTOS = {
   es: {

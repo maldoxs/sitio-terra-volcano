@@ -3,10 +3,10 @@
 
 De acá salen, por generación, dos cosas que de otro modo se desincronizan:
 
-  1. produccion/prompts/*.txt  — los prompts, por si algún día se genera con AI
-  2. sitio/public/media/js/contenido.js — el contenido bilingüe del motor
+  1. herramientas/prompts/*.txt — los prompts, por si algún día se genera con AI
+  2. public/media/js/contenido.js — el contenido bilingüe del motor
 
-Editar acá y correr `python3 produccion/escenas.py`. Nunca editar la salida.
+Editar acá y correr `python3 herramientas/escenas.py`. Nunca editar la salida.
 
 GUION: el ascenso al Villarrica en 4 escenas. El scroll ES subir el cerro.
 Arquitectura A de la skill (recorrido continuo hacia adelante, sin conectores):
@@ -152,7 +152,7 @@ MARCA = {
 
 
 def escribir_prompts():
-    destino = RAIZ / "produccion" / "prompts"
+    destino = RAIZ / "herramientas" / "prompts"
     destino.mkdir(parents=True, exist_ok=True)
     for viejo in destino.glob("*.txt"):
         viejo.unlink()
@@ -174,7 +174,7 @@ def escribir_prompts():
 def escribir_contenido():
     secciones = [{
         "id": e["id"], "accent": e["acento"], "scroll": e["scroll"], "linger": e["linger"],
-        # Rutas relativas a sitio/public/villarrica/, que es desde donde se
+        # Rutas relativas a public/villarrica/, que es desde donde se
         # sirve la landing. Si la landing cambia de carpeta, cambian acá.
         "still": f"../media/stills/{e['id']}.jpg",
         "clip":  f"../media/vid/{e['id']}.mp4",
@@ -185,10 +185,10 @@ def escribir_contenido():
              # Arquitectura A: sin conectores. Los tramos SON el recorrido.
              "conectores": [], "paleta": PALETA}
 
-    destino = RAIZ / "sitio" / "public" / "media" / "js" / "contenido.js"
+    destino = RAIZ / "public" / "media" / "js" / "contenido.js"
     destino.parent.mkdir(parents=True, exist_ok=True)
     destino.write_text(
-        "/* GENERADO por produccion/escenas.py — no editar a mano. */\n"
+        "/* GENERADO por herramientas/escenas.py — no editar a mano. */\n"
         "window.TV_CONTENIDO = " +
         json.dumps(datos, ensure_ascii=False, indent=2) + ";\n", encoding="utf-8")
     return destino

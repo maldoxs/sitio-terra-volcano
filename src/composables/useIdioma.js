@@ -9,7 +9,7 @@
    extranjero — así que se detecta el idioma del navegador y se respeta.
    ========================================================================== */
 import { ref, computed } from 'vue';
-import agencia from '../../../datos/agencia.json';
+import agencia from '../../datos/agencia.json';
 import textos from '../i18n/textos.js';
 
 const detectado = (navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en';
