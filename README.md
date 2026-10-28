@@ -26,8 +26,47 @@ Se abre en `http://localhost:5173`.
 | `npm run dev` | desarrollo, con recarga en caliente |
 | `npm run build` | compila a `dist/` |
 | `npm run preview` | sirve `dist/` como lo verá el visitante |
+| `npm run verificar` | compila, levanta y mide el sitio con un navegador real |
 
 **Requiere Node 20 o superior.** Verifícalo con `node -v`.
+
+---
+
+## Verificar antes de subir
+
+```bash
+npm run verificar
+```
+
+Compila el sitio, lo sirve, lo recorre con un navegador real y comprueba
+diecisiete cosas. Devuelve código 1 si algo falla, así que también sirve en CI.
+
+```
+HOME                  secciones, clase js, datos desde agencia.json,
+                      lang coherente con el contenido
+REVEALS               que todos disparen al recorrer la página
+ASCENSO               pista de scroll suficiente, progreso monótono,
+                      altímetro ascendente, escalador sobre el trazo
+RENDIMIENTO           fps durante la pieza, cero errores de consola
+/villarrica/          responde y sin imágenes rotas
+MOVIMIENTO REDUCIDO   la banda colapsa, entrega la cumbre, nada oculto
+```
+
+**Por qué existe.** Una animación puede verse perfecta en una captura y estar
+rota. Estos controles cazaron seis defectos que ningún linter detecta: tres
+vértices de la ruta cayendo fuera del volcán, un efecto que nacía cumplido por
+falta de pista de scroll, el `<html lang>` en desacuerdo con el contenido, y
+rutas rotas tras mover carpetas.
+
+Si tocas la animación, córrelo antes de hacer push. Y si agregas un
+comportamiento que importe, agrégale su control: el arnés también sirve de
+documentación viva de lo que la pieza tiene que cumplir.
+
+La primera vez puede pedirte descargar el navegador:
+
+```bash
+npx playwright install chromium
+```
 
 ---
 
