@@ -349,29 +349,48 @@ onScroll(() => {
             <!-- La sombra es un degradado radial, no una elipse solida: sobre
                  la nieve de la cumbre una elipse opaca se leia como mancha. -->
             <ellipse rx="26" ry="9" cy="3" fill="url(#sombraGuia)"/>
-            <g class="guia" transform="translate(0 2) scale(1.25)">
-              <!-- piolet, clavado adelante en la pendiente -->
-              <path d="M11 -30 L13.5 -5" stroke="#F2EDE6" stroke-width="1.8"
-                    stroke-linecap="round" opacity=".8"/>
-              <path d="M11 -30 L15.5 -27.5" stroke="#F2EDE6" stroke-width="1.8"
-                    stroke-linecap="round" opacity=".8"/>
-              <!-- piernas, en paso -->
-              <path d="M-2.5 -12 L-5.5 0" stroke="var(--lava)" stroke-width="4.2"
-                    stroke-linecap="round"/>
-              <path d="M2.5 -12 L6 -1.5" stroke="var(--lava)" stroke-width="4.2"
-                    stroke-linecap="round"/>
-              <!-- mochila -->
-              <path d="M-9 -29 h4.5 a3 3 0 0 1 3 3 v8 a3 3 0 0 1 -3 3 H-9 z"
-                    fill="var(--azufre)"/>
-              <!-- torso -->
-              <path d="M-5 -30 h7 a3.4 3.4 0 0 1 3.4 3.4 v10 a3.4 3.4 0 0 1 -3.4 3.4 h-7 z"
-                    fill="var(--lava)"/>
-              <!-- brazo que sostiene el piolet -->
-              <path d="M3 -26 L11.5 -22" stroke="var(--lava)" stroke-width="3.6"
-                    stroke-linecap="round"/>
-              <!-- cabeza y gorro -->
-              <circle cx="-0.5" cy="-34" r="4.6" fill="var(--lava)"/>
-              <path d="M-5.1 -34.8 a4.6 4.6 0 0 1 9.2 0 z" fill="var(--azufre)"/>
+            <g class="guia" transform="translate(0 2) scale(1.3)">
+              <!-- Pictograma de montanista: inclinado hacia adelante, mochila
+                   alta y dos bastones, uno clavado adelante y otro quedandose
+                   atras. La inclinacion es lo que distingue a alguien que SUBE
+                   de alguien parado, y a esta distancia es lo unico que se lee.
+                   Dibujado con los pies en y=0, asi la figura PISA el trazo
+                   cuando el grupo se posiciona con getPointAtLength. -->
+
+              <!-- bastones, por detras del cuerpo -->
+              <path d="M13.5 -21.5 L18.5 -1" stroke="#E6DFD2" stroke-width="1.6"
+                    stroke-linecap="round" opacity=".9"/>
+              <path d="M-2.5 -20.5 L-11 -1" stroke="#E6DFD2" stroke-width="1.6"
+                    stroke-linecap="round" opacity=".7"/>
+
+              <!-- pierna de atras, empujando -->
+              <path d="M-0.5 -14.5 L-5 -7.5 L-8.5 -0.8" fill="none" stroke="var(--guia)"
+                    stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- brazo de atras, hacia el baston que queda detras -->
+              <path d="M3 -28.5 L0 -24 L-2.5 -20.5" fill="none" stroke="var(--guia)"
+                    stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"/>
+
+              <!-- mochila: bulto rectangular de esquinas blandas, no un globo -->
+              <path d="M-6.8 -29.5 a3.4 3.4 0 0 1 3.2 -3.2 L2 -32 L3.5 -17.8
+                       L-3.2 -17 a3.4 3.4 0 0 1 -3.6 -3.1 Z" fill="var(--azufre)"/>
+              <!-- correa de la mochila cruzando el pecho -->
+              <path d="M1.5 -30.5 L4.5 -19.5" stroke="var(--azufre)" stroke-width="1.5"
+                    stroke-linecap="round" opacity=".9"/>
+
+              <!-- torso, mas angosto que la version anterior -->
+              <path d="M2.2 -31.5 L7.6 -29.8 L3.6 -15 L-1.4 -16.4 Z" fill="var(--guia)"/>
+
+              <!-- pierna de adelante, cargando el paso -->
+              <path d="M2.4 -15.5 L6.8 -8.5 L9.5 -0.8" fill="none" stroke="var(--guia)"
+                    stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- brazo de adelante, al baston clavado -->
+              <path d="M6.6 -28.8 L10.4 -25 L13.5 -21.5" fill="none" stroke="var(--guia)"
+                    stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
+
+              <!-- cabeza, adelantada del hombro: va mirando la cuesta -->
+              <circle cx="9.2" cy="-33.4" r="3.6" fill="var(--guia)"/>
+              <!-- gorro: casquete que sigue la curva, no una tapa plana -->
+              <path d="M5.7 -34.2 a3.6 3.6 0 0 1 7 -0.9 Z" fill="var(--azufre)"/>
             </g>
           </g>
           <!-- FUMAROLA. Columna que sale del crater y se desarma con el
@@ -415,6 +434,11 @@ onScroll(() => {
   background:linear-gradient(176deg,var(--c1,#0b1220) 0%,var(--c2,#1b2434) 54%,var(--c3,#2b2a2e) 100%)}
 .estrellas{position:absolute;inset:0;z-index:1;width:100%;height:100%}
 .escena{position:absolute;left:0;right:0;bottom:0;z-index:2;width:100%;height:auto}
+
+/* El guia lleva su propio color, distinto al de la ruta. Si los dos son lava,
+   la figura se funde con el trazo que esta recorriendo y deja de leerse como
+   alguien sobre un camino. Una variable para cambiarlo de un solo lugar. */
+.ascenso{--guia:var(--lago)}
 
 .ruta{fill:none;stroke:var(--lava);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
 .ruta-fantasma{fill:none;stroke:rgba(242,237,230,.17);stroke-width:5;

@@ -223,6 +223,21 @@ Ideas conversadas y no implementadas:
 
 La entrada nueva va arriba.
 
+### 2026-10-28 (e) · el guia
+
+- La figura pasa de bloques a **pictograma de montanista**: inclinado hacia
+  adelante, mochila alta y dos bastones, uno clavado adelante y otro quedando
+  atras. La inclinacion es lo que distingue a alguien que sube de alguien
+  parado, y a esta distancia es lo unico que se lee.
+- Dibujado con los **pies en y=0**, de modo que pisa el trazo cuando el grupo
+  se posiciona con `getPointAtLength`. La primera version tenia el origen en
+  la cabeza y la figura flotaba sobre la ruta.
+- Dos correcciones de proporcion: la mochila era un circulo y se leia como
+  globo, y el torso era demasiado ancho.
+- **El color pasa a `--lago` a traves de una variable propia, `--guia`.** Con
+  el guia en lava se fundia con la ruta, que es del mismo color: la figura
+  dejaba de leerse como alguien SOBRE un camino. Cambiarlo es una linea.
+
 ### 2026-10-28 (d) · el cerro deja de ser un triangulo
 
 La silueta exterior NO se toco: la ruta se genero contra ella y sus once
