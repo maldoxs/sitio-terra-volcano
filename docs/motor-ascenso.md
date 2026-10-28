@@ -223,6 +223,13 @@ Ideas conversadas y no implementadas:
 
 La entrada nueva va arriba.
 
+### 2026-10-28 (h) · el baston al color del equipo
+
+El baston pasa de gris a azufre, igual que mochila y gorro. La figura queda
+con **dos colores en vez de tres**: cuerpo azul, equipo amarillo. El equipo se
+lee como un conjunto y no como piezas sueltas, y el baston aguanta sobre los
+tres fondos que atraviesa: ladera oscura, nieve y cielo de noche.
+
 ### 2026-10-28 (g) · un solo baston
 
 Guia y clientes pasan a llevar un unico baston, el clavado adelante. El

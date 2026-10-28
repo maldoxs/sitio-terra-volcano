@@ -364,8 +364,8 @@ onScroll(() => {
             <g v-for="(c, i) in cordada" :key="i"
                :transform="`translate(${c.x} ${c.y})`" :opacity="c.o * 0.82">
               <g transform="translate(0 2) scale(0.82)">
-                <path d="M9.5 -19 L13.5 -1" stroke="#E6DFD2" stroke-width="1.4"
-                      stroke-linecap="round" opacity=".55"/>
+                <path d="M9.5 -19 L13.5 -1" stroke="var(--cliente-pack)" stroke-width="1.4"
+                      stroke-linecap="round" opacity=".9"/>
                 <path d="M-1 -13.5 L-5 -7 L-8 -0.8" fill="none" stroke="var(--cliente)"
                       stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M-6 -27 a3 3 0 0 1 2.8 -2.8 L1 -29 L2.4 -16.5
@@ -400,9 +400,12 @@ onScroll(() => {
                    cuando el grupo se posiciona con getPointAtLength. -->
 
               <!-- Un solo baston, el clavado adelante. El trasero salia por
-                   detras de la mochila y se leia como una linea suelta. -->
-              <path d="M13.5 -21.5 L18.5 -1" stroke="#E6DFD2" stroke-width="1.6"
-                    stroke-linecap="round" opacity=".9"/>
+                   detras de la mochila y se leia como una linea suelta.
+                   En azufre, igual que mochila y gorro: deja a la figura con
+                   dos colores en vez de tres, y el equipo se lee como un
+                   conjunto en lugar de piezas sueltas. -->
+              <path d="M13.5 -21.5 L18.5 -1" stroke="var(--azufre)" stroke-width="1.7"
+                    stroke-linecap="round"/>
 
               <!-- pierna de atras, empujando -->
               <path d="M-0.5 -14.5 L-5 -7.5 L-8.5 -0.8" fill="none" stroke="var(--guia)"
