@@ -39,17 +39,26 @@ const trazo   = ref(null);
 const halo    = ref(null);
 const escalador  = ref(null);
 const camara  = ref(null);
+/* Las tres capas del paralaje. Cada una con su propio envoltorio: el grupo de
+   la camara ya lleva un `transform` de atributo, y un `transform` de CSS sobre
+   el mismo elemento lo pisaria. */
+const parCerro = ref(null);
+const parFondo = ref(null);
+const parNieve = ref(null);
 
-/* Tiempos del guion, en fracción de la banda. Son los mismos nombres y los
-   mismos valores del original: subida, llegada con la reserva, y clavado
-   dentro del cráter. */
+/* Tiempos del guion, en fracción de la banda: subida y llegada con la reserva.
+
+   El original tiene un tercer tiempo, el clavado dentro del cráter, que escala
+   el dibujo treinta veces y entrega el negro de adentro a la sección
+   siguiente. Acá no está: se probó y se sacó. En este sitio lo que viene
+   después es el catálogo, con fondo claro, así que el clavado no encadenaba
+   con nada y quedaba como una caída dentro del cerro que no lleva a ninguna
+   parte. Sin él la banda tampoco necesita las 5,5 pantallas del original. */
 const SUBE_DESDE = 0.03;
-const SUBE_HASTA = 0.62;
-const LLEGADA    = 0.72;
-const CLAVADO    = 0.86;
+const SUBE_HASTA = 0.70;
+const LLEGADA    = 0.78;
 
-/* Centro del cráter en coordenadas del viewBox exterior. La cámara empuja
-   hacia acá durante la subida y al final se mete adentro. */
+/* Centro del cráter: la cámara empuja hacia acá mientras se sube. */
 const CRATER = [1080, 303];
 
 /* El sendero del original, once vértices en el espacio interior del dibujo. */
@@ -118,15 +127,10 @@ const enLlegada = ref(false);
 const opBandera = ref(0);
 const opEstallido = ref(0);
 const escEstallido = ref(0);
-const opVelo = ref(0);
 const visible = ref(false);
 
 let LARGO = 0;
 let idx = -1;
-
-/* `power3.in` del original, que es lo que hace que el clavado final se sienta
-   como caída y no como zoom parejo. */
-const acelera = (k) => k * k * k;
 
 function pintar(p) {
   p = limita01(p);
@@ -159,12 +163,11 @@ function pintar(p) {
     hito.value = { ...t(`ascenso.hitos.${h.id}`), altitud: h.altitud, n: h.n };
   }
 
-  /* 4 · la cámara empuja hacia el cráter mientras se sube, y al final se mete
-     adentro. Es un `transform` sobre un grupo, nada más: el original lo hace
-     con `svgOrigin`, acá se escribe la traslación a mano. */
+  /* 4 · la cámara empuja hacia el cráter mientras se sube. Es un `transform`
+     sobre un grupo y nada más: el original lo hace con `svgOrigin`, acá se
+     escribe la traslación a mano. */
   const [cx, cy] = CRATER;
-  let escala = 1 + 0.1 * avance;
-  if (p > CLAVADO) escala = 1.1 + (30 - 1.1) * acelera(limita01((p - CLAVADO) / (1 - CLAVADO)));
+  const escala = 1 + 0.1 * avance;
   camara.value.setAttribute('transform', `translate(${cx} ${cy}) scale(${escala.toFixed(3)}) translate(${-cx} ${-cy})`);
 
   // 5 · la bandera y el estallido se ganan al tocar la cumbre
@@ -173,9 +176,8 @@ function pintar(p) {
   escEstallido.value = llegado * 6;
   opEstallido.value = 0.9 * (1 - llegado);
 
-  // 6 · el bloque de reserva, y el velo que entrega el negro a la sección siguiente
-  enLlegada.value = p >= LLEGADA - 0.01 && p < CLAVADO + 0.04;
-  opVelo.value = limita01((p - 0.95) / 0.05);
+  // 6 · el bloque de reserva, que se queda hasta el final de la banda
+  enLlegada.value = p >= LLEGADA - 0.01;
 }
 
 /* Saltar a un hito: se despeja de la misma cuenta del progreso, invertida por
@@ -189,12 +191,35 @@ function irAlHito(h) {
   scrollTo({ top: arriba + recorrido * pDestino, behavior: quieto() ? 'auto' : 'smooth' });
 }
 
+/* ----------------------------------------------------------------------------
+   TEXTO LETRA POR LETRA.
+
+   El original parte los titulos con SplitText, que es un plugin de GSAP. Acá
+   se parten en el template: una palabra por `span` para que la linea siga
+   cortando donde debe, y una letra por `span` dentro. El escalonado es un
+   `animation-delay` calculado desde el indice, no una propiedad `stagger`.
+
+   El titulo entero va en `aria-label` y las letras ocultas al lector de
+   pantalla: una palabra partida en letras sueltas se deletrea.
+   -------------------------------------------------------------------------- */
+function enLetras(texto) {
+  let k = 0;
+  return String(texto).split(' ').map((palabra, w) => ({
+    w,
+    letras: [...palabra].map((c) => ({ c, k: k++ })),
+  }));
+}
+const letrasPaso = computed(() => (hito.value ? enLetras(hito.value.titulo) : []));
+const letrasT1 = computed(() => enLetras(t('hero.t1')));
+const letrasT2 = computed(() => enLetras(t('hero.t2')));
+
 if (import.meta.env.DEV) window.pintarLava = pintar;
 
 /* El ambiente corre siempre, pero no cuando la sección está fuera de pantalla:
    cincuenta y nueve elementos animándose en una sección que nadie mira es
    trabajo de compositor tirado a la basura. */
 let observador = null;
+let soltarPuntero = null;
 
 onMounted(() => {
   LARGO = trazo.value.getTotalLength();
@@ -218,11 +243,48 @@ onMounted(() => {
   observador = new IntersectionObserver(([e]) => { visible.value = e.isIntersecting; });
   observador.observe(seccion.value);
 
+  /* PARALAJE. Tres capas que derivan con el puntero, cada una con su amplitud:
+     la cordillera al reves que el cerro, y la nevada mas que las dos, que es
+     lo que da la sensacion de estar delante.
+
+     El original lo resuelve con `gsap.quickTo`, que interpola hacia el destino
+     con su propia curva. Acá el retardo lo pone una transicion de CSS: cada
+     movimiento del puntero reescribe el destino y la transicion vuelve a
+     salir, que es exactamente el mismo comportamiento sin libreria.
+
+     Solo con puntero fino: en una pantalla tactil no hay puntero que seguir, y
+     el `pointermove` del dedo daria saltos. */
+  if (!quieto() && matchMedia('(pointer: fine)').matches) {
+    const capas = [
+      { el: parFondo, x: -30, y: -12 },
+      { el: parCerro, x: 16,  y: 8 },
+      { el: parNieve, x: 45,  y: 20 },
+    ];
+    let pedido = false;
+    let nx = 0, ny = 0;
+    const aplicar = () => {
+      pedido = false;
+      for (const c of capas) {
+        c.el.value.style.transform = `translate(${(nx * c.x).toFixed(1)}px, ${(ny * c.y).toFixed(1)}px)`;
+      }
+    };
+    const mover = (e) => {
+      nx = e.clientX / innerWidth - 0.5;
+      ny = e.clientY / innerHeight - 0.5;
+      if (!pedido) { pedido = true; requestAnimationFrame(aplicar); }
+    };
+    addEventListener('pointermove', mover, { passive: true });
+    soltarPuntero = () => removeEventListener('pointermove', mover);
+  }
+
   // Sin scrub se entrega la cumbre: nadie scrollea pantallas vacías.
   if (quieto()) pintar(1);
 });
 
-onUnmounted(() => observador?.disconnect());
+onUnmounted(() => {
+  observador?.disconnect();
+  soltarPuntero?.();
+});
 
 onScroll(() => {
   if (quieto() || !seccion.value || !trazo.value) return;
@@ -275,11 +337,13 @@ onScroll(() => {
 
           <!-- Cordillera de fondo. Da escala: sin algo detrás, el cono no
                tiene con qué compararse. -->
-          <path class="cordillera"
+          <g ref="parFondo" class="capa">
+            <path class="cordillera"
                 d="M-60 960 L-60 600 L120 560 L230 600 L340 520 L450 575 L560 545 L640 600
                    L1360 600 L1430 540 L1500 575 L1660 530 L1660 960 Z" fill="#241e1a"/>
+          </g>
 
-          <g ref="camara">
+          <g ref="parCerro" class="capa"><g ref="camara">
             <!-- El volcán va dibujado en un espacio de 1200x800 y corrido a la
                  derecha, para que el texto se siente a su izquierda. -->
             <g transform="translate(480 100)">
@@ -367,9 +431,9 @@ onScroll(() => {
                 <circle r="9" fill="var(--chispa)" stroke="#14100e" stroke-width="2"/>
               </g>
             </g>
-          </g>
+          </g></g>
 
-          <g class="nevada" fill="#f3efe8" opacity=".55">
+          <g ref="parNieve" class="capa nevada" fill="#f3efe8" opacity=".55">
             <circle v-for="c in COPOS" :key="c.i" class="copo" :cx="c.cx" :cy="c.cy" :r="c.r"
                     :style="{
                       '--cy': c.cy + 'px', '--deriva': c.deriva + 'px',
@@ -378,21 +442,33 @@ onScroll(() => {
           </g>
         </svg>
 
-        <!-- Velo a negro: el interior del cráter entrega el fondo a lo que
-             venga después. -->
-        <div class="velo" :style="{ opacity: opVelo }" aria-hidden="true"></div>
-
         <div class="texto">
           <div v-if="hito && !enLlegada" :key="hito.titulo" class="paso">
             <span class="paso__n" aria-hidden="true">{{ String(hito.n).padStart(2, '0') }}</span>
             <p class="paso__cota">{{ String(hito.n).padStart(2, '0') }} · {{ hito.altitud.toLocaleString('es-CL') }} m</p>
-            <h2 class="paso__titulo">{{ hito.titulo }}</h2>
+            <h2 class="paso__titulo" :aria-label="hito.titulo">
+              <span v-for="pal in letrasPaso" :key="pal.w" class="palabra" aria-hidden="true">
+                <span v-for="l in pal.letras" :key="l.k" class="letra"
+                      :style="{ animationDelay: (l.k * 0.018).toFixed(3) + 's' }">{{ l.c }}</span>
+              </span>
+            </h2>
             <p class="paso__cuerpo">{{ hito.texto }}</p>
           </div>
 
           <div v-if="enLlegada" class="llegada">
             <span class="cejilla">{{ t('hero.cejilla') }}</span>
-            <h2 class="llegada__titulo">{{ t('hero.t1') }} <em>{{ t('hero.t2') }}</em></h2>
+            <h2 class="llegada__titulo" :aria-label="`${t('hero.t1')} ${t('hero.t2')}`">
+              <span v-for="pal in letrasT1" :key="'a' + pal.w" class="palabra" aria-hidden="true">
+                <span v-for="l in pal.letras" :key="l.k" class="letra"
+                      :style="{ animationDelay: (l.k * 0.016).toFixed(3) + 's' }">{{ l.c }}</span>
+              </span>
+              <em>
+                <span v-for="pal in letrasT2" :key="'b' + pal.w" class="palabra" aria-hidden="true">
+                  <span v-for="l in pal.letras" :key="l.k" class="letra"
+                        :style="{ animationDelay: (0.22 + l.k * 0.016).toFixed(3) + 's' }">{{ l.c }}</span>
+                </span>
+              </em>
+            </h2>
             <p class="llegada__bajada">{{ t('hero.bajada') }}</p>
             <div class="llegada__botones">
               <a class="btn btn--lava" :href="agencia.contacto.whatsappUrl">{{ t('hero.cta1') }}</a>
@@ -419,12 +495,16 @@ onScroll(() => {
   --chispa:#FFB547;
   position:relative;background:#14100e;color:var(--nieve);
 }
-.pista{height:550vh}
+.pista{height:470vh}
 .fijo{position:sticky;top:0;height:100svh;overflow:hidden}
 .escena{position:absolute;inset:0;width:100%;height:100%}
-.velo{position:absolute;inset:0;background:#14100e;z-index:3;pointer-events:none}
 
-.fantasma,.avance{vector-effect:non-scaling-stroke}
+/* Sin `vector-effect:non-scaling-stroke`. Lo llevaba para que el grosor no
+   creciera con el empuje de la cámara, y a cambio rompía el dibujado: con ese
+   modo el `stroke-dasharray` se mide en PIXELES de pantalla y no en unidades
+   del dibujo, mientras el camino se estira con la escala. La raya quedaba más
+   corta que el camino y el sendero se cortaba cerca del 70%, siempre antes de
+   llegar a la cumbre. El empuje es de un 10%: el grosor aguanta. */
 
 /* --- las marcas, que son botones --- */
 .marcas g{cursor:pointer}
@@ -469,6 +549,33 @@ onScroll(() => {
 @media (max-width:900px){
   .texto{max-width:none;right:var(--gutter);top:auto;bottom:16vh;transform:none}
   .paso__n{display:none}
+}
+
+/* Las tres capas del paralaje. El retardo lo pone esta transición: cada
+   movimiento del puntero reescribe el destino y la transición vuelve a salir,
+   que es lo mismo que hace `gsap.quickTo` en el original. Fuera del puntero
+   fino nadie les escribe nada y se quedan quietas. */
+.capa{transition:transform 1.2s var(--ease)}
+
+/* Los títulos entran letra por letra. Cada letra sube desde debajo del borde
+   de su palabra, que va con `overflow:hidden`: sin esa máscara las letras
+   aparecen flotando en vez de asomarse. El relleno de abajo es para que la
+   máscara no corte las colas de la jota y la ge. */
+.palabra{
+  display:inline-block;overflow:hidden;vertical-align:bottom;
+  padding-bottom:.14em;margin-bottom:-.14em;
+}
+.palabra:not(:last-child){margin-right:.26em}
+.llegada__titulo em .palabra:first-child{margin-left:.26em}
+/* Sin `will-change`. Lo llevaba, y con el titulo partido son decenas de
+   elementos pidiendo capa propia de forma permanente para una animacion que
+   dura medio segundo y ocurre una vez. El arnes lo midio: 54,8 fps con el,
+   60 sin el. `will-change` es para lo que cambia TODO el rato. */
+.letra{display:inline-block}
+
+@media (prefers-reduced-motion:no-preference){
+  .letra{animation:lv-letra .55s var(--ease) both}
+  @keyframes lv-letra{from{transform:translateY(110%);opacity:0}to{transform:none;opacity:1}}
 }
 
 /* ============================================================================
@@ -538,6 +645,5 @@ onScroll(() => {
   .pista{height:auto}
   .fijo{position:relative;height:auto;min-height:70svh}
   .texto{position:relative;top:auto;transform:none;padding:clamp(60px,10vh,110px) 0}
-  .velo{display:none}
 }
 </style>
