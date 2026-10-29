@@ -14,7 +14,7 @@
      mano cambia la altura del documento y pelea con el scroll del trackpad.
      ========================================================================= -->
 <script setup>
-import { ref, shallowRef, onMounted } from 'vue';
+import { ref, shallowRef, computed, onMounted } from 'vue';
 import { onScroll, quieto, limita01 } from '../composables/useScrollRaf.js';
 import { useIdioma } from '../composables/useIdioma.js';
 
@@ -51,6 +51,12 @@ const tonoAraucaria = ref('rgb(30,38,50)');
    contra un cielo que cambia es lo que hace que una escena se vea pegada. */
 const tonoNieve = ref('rgb(74,88,112)');
 const anchoVara = ref('0%');
+/* Fase del paso, de 0 a 1. Como todo lo demas, es funcion del progreso: el
+   guia no camina con un reloj propio sino con el scroll. Si el visitante se
+   detiene, la figura se queda con el pie en el aire, y eso es correcto: la
+   pieza no tiene vida propia, la pone quien scrollea. */
+const PASOS = 42;                       // zancadas en todo el ascenso
+const fase = ref(0);
 const hito = shallowRef(null);
 
 /* Las cotas salen de datos/agencia.json y llevan `altitudesConfirmadas:false`:
@@ -113,6 +119,22 @@ const CIELOS = [
   [[ 74, 116, 170], [220, 150, 112], [242, 188,  98]],   // amanecer
 ];
 const mez = (a, b, k) => `rgb(${Math.round(a[0] + (b[0] - a[0]) * k)},${Math.round(a[1] + (b[1] - a[1]) * k)},${Math.round(a[2] + (b[2] - a[2]) * k)})`;
+
+/* Las piernas en funcion de la fase, en oposicion: cuando una va adelante la
+   otra queda atras, desfasadas media zancada. El tobillo no baja de y=0
+   porque ahi esta el suelo. */
+const AMPLITUD = 5.2;
+const piernaDelantera = computed(() => {
+  const a = Math.sin(fase.value * Math.PI * 2) * AMPLITUD;
+  return `M2.4 -15.5 L${(6.8 + a * 0.45).toFixed(1)} ${(-8.5 + Math.abs(a) * 0.18).toFixed(1)} L${(9.5 + a).toFixed(1)} -0.8`;
+});
+const piernaTrasera = computed(() => {
+  const a = Math.sin(fase.value * Math.PI * 2 + Math.PI) * AMPLITUD;
+  return `M-0.5 -14.5 L${(-5 + a * 0.45).toFixed(1)} ${(-7.5 + Math.abs(a) * 0.18).toFixed(1)} L${(-8.5 + a).toFixed(1)} -0.8`;
+});
+/* Balanceo: el cuerpo sube un poco cuando una pierna pasa por su punto mas
+   alto. Es lo que separa caminar de deslizarse. */
+const balanceo = computed(() => -Math.abs(Math.cos(fase.value * Math.PI * 2)) * 0.8);
 
 let LARGO = 0;
 let idxHito = -1;
@@ -184,9 +206,23 @@ function pintar(p) {
   }
 
   pActual.value = p;
+  fase.value = (p * PASOS) % 1;
 
   anchoVara.value = (p * 100).toFixed(1) + '%';
 }
+/* Saltar a un hito. La posicion se despeja de la misma cuenta con que se
+   calcula el progreso: p = -rect.top / (alto - viewport). Por eso un hito
+   siempre cae donde su altitud dice, sin numeros afinados a mano. */
+function irAlHito(hito) {
+  if (!seccion.value) return;
+  const arriba = seccion.value.getBoundingClientRect().top + scrollY;
+  const recorrido = seccion.value.offsetHeight - innerHeight;
+  scrollTo({
+    top: arriba + recorrido * hito.p,
+    behavior: quieto() ? 'auto' : 'smooth',
+  });
+}
+
 // expuesto para depurar desde la consola del navegador
 if (import.meta.env.DEV) window.pintarAscenso = pintar;
 
@@ -341,7 +377,16 @@ onScroll(() => {
           <!-- Una marca por hito, sobre el propio trazo. Se enciende al pasarla:
                el recorrido deja huella en vez de limitarse a avanzar. -->
           <g class="marcas">
-            <g v-for="m in marcas" :key="m.id" :class="{ pasada: pActual >= m.p }">
+            <g v-for="m in marcas" :key="m.id"
+               :class="{ pasada: pActual >= m.p }"
+               role="button" tabindex="0"
+               :aria-label="`${t(`ascenso.hitos.${m.id}`).titulo}, ${m.altitud} m`"
+               @click="irAlHito(m)"
+               @keydown.enter.prevent="irAlHito(m)"
+               @keydown.space.prevent="irAlHito(m)">
+              <!-- Area de click generosa e invisible: un circulo de 5,5 unidades
+                   es un blanco de 8 px en pantalla, imposible de apuntar. -->
+              <circle :cx="m.x" :cy="m.y" r="17" fill="transparent" class="blanco"/>
               <circle :cx="m.x" :cy="m.y" r="5.5"/>
               <!-- El nombre queda escrito sobre el cerro al pasarlo, como en
                    un topo de ruta. El contorno oscuro bajo el texto lo hace
@@ -391,7 +436,7 @@ onScroll(() => {
             <!-- La sombra es un degradado radial, no una elipse solida: sobre
                  la nieve de la cumbre una elipse opaca se leia como mancha. -->
             <ellipse rx="26" ry="9" cy="3" fill="url(#sombraGuia)"/>
-            <g class="guia" transform="translate(0 2) scale(1.3)">
+            <g class="guia" :transform="`translate(0 ${(2 + balanceo).toFixed(2)}) scale(1.3)`">
               <!-- Pictograma de montanista: inclinado hacia adelante, mochila
                    alta y dos bastones, uno clavado adelante y otro quedandose
                    atras. La inclinacion es lo que distingue a alguien que SUBE
@@ -408,7 +453,7 @@ onScroll(() => {
                     stroke-linecap="round"/>
 
               <!-- pierna de atras, empujando -->
-              <path d="M-0.5 -14.5 L-5 -7.5 L-8.5 -0.8" fill="none" stroke="var(--guia)"
+              <path :d="piernaTrasera" fill="none" stroke="var(--guia)"
                     stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
               <!-- brazo de atras, colgando con el impulso del paso -->
               <path d="M3 -28.5 L0.5 -23.5 L-1.5 -19" fill="none" stroke="var(--guia)"
@@ -425,7 +470,7 @@ onScroll(() => {
               <path d="M2.2 -31.5 L7.6 -29.8 L3.6 -15 L-1.4 -16.4 Z" fill="var(--guia)"/>
 
               <!-- pierna de adelante, cargando el paso -->
-              <path d="M2.4 -15.5 L6.8 -8.5 L9.5 -0.8" fill="none" stroke="var(--guia)"
+              <path :d="piernaDelantera" fill="none" stroke="var(--guia)"
                     stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
               <!-- brazo de adelante, al baston clavado -->
               <path d="M6.6 -28.8 L10.4 -25 L13.5 -21.5" fill="none" stroke="var(--guia)"
@@ -512,6 +557,17 @@ onScroll(() => {
   transition:opacity .55s var(--ease),transform .55s var(--ease);
 }
 .marcas .pasada text{opacity:1;transform:none}
+
+/* Son botones: tienen que verse pulsables y responder al teclado. */
+.marcas g{cursor:pointer}
+.marcas g:hover circle:not(.blanco),
+.marcas g:focus-visible circle:not(.blanco){stroke:var(--azufre);r:8}
+.marcas g:hover text,
+.marcas g:focus-visible text{opacity:1;transform:none}
+.marcas g:focus{outline:none}
+.marcas g:focus-visible .blanco{
+  stroke:var(--nieve);stroke-width:1.5;stroke-dasharray:3 3;fill:none;
+}
 
 @media (prefers-reduced-motion:reduce){
   .marcas circle,.marcas text{transition:none}

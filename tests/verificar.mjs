@@ -165,6 +165,23 @@ try {
   comprobar('el escalador termina sobre el trazo', sobreRuta !== null && sobreRuta < 1,
     sobreRuta === null ? 'no se encontro' : `${sobreRuta.toFixed(2)} px de distancia`);
 
+  /* Los hitos son botones: al pulsarlos el scroll salta a su altitud. La
+     posicion se despeja de la misma cuenta con que se calcula el progreso,
+     asi que el altimetro tiene que marcar EXACTAMENTE la cota del hito. */
+  await page.evaluate(({ t, h }) => scrollTo(0, t + (h - innerHeight) * 0.1),
+    { t: banda.top, h: banda.alto });
+  await page.waitForTimeout(600);
+  const salto = await page.evaluate(async () => {
+    const gs = [...document.querySelectorAll('#ascenso .marcas > g')];
+    if (gs.length < 5) return null;
+    gs[4].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 1800));
+    return +(document.querySelector('#ascenso .hud__alt')?.textContent || '').replace(/\D/g, '');
+  });
+  const cotaPlateau = agencia.rutaVillarrica.hitos.find((x) => x.id === 'plateau').altitud;
+  comprobar('pulsar un hito salta a su cota', salto === cotaPlateau,
+    `${salto} m, esperado ${cotaPlateau}`);
+
   /* =====================================================================
      4. Rendimiento durante la pieza
      ===================================================================== */

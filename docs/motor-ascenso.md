@@ -223,6 +223,27 @@ Ideas conversadas y no implementadas:
 
 La entrada nueva va arriba.
 
+### 2026-10-29 · hitos clicables y ciclo de caminata
+
+**Los hitos son botones.** Pulsar uno lleva el scroll a su cota. La posicion
+se despeja de la misma cuenta con que se calcula el progreso
+(`p = -rect.top / (alto - viewport)`), asi que un hito siempre cae donde su
+altitud dice, sin numeros afinados a mano. Comprobado: pulsar la quinta marca
+deja el altimetro en 2.650 m exactos, que es la Falsa Cumbre. Navegables con
+teclado, con area de pulsacion de 17 unidades: el circulo visible son 5,5, que
+en pantalla es un blanco de 8 px, imposible de apuntar.
+
+**El guia camina.** Las piernas van en oposicion, desfasadas media zancada, y
+el cuerpo sube un poco cuando una pasa por su punto mas alto. Ese balanceo es
+lo que separa caminar de deslizarse.
+
+La fase del paso es `(p * 42) % 1`: **funcion del scroll, no de un reloj
+propio**. Si el visitante se detiene, la figura se queda con el pie en el
+aire. Es coherente con toda la pieza: no tiene vida propia, la pone quien
+scrollea.
+
+Control nuevo en el arnes para el salto a un hito: 18 en total.
+
 ### 2026-10-28 (h) · el baston al color del equipo
 
 El baston pasa de gris a azufre, igual que mochila y gorro. La figura queda
