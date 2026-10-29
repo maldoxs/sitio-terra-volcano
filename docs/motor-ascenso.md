@@ -87,11 +87,13 @@ gradiente del cielo.
 ### La ruta
 
 ```
-M210 506 L295 472 L348 439 L375 405 L375 372 L397 338
-L420 304 L458 271 L485 237 L496 204 L500 166
+M224.9 506 L284.9 472 L326 439 L350.9 405 L364.8 372 L380.1 338
+L406.6 304 L440.7 271 L481.1 237 L487 204 L500 166
 ```
 
 Once vertices en el sistema de coordenadas del `viewBox="0 0 1000 620"`.
+Regenerados el 2026-10-28 contra el perfil concavo. Los anteriores se
+generaron contra flancos rectos y quedaban fuera del cerro.
 
 ---
 
@@ -141,8 +143,12 @@ Para cada altura y, de 506 bajando a 166:
     x      = borde + holgura
 ```
 
-`flankX(y)` interpola la ladera izquierda, que va de (150,512) a (330,404) a
-(430,252) a (500,150).
+`flankX(y)` era la interpolacion de una polilinea de cuatro tramos. Desde que
+el cono es concavo es la propia curva del perfil, que se evalua exacta:
+
+```
+x(y) = 500 - (182 v + 168 v^2.3),   v = (y - 114.3) / 397.7
+```
 
 **Por que funciona:** como `y` es la variable que se recorre y siempre
 decrece, *subir siempre* deja de ser algo que haya que comprobar despues. Es
@@ -222,6 +228,88 @@ Ideas conversadas y no implementadas:
 ## Registro de cambios de la pieza
 
 La entrada nueva va arriba.
+
+### 2026-10-28 (i) · el cerro toma volumen
+
+Cinco cambios sobre el mismo `p`, ninguno de ellos una libreria nueva.
+
+**El cono es concavo.** Era una polilinea de cuatro tramos rectos. Un
+estratovolcan tiene perfil concavo, empinado junto al crater y abriendose
+hacia la base, y esa curvatura es lo que lo hace leerse como volcan en vez de
+como triangulo. La curva es
+
+```
+x(y) = 500 - (182 v + 168 v^2.3),   v = (y - 114.3) / 397.7
+```
+
+El termino lineal fija el angulo del cono arriba y el de potencia hace el
+ensanche de abajo. **Sin el termino lineal la cumbre sale como aguja
+vertical**, porque la derivada de una potencia pura se va a cero en el
+vertice. Se dibuja con tres Bezier cubicas tomando las tangentes de la propia
+curva en los extremos: el error maximo del ajuste es 0,03 unidades.
+
+La falda, del pie del cono a y=548, no se toco: ahi estan las araucarias y
+moverla las habria dejado dentro del cerro.
+
+**El cono es truncado de verdad.** La silueta se corta en y=150, justo donde
+el perfil mide 17 unidades de media boca, que es el `rx` de la elipse del
+crater. Antes terminaba en punta y la elipse quedaba flotando encima como un
+aro. El defecto ya existia; curvar los flancos lo dejo a la vista.
+
+**La ruta se regenero**, con el mismo metodo de parametrizar por altura. No
+era opcional: a media altura el perfil nuevo mueve la ladera 32 unidades hacia
+el eje y los vertices viejos quedaban al aire. Un cambio en el metodo: el
+techo de la holgura ya no es un numero, es una fraccion del ancho que queda
+hasta el eje de la cumbre. Como el cono se angosta, el techo se cierra solo y
+el sendero converge al crater en lugar de cruzarse al flanco derecho, que es
+lo que hacia con el techo fijo.
+
+**La nieve sigue la misma curva** con un retranqueo de 6 unidades que se
+cierra al acercarse al crater. Con los bordes rectos de antes se asomaba por
+fuera de la silueta; con un retranqueo constante los dos bordes se cruzaban en
+la cumbre, donde el cono mide dos unidades de ancho.
+
+**Luz direccional.** El relleno plano pasa a degradado en diagonal, desde el
+sol, que esta arriba a la derecha. El flanco derecho recibe y el izquierdo
+queda en sombra. Se suma un filo encendido sobre la curva del flanco derecho,
+atado a `opSol`: el borde se enciende cuando sale el sol, no antes. Lleva su
+propio degradado vertical y se apaga al entrar en la bruma, porque un trazo de
+color plano y grosor constante se lee como contorno dibujado, no como luz.
+
+**Bruma en la base.** Una banda que va delante del cerro y detras de las
+araucarias, que es donde esta de verdad. Separa la montana del suelo y le da
+escala: sin ella el cono se apoyaba en una linea dura y se leia cerca. Su
+color sigue la hora del dia como la nieve y las araucarias.
+
+**El penacho se mueve y se adelanta.** La deriva de cada una de las cinco
+bocanadas sale de `p`, no de un reloj: si el visitante se detiene, el humo se
+queda donde esta, igual que el pie del guia. Cada bocanada va con su desfase y
+con amplitud creciente hacia arriba, asi la columna se ondula en vez de
+desplazarse entera como un bloque. Ademas se ve desde mucho antes y apenas
+insinuada: el Villarrica humea todo el dia, y un volcan que recien empieza a
+fumar al llegar arriba se lee como premio y no como cerro activo. La boca
+encendida del crater si sigue ganandose al llegar al borde.
+
+**El guia se calza.** Botas en tono propio, que es el unico oscuro de la
+figura, pompon en el gorro y guante en la mano que empuna el baston. A esta
+escala el pie oscuro bajo la pierna clara es lo que separa a alguien calzado
+de un palo, y el pompon es lo que termina de decir que el gorro es de lana y
+no un casco. Primera version descartada: pompon y guante mas grandes se
+despegaban de la cabeza y del brazo y se leian como bolas sueltas.
+
+**Control nuevo en el arnes, 19 en total: la ruta entera cae dentro del
+cerro.** Es el defecto fundacional de la pieza, tres vertices fuera la primera
+vez, y reaparece cada vez que se toca la silueta porque la ruta se genera
+contra ella. Se le pregunta al propio relleno del cerro con `isPointInFill`
+sobre 121 puntos del trazo, en vez de rehacer la cuenta en el arnes: es la
+misma razon por la que el escalador se posiciona con `getPointAtLength`.
+Comprobado que falla: con un vertice movido 100 unidades hacia afuera el
+control cae y nombra los puntos.
+
+**Dos trabas del entorno, no de la pieza.** En macOS `vite preview` escucha
+solo en `::1`, asi que el arnes pedia `127.0.0.1` y se caia antes del primer
+control; la URL pasa a `localhost`. Y hay que bajar el navegador una vez con
+`npx playwright install chromium`.
 
 ### 2026-10-29 · hitos clicables y ciclo de caminata
 

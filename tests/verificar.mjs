@@ -18,7 +18,10 @@ import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
 
 const PUERTO = 4178;
-const URL = `http://127.0.0.1:${PUERTO}/`;
+/* `localhost` y no 127.0.0.1: `vite preview` escucha solo en la direccion que
+   resuelve el nombre, y en macOS eso es ::1. Pedir 127.0.0.1 ahi devuelve
+   conexion rechazada y el arnes se cae antes del primer control. */
+const URL = `http://localhost:${PUERTO}/`;
 const ANCHO = 1440, ALTO = 900;
 
 const resultados = [];
@@ -164,6 +167,29 @@ try {
   });
   comprobar('el escalador termina sobre el trazo', sobreRuta !== null && sobreRuta < 1,
     sobreRuta === null ? 'no se encontro' : `${sobreRuta.toFixed(2)} px de distancia`);
+
+  /* Cada vertice de la ruta tiene que caer DENTRO del cerro. Es el defecto
+     fundacional de la pieza: tres vertices quedaron fuera la primera vez, y
+     vuelve a aparecer cada vez que se toca la silueta, porque la ruta se
+     genera contra ella. Se le pregunta al propio relleno del cerro con
+     isPointInFill en vez de rehacer la cuenta aca, que es la misma razon por
+     la que el escalador se posiciona con getPointAtLength. */
+  const fuera = await page.evaluate(() => {
+    const svg = document.querySelector('#ascenso .escena');
+    const cerro = svg.querySelector('path[fill^="url(#ladera"]');
+    const r = svg.querySelector('.ruta');
+    const malos = [];
+    const largo = r.getTotalLength();
+    for (let i = 0; i <= 120; i++) {
+      const q = r.getPointAtLength((largo * i) / 120);
+      const pt = svg.createSVGPoint();
+      pt.x = q.x; pt.y = q.y;
+      if (!cerro.isPointInFill(pt)) malos.push(`${q.x.toFixed(0)},${q.y.toFixed(0)}`);
+    }
+    return malos;
+  });
+  comprobar('la ruta entera cae dentro del cerro', fuera.length === 0,
+    fuera.length ? `fuera: ${fuera.slice(0, 4).join('  ')}` : '121 puntos del trazo comprobados');
 
   /* Los hitos son botones: al pulsarlos el scroll salta a su altitud. La
      posicion se despeja de la misma cuenta con que se calcula el progreso,

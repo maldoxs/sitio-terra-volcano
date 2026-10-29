@@ -38,6 +38,7 @@ const estrellas = ref(null);
 
 const altitud = ref(0);
 const opFumarola = ref(0);
+const opColumna = ref(0);
 const opEstrellas = ref(1);
 const opLuna = ref(1);
 const opNubes = ref(0);
@@ -50,6 +51,10 @@ const tonoAraucaria = ref('rgb(30,38,50)');
    al amanecer se acerca al hueso de la paleta. Una nieve blanca constante
    contra un cielo que cambia es lo que hace que una escena se vea pegada. */
 const tonoNieve = ref('rgb(74,88,112)');
+/* La bruma del pie del cerro toma la hora del dia como todo lo demas: azul
+   apagado de noche, durazno al amanecer. Una bruma de color fijo contra un
+   cielo que cambia es lo que delata una capa pegada encima. */
+const tonoBruma = ref('rgb(44,56,78)');
 const anchoVara = ref('0%');
 /* Fase del paso, de 0 a 1. Como todo lo demas, es funcion del progreso: el
    guia no camina con un reloj propio sino con el scroll. Si el visitante se
@@ -86,8 +91,13 @@ const MARCABLES = HITOS.filter((h) => h.id !== 'conaf');
 /* La ruta: once vértices generados contra la silueta del volcán. Todos caen
    dentro de la ladera con 24px de holgura y cada tramo gana altura.
    Se parametrizó por ALTURA, no por distancia: así «subir siempre» queda
-   garantizado por el método en vez de ser algo que haya que comprobar. */
-const D_RUTA = 'M210 506 L295 472 L348 439 L375 405 L375 372 L397 338 L420 304 L458 271 L485 237 L496 204 L500 166';
+   garantizado por el método en vez de ser algo que haya que comprobar.
+   Regenerada al curvar los flancos: el perfil cóncavo mueve la ladera hasta
+   32 unidades hacia el eje a media altura, y los vértices viejos quedaban
+   fuera del cerro. El techo de la holgura es proporcional al ancho que queda
+   hasta el eje de la cumbre, así el sendero converge solo al cráter en vez de
+   cruzarse al flanco derecho. */
+const D_RUTA = 'M224.9 506 L284.9 472 L326 439 L350.9 405 L364.8 372 L380.1 338 L406.6 304 L440.7 271 L481.1 237 L487 204 L500 166';
 
 /* Araucarias al pie del cerro. Posicion y escala fijas: un bosque aleatorio
    cambiaria entre cargas y haria incomparables las capturas del arnes. */
@@ -124,17 +134,49 @@ const mez = (a, b, k) => `rgb(${Math.round(a[0] + (b[0] - a[0]) * k)},${Math.rou
    otra queda atras, desfasadas media zancada. El tobillo no baja de y=0
    porque ahi esta el suelo. */
 const AMPLITUD = 5.2;
+const avanceDelantero = computed(() => Math.sin(fase.value * Math.PI * 2) * AMPLITUD);
+const avanceTrasero   = computed(() => Math.sin(fase.value * Math.PI * 2 + Math.PI) * AMPLITUD);
 const piernaDelantera = computed(() => {
-  const a = Math.sin(fase.value * Math.PI * 2) * AMPLITUD;
+  const a = avanceDelantero.value;
   return `M2.4 -15.5 L${(6.8 + a * 0.45).toFixed(1)} ${(-8.5 + Math.abs(a) * 0.18).toFixed(1)} L${(9.5 + a).toFixed(1)} -0.8`;
 });
 const piernaTrasera = computed(() => {
-  const a = Math.sin(fase.value * Math.PI * 2 + Math.PI) * AMPLITUD;
+  const a = avanceTrasero.value;
   return `M-0.5 -14.5 L${(-5 + a * 0.45).toFixed(1)} ${(-7.5 + Math.abs(a) * 0.18).toFixed(1)} L${(-8.5 + a).toFixed(1)} -0.8`;
 });
+/* Las botas van donde termina cada pierna. Se dibujan aparte y no como punta
+   del mismo trazo porque son de otro color: a esta escala, el pie oscuro bajo
+   la pierna clara es lo que separa a alguien calzado de un palo. */
+const botaDelantera = computed(() => `translate(${(9.5 + avanceDelantero.value).toFixed(1)} -0.9)`);
+const botaTrasera   = computed(() => `translate(${(-8.5 + avanceTrasero.value).toFixed(1)} -0.9)`);
 /* Balanceo: el cuerpo sube un poco cuando una pierna pasa por su punto mas
    alto. Es lo que separa caminar de deslizarse. */
 const balanceo = computed(() => -Math.abs(Math.cos(fase.value * Math.PI * 2)) * 0.8);
+
+/* EL PENACHO. Cinco bocanadas que crecen y se desarman con el viento. La
+   deriva es funcion del progreso, igual que el paso del guia: sin reloj
+   propio. Cada bocanada va con su propio desfase y con amplitud creciente,
+   asi la columna se ondula en vez de desplazarse entera como un bloque. */
+const BOCANADAS = [
+  { x: 502, y: 132, rx: 13, ry: 10, o: 0.50 },
+  { x: 509, y: 110, rx: 18, ry: 13, o: 0.42 },
+  { x: 521, y:  86, rx: 24, ry: 16, o: 0.32 },
+  { x: 539, y:  60, rx: 31, ry: 19, o: 0.22 },
+  { x: 563, y:  34, rx: 38, ry: 22, o: 0.13 },
+];
+const CICLOS_VIENTO = 16;           // ondulaciones a lo largo de todo el ascenso
+const penacho = computed(() => BOCANADAS.map((b, i) => {
+  const t = pActual.value * CICLOS_VIENTO * Math.PI * 2 - i * 1.1;
+  const amp = 3 + i * 3.2;          // arriba el viento manda mas que abajo
+  return {
+    i,
+    cx: +(b.x + Math.sin(t) * amp).toFixed(1),
+    cy: +(b.y + Math.cos(t) * amp * 0.22).toFixed(1),
+    rx: +(b.rx * (1 + Math.sin(t + 0.7) * 0.07)).toFixed(1),
+    ry: b.ry,
+    o: b.o,
+  };
+}));
 
 let LARGO = 0;
 let idxHito = -1;
@@ -192,9 +234,15 @@ function pintar(p) {
      punto mas claras, lo justo para leerse como siluetas. */
   tonoAraucaria.value = mez([30, 38, 50], [47, 93, 74], limita01(p * 1.5));
   tonoNieve.value = mez([74, 88, 112], [242, 237, 230], limita01(p * 1.3));
+  tonoBruma.value = mez([44, 56, 78], [229, 186, 150], limita01(p * 1.2));
 
-  // 5 · fumarola: se gana al llegar al borde del crater
+  // 5 · fumarola: la boca encendida se gana al llegar al borde del crater
   opFumarola.value = limita01((p - 0.86) / 0.14);
+  /* La columna, en cambio, se ve desde mucho antes y apenas insinuada: el
+     Villarrica humea todo el dia y un volcan que recien empieza a fumar al
+     llegar arriba se lee como un premio, no como un cerro activo. Al llegar
+     manda opFumarola y el penacho se abre del todo. */
+  opColumna.value = Math.max(opFumarola.value, limita01((p - 0.28) / 0.22) * 0.3);
 
   // 6 · hitos: cambian al cruzar su altitud, no en cada frame
   let i = -1;
@@ -311,10 +359,54 @@ onScroll(() => {
           </g>
 
           <!-- EL CERRO.
-               La silueta exterior no se toca: la ruta se genero contra ella y
-               sus once vertices dependen de esas pendientes. Todo el detalle
-               va por DENTRO. -->
-          <path fill="#0d1117" d="M0 620V548l150-36 180-108 100-152 70-102 70 102 100 152 180 108 150 36v72z"/>
+               Perfil CONCAVO, no una polilinea de flancos rectos: empinado
+               junto al crater y abriendose hacia la base. Esa curvatura es lo
+               que hace que se lea como estratovolcan y no como un cono
+               generico, y es lo que distingue al Villarrica de un triangulo.
+
+               La curva es x = 500 - (182u + 168u^2.3), con u la fraccion de
+               altura entre el crater y el pie. El termino lineal fija el
+               angulo del cono arriba; el de potencia hace el ensanche de
+               abajo. Sin el lineal la cumbre sale como aguja vertical.
+
+               El cono es TRUNCADO de verdad: la curva se corta en y=150
+               justo donde mide 17 unidades de media boca, que es el rx de la
+               elipse del crater. Antes terminaba en punta y la elipse quedaba
+               flotando por encima del vertice, como un aro.
+
+               Van tres Bezier cubicas con las tangentes de la propia curva en
+               los extremos: el error maximo del ajuste es 0,03 unidades, que
+               a esta escala es una centesima de pixel.
+
+               La falda (del pie a y=548) no se toco: ahi estan las araucarias
+               y moverla las habria dejado dentro del cerro. -->
+          <defs>
+            <!-- La luz viene del sol, que esta arriba a la derecha. El flanco
+                 derecho recibe y el izquierdo queda en sombra: un relleno
+                 plano deja el cono como una silueta recortada, sin volumen. -->
+            <linearGradient id="ladera" x1="1" y1="0.1" x2="0.05" y2="0.95">
+              <stop offset="0%"   stop-color="#1b2431"/>
+              <stop offset="46%"  stop-color="#101722"/>
+              <stop offset="100%" stop-color="#070a0f"/>
+            </linearGradient>
+            <!-- El filo no se enciende parejo de arriba a abajo: se apaga al
+                 entrar en la bruma del pie. Un trazo de grosor constante y
+                 color plano se lee como contorno dibujado, no como luz. -->
+            <linearGradient id="filoLuz" gradientUnits="userSpaceOnUse"
+                            x1="0" y1="150" x2="0" y2="470">
+              <stop offset="0%"   stop-color="var(--azufre)"/>
+              <stop offset="52%"  stop-color="var(--azufre)" stop-opacity=".55"/>
+              <stop offset="100%" stop-color="var(--azufre)" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#ladera)" d="M0 620V548L150 512C203.4 474.7 250.1 437.3 290.7 400C338 356.7 377 313.3 409.3 270C439.1 230 463 190 483 150L517 150C537 190 560.9 230 590.7 270C623 313.3 662 356.7 709.3 400C749.9 437.3 796.6 474.7 850 512L1000 548V620Z"/>
+
+          <!-- Filo encendido del flanco derecho. Es la MISMA curva de la
+               silueta, trazada en vez de rellenada, y crece con el sol: el
+               borde se enciende cuando el sol sale, no antes. -->
+          <path class="filo" :opacity="opSol * 0.6" fill="none"
+                stroke="url(#filoLuz)" stroke-width="2.2" stroke-linecap="round"
+                d="M517 150C537 190 560.9 230 590.7 270C623 313.3 662 356.7 709.3 400C749.9 437.3 796.6 474.7 850 512"/>
 
           <!-- Quebradas. Aristas finas que bajan de la cumbre, no cunas: una
                cuna ancha se lee como error de relleno, no como relieve. -->
@@ -326,17 +418,25 @@ onScroll(() => {
 
           <!-- NIEVE. El borde inferior baja por las quebradas y se retira en
                las aristas, con amplitudes distintas: un zigzag de dientes
-               iguales es lo que mas delata un dibujo. -->
+               iguales es lo que mas delata un dibujo.
+               Los dos bordes de arriba siguen la MISMA curva del cono con un
+               retranqueo de 6 unidades, que se cierra al acercarse al crater:
+               con los bordes rectos de antes la nieve se asomaba por fuera de
+               la silueta curva, y con un retranqueo fijo los dos bordes se
+               cruzaban en la cumbre, donde el cono mide dos unidades. -->
           <path :fill="tonoNieve" opacity=".95"
-                d="M392 310 L500 150 L608 310
-                   Q598 288 584 312
-                   Q568 340 554 304
-                   Q538 320 524 296
-                   Q510 332 496 302
-                   Q480 316 466 294
-                   Q450 328 436 300
-                   Q420 314 406 298
-                   Q398 306 392 310 Z"/>
+                d="M383.6 312
+                   C403.2 286.7 420.8 263.3 436.6 240
+                   C456.8 210 472.3 180 487.3 150
+                   L512.8 150
+                   C527.7 180 543.2 210 563.4 240
+                   C579.2 263.3 596.8 286.7 616.4 310
+                   Q605.9 332 595.3 312 Q584.7 298 574.1 305
+                   Q563.5 326 552.9 312 Q542.3 304 531.8 305
+                   Q521.2 340 510.6 312 Q500 300 489.4 305
+                   Q478.8 330 468.2 312 Q457.7 306 447.1 305
+                   Q436.5 336 425.9 312 Q415.3 302 404.7 305
+                   Q394.1 324 383.6 312 Z"/>
 
           <!-- Espolones de roca asomando entre la nieve. Poligonos irregulares,
                no rombos: la simetria los convertia en adorno geometrico.
@@ -354,6 +454,19 @@ onScroll(() => {
           <ellipse cx="500" cy="152" rx="17" ry="6" fill="#0d1117" opacity=".9"/>
           <path d="M483 152 a17 6 0 0 0 34 0" fill="none"
                 stroke="#0d1117" stroke-width="2.5" opacity=".6"/>
+
+          <!-- BRUMA del pie del cerro. Separa la montana del suelo y le da
+               escala: sin ella el cono se apoya en una linea dura y se lee
+               cerca. Va delante del cerro y detras de las araucarias, que es
+               donde esta de verdad. -->
+          <defs>
+            <linearGradient id="bruma" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"  :stop-color="tonoBruma" stop-opacity="0"/>
+              <stop offset="58%" :stop-color="tonoBruma" stop-opacity=".34"/>
+              <stop offset="100%" :stop-color="tonoBruma" stop-opacity=".6"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="424" width="1000" height="196" fill="url(#bruma)"/>
 
           <!-- ARAUCARIAS. El arbol de la Araucania, y el token que da nombre
                a su color en la paleta. Tronco recto y copa en candelabro: a
@@ -476,24 +589,43 @@ onScroll(() => {
               <path d="M6.6 -28.8 L10.4 -25 L13.5 -21.5" fill="none" stroke="var(--guia)"
                     stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
 
+              <!-- guante en la mano que empuna el baston: un punto claro en
+                   el extremo del brazo, que es donde el ojo busca la mano -->
+              <circle cx="13.2" cy="-21.9" r="1.4" fill="var(--nieve)" opacity=".85"/>
+
               <!-- cabeza, adelantada del hombro: va mirando la cuesta -->
               <circle cx="9.2" cy="-33.4" r="3.6" fill="var(--guia)"/>
               <!-- gorro: casquete que sigue la curva, no una tapa plana -->
               <path d="M5.7 -34.2 a3.6 3.6 0 0 1 7 -0.9 Z" fill="var(--azufre)"/>
+              <!-- pompon: lo que termina de decir que es gorro de lana y no
+                   casco. Va en nieve, que es el unico tercer tono que la
+                   figura se permite, y mide menos que la cabeza. -->
+              <circle cx="9.3" cy="-37.3" r="1.3" fill="var(--nieve)"/>
+
+              <!-- BOTAS. Van al final para quedar sobre la pierna, y en tono
+                   oscuro propio: el pie oscuro bajo la pierna clara es lo que
+                   separa a alguien calzado de un palo. -->
+              <g fill="var(--bota)">
+                <path :transform="botaTrasera"   d="M-2.6 -1.9 h4.4 a1 1 0 0 1 1 1 v1.9 h-6.4 a1 1 0 0 1 1 -2.9 z"/>
+                <path :transform="botaDelantera" d="M-2.2 -1.9 h4 a1 1 0 0 1 1 1 l.6 1.9 h-6.6 a1 1 0 0 1 1 -2.9 z"/>
+              </g>
             </g>
           </g>
           <!-- FUMAROLA. Columna que sale del crater y se desarma con el
                viento, en vez de dos circulos. El brillo de la boca queda
                debajo del penacho para que se lea como fuente de la columna. -->
-          <g :opacity="opFumarola" class="fumarola">
-            <circle cx="500" cy="150" r="19" fill="var(--azufre)" opacity=".22"/>
-            <circle cx="500" cy="150" r="8"  fill="#FFE9B0" opacity=".55"/>
-            <g fill="#F2EDE6">
-              <ellipse cx="502" cy="132" rx="13" ry="10" opacity=".5"/>
-              <ellipse cx="509" cy="110" rx="18" ry="13" opacity=".42"/>
-              <ellipse cx="521" cy="86"  rx="24" ry="16" opacity=".32"/>
-              <ellipse cx="539" cy="60"  rx="31" ry="19" opacity=".22"/>
-              <ellipse cx="563" cy="34"  rx="38" ry="22" opacity=".13"/>
+          <g class="fumarola">
+            <!-- La boca encendida sigue siendo el premio de llegar al borde. -->
+            <g :opacity="opFumarola">
+              <circle cx="500" cy="150" r="19" fill="var(--azufre)" opacity=".22"/>
+              <circle cx="500" cy="150" r="8"  fill="#FFE9B0" opacity=".55"/>
+            </g>
+            <!-- La columna se mueve con el scroll: la deriva de cada bocanada
+                 sale de `p`, no de un reloj. Si el visitante se detiene, el
+                 humo se queda donde esta, igual que el pie del guia. -->
+            <g fill="#F2EDE6" :opacity="opColumna">
+              <ellipse v-for="b in penacho" :key="b.i"
+                       :cx="b.cx" :cy="b.cy" :rx="b.rx" :ry="b.ry" :opacity="b.o"/>
             </g>
           </g>
         </svg>
@@ -530,7 +662,9 @@ onScroll(() => {
 /* El guia lleva --lago; los clientes un tono apagado que los deja presentes
    sin competir. Tres figuras del mismo color que el guia convertirian la
    cordada en una mancha. */
-.ascenso{--guia:var(--lago); --cliente:#96a6bd; --cliente-pack:#b09a78}
+/* La bota es el unico tono oscuro de la figura: tiene que leerse como pie
+   apoyado sobre la nieve y sobre la roca negra por igual. */
+.ascenso{--guia:var(--lago); --cliente:#96a6bd; --cliente-pack:#b09a78; --bota:#243041}
 
 .ruta{fill:none;stroke:var(--lava);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
 .ruta-fantasma{fill:none;stroke:rgba(242,237,230,.17);stroke-width:5;
