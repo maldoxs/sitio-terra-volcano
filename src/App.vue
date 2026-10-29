@@ -6,6 +6,7 @@ import BarraNav from './componentes/BarraNav.vue';
 import SeccionHero from './componentes/SeccionHero.vue';
 import BandaCifras from './componentes/BandaCifras.vue';
 import SeccionAscenso from './componentes/SeccionAscenso.vue';
+import SeccionAscensoLava from './componentes/SeccionAscensoLava.vue';
 import CatalogoTours from './componentes/CatalogoTours.vue';
 import ComparacionPrecio from './componentes/ComparacionPrecio.vue';
 import SobreRichard from './componentes/SobreRichard.vue';
@@ -19,6 +20,10 @@ import PieSitio from './componentes/PieSitio.vue';
     <SeccionHero />
     <BandaCifras />
     <SeccionAscenso />
+    <!-- Replica de la pieza de Andres, traida a este stack. Va DEBAJO de la
+         actual a proposito: estan las dos para poder compararlas scrolleando
+         una despues de la otra mientras se decide con cual se queda el sitio. -->
+    <SeccionAscensoLava />
     <CatalogoTours />
     <ComparacionPrecio />
     <SobreRichard />

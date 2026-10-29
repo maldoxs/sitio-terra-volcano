@@ -667,7 +667,12 @@ onScroll(() => {
 .ascenso{--guia:var(--lago); --cliente:#96a6bd; --cliente-pack:#b09a78; --bota:#243041}
 
 .ruta{fill:none;stroke:var(--lava);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
-.ruta-fantasma{fill:none;stroke:rgba(242,237,230,.17);stroke-width:5;
+/* El camino por recorrer. Estaba en nieve al 17%, que sobre la roca negra se
+   leia pero sobre la NIEVE de la cumbre desaparecia: el tramo que falta se
+   borraba justo en la mitad alta, que es donde mas importa verlo. Va en un
+   gris calido, que es el unico tono que aguanta los dos fondos que el trazo
+   atraviesa. Mismo criterio que el contorno bajo el texto de los hitos. */
+.ruta-fantasma{fill:none;stroke:rgba(138,128,120,.8);stroke-width:5;
   stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:2 11}
 
 /* Marcas de los hitos. Apagadas son parte del camino por recorrer; encendidas
