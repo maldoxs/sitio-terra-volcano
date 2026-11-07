@@ -1,0 +1,13 @@
+# Sitio HTML de Terra Volcano. Se publica la carpeta sitio/, sin compilar.
+# La clave de Google no va en el repositorio: se guarda en Netlify como
+# GOOGLE_MAPS_KEY y aqui se escribe en config.js al publicar.
+[build]
+  publish = "sitio"
+  command = "printf 'window.CLAVE_GOOGLE = \"%s\";\n' \"$GOOGLE_MAPS_KEY\" > sitio/recorrido/config.js"
+
+# La clave de navegador queda visible en el sitio por diseno y esta restringida
+# por dominio en Google Cloud, asi que el escaner de secretos no debe frenar el despliegue.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "GOOGLE_MAPS_KEY"
+  SECRETS_SCAN_OMIT_PATHS = "sitio/recorrido/config.js"
+  SECRETS_SCAN_SMART_DETECTION_OMIT_PATHS = "sitio/recorrido/config.js"

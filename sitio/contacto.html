@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contacto | Terra Volcano</title>
+<meta name="description" content="Escríbenos o visítanos en Boulevard Patagonia, Pucón.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Public+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="paginas.css">
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header class="barra">
+  <a href="index.html" aria-label="Terra Volcano, inicio"><img src="media/logo-blanco.png" width="191" height="50" alt="Terra Volcano"></a>
+  <nav aria-label="Principal">
+    <a href="index.html">Inicio</a>
+    <a href="index.html#dia">Tu día</a>
+    <a href="tours.html">Tours</a>
+    <a href="nosotros.html">Nosotros</a>
+    <a href="contacto.html" aria-current="page">Contacto</a>
+  </nav>
+  <details class="menu-movil"><summary>Menú</summary><div><a href="index.html">Inicio</a><a href="index.html#dia">Tu día</a><a href="tours.html">Tours</a><a href="nosotros.html">Nosotros</a><a href="contacto.html">Contacto</a></div></details>
+  <span class="idioma"><button type="button" data-idioma="es" aria-pressed="true">ES</button> / <button type="button" data-idioma="en" aria-pressed="false">EN</button></span>
+</header>
+<main>
+  <section class="hablemos" id="hablemos">
+    <div>
+      <h1>Hablemos antes de subir.</h1>
+      <p class="hablemos__bajada">Cuéntanos qué quieres hacer y cuándo. Te respondemos por WhatsApp.</p>
+      <form class="formulario" id="formulario">
+        <label>Nombre<input name="nombre" required autocomplete="name"></label>
+        <label>Correo electrónico<input name="correo" type="email" required autocomplete="email"></label>
+        <label class="ancho">¿Qué te gustaría hacer?<textarea name="mensaje" rows="3" required></textarea></label>
+        <button class="reservar" type="submit">Enviar por WhatsApp</button>
+      </form>
+    </div>
+    <div class="brujula-viva" aria-hidden="true">
+      <p class="brujula-viva__nota">Mueve el cursor: la aguja te sigue.</p>
+      <img class="brujula-viva__foto" src="media/rumbo/mano.webp" width="904" height="979" alt="">
+      <img class="brujula-viva__aguja" id="aguja" src="media/rumbo/aguja.webp" width="202" height="202" alt="">
+      <img class="brujula-viva__eje" src="media/rumbo/eje.webp" width="45" height="54" alt="">
+    </div>
+  </section>
+
+  <section class="aca" aria-label="Mapa">
+    <iframe loading="lazy" title="Mapa de Terra Volcano en Pucón" src="https://maps.google.com/maps?q=Terra%20Volcano%2C%20Av.%20O%27Higgins%20717%2C%20Boulevard%20Patagonia%2C%20Local%204&t=m&z=16&output=embed&iwloc=near"></iframe>
+    <div class="aca__texto">
+      <h2>Estamos acá.</h2>
+      <p>En Boulevard Patagonia, en el centro de Pucón.</p>
+      <address>Av. Bernardo O'Higgins 717, Local 4<br>Boulevard Patagonia, Pucón, Chile</address>
+      <a class="reservar" href="https://www.google.com/maps/dir/?api=1&destination=Terra%20Volcano%2C%20Av.%20O%27Higgins%20717%2C%20Puc%C3%B3n">Cómo llegar</a>
+    </div>
+  </section>
+
+  <figure class="equipo">
+    <img loading="lazy" src="media/nosotros/equipo.webp" width="1800" height="1350" alt="El equipo de Terra Volcano, de pie frente a la agencia en Pucón.">
+    <figcaption>Pasa a vernos antes de tu ascenso.</figcaption>
+  </figure>
+</main>
+
+<footer class="pie-sitio">
+  <h2>Nos vemos en Pucón.</h2>
+  <a class="reservar" href="https://wa.me/56983388317">Reservar por WhatsApp</a>
+  <div class="pie-sitio__fila">
+    <div><img loading="lazy" src="media/logo-blanco.png" width="191" height="50" alt="Terra Volcano">Agencia de montaña en Pucón desde 2015.</div>
+    <address style="font-style:normal">Av. Bernardo O'Higgins 717, Local 4<br>Boulevard Patagonia, Pucón, Chile<br><a href="https://wa.me/56983388317">+56 9 8338 8317</a></address>
+    <div><a href="nosotros.html">Nosotros</a><a href="contacto.html">Contacto</a><a href="https://www.instagram.com/terravolcano_pucon">Instagram</a><a href="https://www.facebook.com/puconterravolcano/">Facebook</a></div>
+  </div>
+  <small>Turismo Aventura Richard Díaz Suazo EIRL</small>
+</footer>
+
+<script type="module" src="idioma.js"></script>
+<script>
+  /* El formulario arma el mensaje y lo abre en WhatsApp: no hay servidor de correo */
+  document.getElementById('formulario').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = new FormData(e.target);
+    const texto = `${d.get('mensaje')}\n\n${d.get('nombre')} (${d.get('correo')})`;
+    open(`https://wa.me/56983388317?text=${encodeURIComponent(texto)}`, '_blank', 'noopener');
+  });
+
+  /* La aguja apunta al cursor */
+  if (matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const aguja = document.getElementById('aguja');
+    const zona = document.getElementById('hablemos');
+    let giro = 0;
+    let pendiente = false;
+    let x = 0;
+    let y = 0;
+    const seguir = () => {
+      pendiente = false;
+      const c = aguja.getBoundingClientRect();
+      const a = Math.atan2(y - (c.top + c.height / 2), x - (c.left + c.width / 2)) * 180 / Math.PI + 90;
+      const destino = a + 62.5;
+      giro += ((destino - giro + 540) % 360) - 180;
+      aguja.style.setProperty('--rumbo', `${giro}deg`);
+    };
+    zona.addEventListener('pointermove', (e) => {
+      x = e.clientX; y = e.clientY;
+      if (!pendiente) { pendiente = true; requestAnimationFrame(seguir); }
+    });
+  }
+</script>
+</body>
+</html>

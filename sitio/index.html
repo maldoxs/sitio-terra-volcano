@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terra Volcano | Ascenso guiado al Villarrica</title>
+<meta name="description" content="Ascenso guiado al volcán Villarrica desde Pucón, con un guía cada tres personas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="media/cordada.webp" media="(min-width: 761px)">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Public+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{
+    --obsidiana:#0A0B0D; --noche:#06122E; --lava:#D81226; --azufre:#DAAD25; --nieve:#F5F4F1; --lago:#264AA0;
+    --display:'Archivo',system-ui,sans-serif; --texto:'Public Sans',system-ui,sans-serif;
+    --margen:clamp(20px,3.4vw,56px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--nieve);color:var(--obsidiana);font:400 17px/1.6 var(--texto);overflow-x:clip}
+  a{color:inherit;text-decoration:none}
+
+  /* La portada queda fija mientras la nube sube por encima */
+  .ascenso{height:230svh;position:relative}
+  .escenario{position:sticky;top:0;height:100svh;overflow:hidden;background:#1d5fb8;color:var(--nieve)}
+
+  /* La foto se dimensiona como bloque 16:9 para que las notas caigan siempre
+     sobre el mismo punto de la imagen, sea cual sea la pantalla */
+  .foto{position:absolute;left:50%;top:50%;width:max(100vw,calc(100svh * 16 / 9));aspect-ratio:16/9;translate:-50% -50%}
+  .foto img{display:block;width:100%;height:100%}
+  .foto__capa{position:absolute;inset:0;will-change:transform;transform-origin:50% 62%}
+
+  .nota{position:absolute;font:700 clamp(14px,1.1vw,17px)/1.25 var(--texto);color:var(--obsidiana);white-space:nowrap}
+  .nota::before{content:"";position:absolute;background:currentColor}
+  .nota--tu{left:66%;top:59%;padding-left:clamp(36px,3.8vw,60px)}
+  .nota--tu::before{left:0;top:.62em;height:1px;width:clamp(28px,3.2vw,50px);transform-origin:left;animation:crece-x .9s 1.1s cubic-bezier(.2,.7,.2,1) both}
+  .nota--crater{left:53.5%;top:15%;color:var(--nieve);padding-left:clamp(36px,3.8vw,60px)}
+  .nota--crater::before{left:0;top:.62em;height:1px;width:clamp(28px,3.2vw,50px);transform-origin:left;animation:crece-x .9s 1.5s cubic-bezier(.2,.7,.2,1) both}
+  .nota span{display:block;animation:aparece .7s 1.5s both}
+  .nota--tu span{animation-delay:1.7s}
+
+  .barra{position:absolute;inset:0 0 auto;z-index:3;display:flex;align-items:center;gap:clamp(18px,2.6vw,40px);padding:clamp(16px,2vw,26px) var(--margen)}
+  .barra img{height:38px;width:auto;display:block}
+  .barra nav{display:flex;gap:clamp(16px,2.2vw,34px);margin-left:auto;font-weight:500;font-size:15px}
+  .barra nav a{padding:6px 0;border-bottom:1px solid transparent;transition:border-color .2s}
+  .barra nav a:hover{border-color:currentColor}
+  .idioma{font-size:14px;font-weight:500;opacity:.85}
+  .idioma button{padding:4px 2px;border:0;background:none;color:inherit;font:inherit;cursor:pointer;opacity:.75}
+  .idioma button[aria-pressed="true"]{font-weight:700;opacity:1}
+  .idioma button:focus-visible{outline:2px solid var(--azufre);outline-offset:2px}
+
+  .titular{position:absolute;z-index:2;left:var(--margen);top:clamp(84px,13svh,150px);max-width:min(46vw,760px)}
+  .titular h1{margin:0;font:700 clamp(56px,min(8.3vw,16.5svh),150px)/.9 var(--display);font-stretch:82%;letter-spacing:-.022em;text-wrap:balance}
+  .titular h1 span{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+  .titular h1 i{display:block;font-style:normal;animation:sube 1.1s cubic-bezier(.16,.84,.24,1) both}
+  .titular h1 span+span i{animation-delay:.12s}
+  .bajada{margin:0 0 clamp(14px,1.8vw,22px);color:#fff;font:500 clamp(19px,1.75vw,27px)/1.25 var(--texto);animation:aparece .8s .55s both}
+
+  .pie{position:absolute;z-index:2;left:var(--margen);right:var(--margen);bottom:clamp(22px,4svh,40px);display:flex;align-items:flex-end;justify-content:space-between;gap:24px;color:var(--obsidiana)}
+  /* La luz baja por la nieve: el texto va sobre la foto, sin cajas */
+  .escenario__velo{position:absolute;left:0;right:0;bottom:0;height:46%;z-index:1;pointer-events:none;background:linear-gradient(0deg,rgba(6,18,46,.9) 0%,rgba(6,18,46,.72) 34%,rgba(6,18,46,.28) 68%,rgba(6,18,46,0) 100%)}
+  .datos{display:flex;margin:0;font-size:14px;line-height:1.3;color:#fff}
+  .datos div+div{margin-left:clamp(18px,2.4vw,36px);padding-left:clamp(18px,2.4vw,36px);border-left:1px solid rgba(255,255,255,.34)}
+  .datos div{margin:0}
+  .datos dt{font:700 clamp(19px,1.8vw,26px)/1.1 var(--display);font-stretch:88%}
+  .datos dd{margin:3px 0 0;font-weight:500}
+  .reservar{display:inline-flex;align-items:center;gap:12px;padding:16px 24px;background:var(--lava);color:#fff;font-weight:700;font-size:16px;border-radius:2px;white-space:nowrap;transition:background .2s}
+  .reservar:hover{background:#b30e1f}
+  .reservar:focus-visible,.barra a:focus-visible{outline:2px solid var(--azufre);outline-offset:3px}
+
+  /* Una sola imagen de nube, usada en dos capas a distinta velocidad */
+  .nube{position:absolute;left:0;right:0;bottom:0;height:125svh;z-index:4;pointer-events:none;background:url(media/nube.webp) repeat-x 0 0/max(1600px,100vw) 100%;transform:translate3d(0,100%,0);will-change:transform}
+  .nube::after{content:"";position:absolute;left:0;right:0;top:100%;height:100svh;background:var(--nieve)}
+  .nube--atras{background-position:-620px 0;opacity:.7;z-index:1}
+  .nube--atras::after{display:none}
+
+  .relato{position:relative;z-index:5;margin-top:-62svh;padding:0 var(--margen) clamp(70px,10vw,140px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,80px);align-items:end}
+  .relato h2{margin:0;font:700 clamp(36px,4.6vw,76px)/1 var(--display);font-stretch:84%;letter-spacing:-.018em;text-wrap:balance}
+  .relato p{margin:20px 0 0;max-width:30em}
+  .relato img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+
+
+  .relato p{font-size:clamp(17px,1.3vw,20px)}
+  .pilares{position:relative;z-index:5;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:clamp(40px,5vw,72px) var(--margen);background:var(--noche);color:#fff}
+  .pilares div{padding:0 clamp(16px,2.2vw,34px);border-left:1px solid rgba(255,255,255,.28)}
+  .pilares div:first-child{padding-left:0;border-left:0}
+  .pilares div:last-child{padding-right:0}
+  .pilares h3{margin:0 0 10px;font:700 clamp(23px,2.2vw,34px)/1.08 var(--display);font-stretch:86%;letter-spacing:-.01em}
+  .pilares p{margin:0;font-size:16px;line-height:1.45;color:#d6dbe6}
+  .sellos{display:flex;gap:18px;align-items:center;mix-blend-mode:multiply}
+  .sellos img{display:block;height:62px;width:auto}
+
+
+  /* El dia del ascenso: la ficha queda fija y la linea sube con el scroll */
+  .dia{position:relative;z-index:5;background:var(--nieve);padding:clamp(40px,6vw,90px) var(--margen) clamp(70px,9vw,130px)}
+  .dia__cuerpo{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,100px);margin-bottom:clamp(34px,4.6vw,64px)}
+  .dia__fija{position:sticky;top:clamp(40px,9svh,90px);align-self:start}
+  .dia h2{margin:0;font:700 clamp(40px,5.4vw,92px)/.96 var(--display);font-stretch:84%;letter-spacing:-.02em}
+  .ficha{margin:clamp(22px,2.6vw,36px) 0 clamp(22px,2.4vw,32px);display:grid;grid-template-columns:auto 1fr;gap:8px 22px;font-size:16px;line-height:1.35}
+  .ficha dt{color:#555a63}
+  .ficha dd{margin:0;font-weight:700}
+  .ficha .ficha__precio{font:700 clamp(24px,2.2vw,32px)/1.1 var(--display);font-stretch:88%}
+  .dia__acciones{display:flex;flex-wrap:wrap;gap:12px}
+  .ruta{padding:15px 22px;border:1px solid var(--obsidiana);border-radius:2px;background:none;color:inherit;font:700 16px/1.2 var(--texto);cursor:pointer;transition:background .2s,color .2s}
+  .ruta:hover{background:var(--obsidiana);color:var(--nieve)}
+  .ruta:focus-visible{outline:2px solid var(--lava);outline-offset:3px}
+  .visor{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:var(--obsidiana)}
+  .visor::backdrop{background:var(--obsidiana)}
+  .visor iframe{display:block;width:100%;height:100%;border:0}
+  .visor__cerrar{position:absolute;left:50%;top:14px;translate:-50% 0;z-index:2;padding:12px 22px;border:0;border-radius:2px;background:var(--lava);color:#fff;font:700 15px/1 var(--texto);cursor:pointer}
+  .pasos{position:relative;list-style:none;margin:0;padding:0 0 0 clamp(26px,3vw,44px)}
+  .pasos::before,.pasos__avance{content:"";position:absolute;left:4px;top:10px;bottom:10px;width:2px;background:#d9d7d1}
+  .pasos__avance{background:var(--lava);transform:scaleY(0);transform-origin:top;will-change:transform}
+  .paso{position:relative;padding-bottom:clamp(34px,4.6vw,64px);transition:opacity .35s}
+  .paso:last-child{padding-bottom:0}
+  .paso::before{content:"";position:absolute;left:calc(clamp(26px,3vw,44px) * -1);top:9px;width:10px;height:10px;border-radius:50%;background:var(--nieve);box-shadow:0 0 0 2px #b9b6ae;transition:background .3s,box-shadow .3s}
+  .con-movimiento .paso:not(.activo){opacity:.42}
+  .paso.activo::before{background:var(--lava);box-shadow:0 0 0 2px var(--lava)}
+  .paso h3{margin:0 0 6px;font:700 clamp(23px,2.3vw,36px)/1.08 var(--display);font-stretch:86%;letter-spacing:-.01em}
+  .paso p{margin:0;max-width:31em}
+  .incluye{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,100px);border-top:1px solid #d9d7d1;padding-top:clamp(24px,3vw,40px)}
+  .incluye h3{margin:0 0 10px;font:700 clamp(19px,1.6vw,24px)/1.15 var(--display);font-stretch:88%}
+  .incluye ul{margin:0;padding:0;list-style:none;columns:2;column-gap:32px;font-size:16px;line-height:1.5}
+  .incluye li{break-inside:avoid;padding-bottom:4px}
+  .incluye p{margin:0;font-size:16px;line-height:1.5}
+
+
+  /* Rumbo: la brujula elige la categoria y el paisaje gira hacia ella */
+  .rumbo{position:relative;z-index:5;height:600svh;background:var(--obsidiana);color:var(--nieve);--actual:0;--giro:-65deg;--radio:min(33vw,44svh)}
+  .rumbo__fija{position:sticky;top:0;height:100svh;overflow:hidden}
+  .rumbo__foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:translate3d(calc((var(--n) - var(--actual)) * 7%),0,0) scale(1.16);transition:opacity .9s ease,transform 1.3s cubic-bezier(.2,.7,.2,1);will-change:transform,opacity}
+  .rumbo__foto.activa{opacity:1}
+  .rumbo__velo{position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,18,46,.92) 0%,rgba(6,18,46,.82) 34%,rgba(6,18,46,.34) 54%,rgba(6,18,46,0) 74%),linear-gradient(0deg,rgba(10,11,13,.72) 0%,rgba(10,11,13,0) 46%)}
+  .rumbo__cabeza{position:absolute;left:var(--margen);top:clamp(30px,6svh,64px);margin:0;font:700 clamp(15px,1.1vw,17px)/1 var(--texto)}
+  .rumbo__panel{position:absolute;left:var(--margen);top:clamp(64px,11svh,110px);width:min(40vw,580px);opacity:0;transform:translate3d(0,14px,0);transition:opacity .45s,transform .6s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+  .rumbo__panel.activo{opacity:1;transform:none;pointer-events:auto}
+  .rumbo__panel h2{margin:0;font:700 clamp(46px,6vw,104px)/.94 var(--display);font-stretch:84%;letter-spacing:-.02em}
+  .rumbo__panel>p{margin:12px 0 18px;font-size:clamp(17px,1.4vw,21px);line-height:1.35}
+  .rumbo__lista{margin:0;padding:0;list-style:none;font-size:16px}
+  .rumbo__lista li{display:grid;grid-template-columns:1fr auto;gap:14px;padding:7px 0;border-top:1px solid rgba(245,244,241,.28)}
+  .rumbo__lista b{font-weight:700}
+  .rumbo__lista span{white-space:nowrap}
+  .rumbo__lista span:last-child{text-align:right}
+  .rumbo__lista span small{font-size:12px;opacity:.82}
+  .rumbo__panel .rumbo__nota{margin:12px 0 0;font-size:14px;opacity:.82}
+  .rumbo__dial{position:absolute;left:72%;bottom:clamp(170px,31svh,290px);width:0;height:0}
+  .rumbo__arco{position:absolute;left:calc(var(--radio) * -1);top:calc(var(--radio) * -1);width:calc(var(--radio) * 2);height:calc(var(--radio) * 2);border:1px solid rgba(245,244,241,.42);border-radius:50%;pointer-events:none;clip-path:inset(0 0 50% 0)}
+  .rumbo__centro{position:absolute;z-index:2;left:58.13%;top:34.33%;width:0;height:0}
+  .rumbo__marca{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:rgba(245,244,241,.7);transform:rotate(var(--a)) translateY(calc(var(--radio) * -1))}
+  .rumbo__punto{position:absolute;left:-7px;top:-7px;width:14px;height:14px;border-radius:50%;background:var(--azufre);transform:rotate(var(--giro)) translateY(calc(var(--radio) * -1));transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+  .rumbo__opcion{position:absolute;left:0;top:0;padding:8px 10px;border:0;background:none;color:inherit;font:500 clamp(15px,1.15vw,18px)/1.1 var(--texto);white-space:nowrap;cursor:pointer;pointer-events:auto;opacity:.78;translate:-50% -50%;transform:rotate(var(--a)) translateY(calc((var(--radio) - 34px) * -1)) rotate(calc(var(--a) * -1));transition:opacity .3s}
+  .rumbo__opcion:hover,.rumbo__opcion[aria-pressed="true"]{opacity:1}
+  .rumbo__opcion[aria-pressed="true"]{font-weight:700}
+  .rumbo__opcion:focus,.rumbo__opcion:focus-visible{outline:none}
+  .rumbo__opcion:focus-visible{text-decoration:underline;text-underline-offset:4px}
+  /* El pivote de la aguja esta en x=701 y=448 de la foto de 1206x1305: ese punto cae en el centro del arco */
+  .mano{--ancho:clamp(300px,31vw,450px);position:absolute;left:calc(var(--ancho) * -.5813);top:calc(var(--ancho) * -.3715);width:var(--ancho);pointer-events:none}
+  .mano__foto{display:block;width:100%;height:auto}
+  .mano__aguja{position:absolute;left:46.93%;top:23.98%;width:22.39%;height:auto;transform:rotate(calc(var(--giro) + 62.5deg));transition:transform 1.4s cubic-bezier(.3,1.5,.4,1)}
+  .mano__eje{position:absolute;left:55.64%;top:31.26%;width:4.98%;height:auto}
+
+
+  .rumbo__lista b small{display:block;margin-top:2px;font:400 14px/1.3 var(--texto);opacity:.85}
+  .rumbo__lista li{align-items:start}
+  .rumbo__enlace{text-decoration:underline;text-underline-offset:3px}
+  .rumbo__nota a{color:inherit;font-weight:700;text-underline-offset:3px;text-decoration:underline}
+
+  /* Opiniones y cierre */
+  .opiniones{position:relative;z-index:5;background:var(--nieve);padding:clamp(70px,9vw,130px) var(--margen) clamp(40px,5vw,70px)}
+  .opiniones__cabeza{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,5vw,80px);align-items:end;margin-bottom:clamp(36px,5vw,70px)}
+  .opiniones h2{margin:0;font:700 clamp(46px,6.4vw,110px)/.94 var(--display);font-stretch:84%;letter-spacing:-.02em}
+  .opiniones__cabeza p{margin:0;max-width:30em}
+  .opiniones__cabeza a{display:inline-block;margin-top:12px;font-weight:700;color:var(--lava);text-underline-offset:3px;text-decoration:underline}
+  .citas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,4vw,64px);margin:0;padding:0;list-style:none}
+  .citas blockquote{margin:0;font:600 clamp(21px,1.9vw,29px)/1.2 var(--display);font-stretch:90%;letter-spacing:-.008em}
+  .citas figure{margin:0;border-top:2px solid var(--obsidiana);padding-top:16px}
+  .citas figcaption{margin-top:14px;font-size:15px;color:#555a63}
+  .sellos{display:flex;flex-wrap:wrap;gap:clamp(14px,2.4vw,34px);align-items:center;margin-top:clamp(40px,5vw,70px);mix-blend-mode:multiply}
+  .sellos img{display:block;height:clamp(50px,5vw,66px);width:auto}
+  .pie-sitio{position:relative;z-index:5;background:var(--obsidiana);color:var(--nieve);padding:clamp(60px,8vw,110px) var(--margen) 30px}
+  .pie-sitio h2{margin:0 0 26px;font:700 clamp(46px,7vw,124px)/.94 var(--display);font-stretch:84%;letter-spacing:-.02em}
+  .pie-sitio__fila{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:clamp(44px,6vw,80px);padding-top:26px;border-top:1px solid rgba(245,244,241,.28);font-size:16px;line-height:1.5}
+  .pie-sitio__fila img{display:block;height:40px;width:auto;margin-bottom:10px}
+  .pie-sitio__fila a{display:block;width:fit-content;text-underline-offset:3px}
+  .pie-sitio__fila a:hover{text-decoration:underline}
+  .pie-sitio small{display:block;margin-top:40px;font-size:13px;opacity:.7}
+
+  /* Galeria: cada foto ocupa la pantalla y la siguiente la va cubriendo con el scroll.
+     Sin JS o con movimiento reducido quedan una bajo la otra */
+  .galeria{position:relative;z-index:5;background:var(--obsidiana);color:var(--nieve)}
+  .galeria__titulo{position:relative;z-index:9;padding:clamp(26px,5svh,48px) var(--margen) 0}
+  .galeria__titulo h2{margin:0;font:700 clamp(30px,5vw,76px)/.98 var(--display);font-stretch:84%;letter-spacing:-.018em;text-shadow:0 2px 26px rgba(6,18,46,.6)}
+  .lamina{position:relative;margin:0;height:100svh;overflow:hidden;background:#101216}
+  .lamina__marco{position:absolute;inset:0}
+  .lamina img{display:block;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%)}
+  .lamina::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(6,18,46,.78) 0%,rgba(6,18,46,0) 36%),linear-gradient(180deg,rgba(6,18,46,.74) 0%,rgba(6,18,46,0) 32%)}
+  .lamina figcaption{position:absolute;z-index:2;left:var(--margen);right:var(--margen);bottom:clamp(24px,6svh,56px);font:700 clamp(30px,5.4vw,88px)/1 var(--display);font-stretch:84%;letter-spacing:-.018em}
+  .lamina figcaption span{display:block;margin-bottom:8px;font:500 15px/1 var(--texto);letter-spacing:0;color:#d6dbe6}
+  .con-movimiento .galeria__escena{height:calc(100svh + 5 * 90svh)}
+  .con-movimiento .galeria__fija{position:sticky;top:0;height:100svh;overflow:hidden}
+  .con-movimiento .galeria__titulo{position:absolute;left:0;right:0;top:0}
+  .con-movimiento .lamina{position:absolute;inset:0;height:auto;will-change:transform}
+  .con-movimiento .lamina__marco{will-change:transform}
+  .con-movimiento .lamina:not(:nth-child(2)){transform:translate3d(0,100%,0)}
+  .galeria__saltar{display:inline-flex;align-items:center;margin-top:6px;font-size:15px;font-weight:700;text-decoration:underline;text-underline-offset:3px;text-shadow:0 1px 12px rgba(6,18,46,.7)}
+  .galeria__fin{padding:clamp(56px,9vw,120px) var(--margen);text-align:center}
+  .galeria__fin h2{margin:0 0 22px;font:700 clamp(34px,4.6vw,76px)/1 var(--display);font-stretch:84%;letter-spacing:-.018em}
+
+  @keyframes sube{from{transform:translateY(105%)}}
+  @keyframes aparece{from{opacity:0}}
+  @keyframes crece{from{transform:scaleY(0)}}
+  @keyframes crece-x{from{transform:scaleX(0)}}
+
+  @media (max-width:760px){
+    .foto{width:100%;height:100%;aspect-ratio:auto;left:0;top:0;translate:none}
+    .foto img{object-fit:cover;object-position:50% 100%}
+    .barra nav{display:none}
+    .barra .idioma{margin-left:auto}
+    .barra img{height:32px}
+    .titular{max-width:none;right:var(--margen);top:84px}
+    .titular h1{font-size:clamp(50px,15.5vw,84px)}
+    .escenario__velo{height:52%}
+    .bajada{font-size:18px}
+    .nota{display:none}
+    .pie{flex-direction:column;align-items:stretch;gap:14px}
+    .datos{justify-content:space-between}
+    .datos div+div{margin-left:10px;padding-left:10px}
+    .datos dd{font-size:13px}
+    .reservar{justify-content:center}
+    .relato{grid-template-columns:1fr}
+    .con-movimiento .galeria__escena{height:calc(100svh + 5 * 70svh)}
+    /* en celular el boton va en su propia barra, sin tapar la ficha del recorrido */
+    .visor{padding-top:56px}
+    .visor__cerrar{left:auto;right:12px;top:6px;translate:none;min-height:44px}
+    .pilares{grid-template-columns:1fr;gap:22px}
+    .pilares div{padding:0;border-left:0}
+    .opiniones__cabeza,.citas,.pie-sitio__fila{grid-template-columns:1fr}
+    /* En celular la brujula va abajo, con la lista arriba y las categorias entre ambas */
+    .rumbo{height:auto;--radio:min(31vw,130px)}
+    .rumbo__fija{position:relative;height:auto;min-height:100svh;display:flex;flex-direction:column;padding-top:22px}
+    .rumbo__velo{background:linear-gradient(180deg,rgba(6,18,46,.92) 0%,rgba(6,18,46,.82) 58%,rgba(6,18,46,.3) 100%)}
+    .rumbo__cabeza{position:relative;z-index:2;left:auto;top:auto;margin:0 var(--margen) 8px}
+    .rumbo__panel{position:relative;z-index:2;display:none;left:auto;top:auto;width:auto;margin:0 var(--margen);transform:none}
+    .rumbo__panel.activo{display:block}
+    .rumbo__panel h2{font-size:clamp(40px,12vw,58px)}
+    .rumbo__panel>p{margin:6px 0 10px;font-size:16px}
+    .rumbo__lista{font-size:15px}
+    .rumbo__lista li{gap:10px;padding:0;align-items:center}
+    .rumbo__enlace{display:block;padding:8px 0}
+    .rumbo__panel .rumbo__nota{margin-top:0}
+    .rumbo__nota a{display:inline-block;padding:10px 0}
+    .rumbo__dial{position:relative;z-index:2;left:auto;bottom:auto;width:auto;height:auto;margin-top:auto;padding:12px var(--margen) 0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px}
+    /* los nombres salen de cada marca como rayos: a la derecha se leen hacia afuera, a la izquierda hacia la marca */
+    .rumbo__opcion{font-size:13.5px;padding:10px 7px;translate:0 -50%;transform-origin:0 50%;transform:rotate(calc(var(--a) - 90deg)) translateX(calc(var(--radio) + 6px))}
+    .rumbo__opcion--izq{translate:-100% -50%;transform-origin:100% 50%;transform:rotate(calc(var(--a) + 90deg)) translateX(calc((var(--radio) + 6px) * -1))}
+    .rumbo__opcion[aria-pressed="true"]{color:var(--obsidiana);background:var(--nieve);border-radius:2px;opacity:1}
+    /* el margen lateral la deja sola en su fila, y el superior da espacio a la curva */
+    .mano{--ancho:min(58vw,270px);position:relative;left:calc(var(--ancho) * -.0813);top:auto;flex:0 0 var(--ancho);margin:calc(var(--radio) - var(--ancho) * .3715 + 84px) calc((100% - var(--ancho)) / 2) calc(var(--ancho) * -.03)}
+    .dia__cuerpo{grid-template-columns:1fr}
+    .dia__fija{position:static}
+    .dia__acciones .reservar{width:100%;justify-content:center}
+    .dia__acciones .ruta{flex:1 1 40%;padding:14px 10px;text-align:center;font-size:15px}
+    .incluye{grid-template-columns:1fr;gap:24px}
+    .incluye ul{columns:1}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important}
+    .ascenso{height:auto}
+    .escenario{position:relative}
+    .nube{display:none}
+    .relato{margin-top:0;padding-top:60px}
+    .rumbo{height:100svh}
+    .rumbo__foto,.rumbo__panel,.rumbo__punto,.mano__aguja{transition:none}
+  }
+</style>
+</head>
+<body>
+<main>
+  <section class="ascenso" id="ascenso">
+    <div class="escenario">
+      <div class="foto">
+        <div class="foto__capa" id="capa">
+          <picture>
+            <source media="(max-width:760px)" srcset="media/cordada-vertical.webp">
+            <img src="media/cordada.webp" width="1600" height="900" fetchpriority="high" alt="Una cordada sube en fila por la nieve hacia la cumbre humeante del volcán Villarrica, bajo un cielo azul.">
+          </picture>
+          <div class="nota nota--crater"><span>El cráter sigue activo</span></div>
+          <div class="nota nota--tu"><span>Aquí vas tú</span></div>
+        </div>
+      </div>
+      <div class="nube nube--atras" id="nube-atras"></div>
+
+      <header class="barra">
+        <a href="#ascenso" aria-label="Terra Volcano, inicio"><img src="media/logo-blanco.png" width="191" height="50" alt="Terra Volcano"></a>
+        <nav aria-label="Principal">
+          <a href="index.html" aria-current="page">Inicio</a>
+          <a href="#dia">Tu día</a>
+          <a href="tours.html">Tours</a>
+          <a href="nosotros.html">Nosotros</a>
+          <a href="contacto.html">Contacto</a>
+        </nav>
+        <details class="menu-movil"><summary>Menú</summary><div><a href="index.html">Inicio</a><a href="index.html#dia">Tu día</a><a href="tours.html">Tours</a><a href="nosotros.html">Nosotros</a><a href="contacto.html">Contacto</a></div></details>
+        <span class="idioma"><button type="button" data-idioma="es" aria-pressed="true">ES</button> / <button type="button" data-idioma="en" aria-pressed="false">EN</button></span>
+      </header>
+
+      <div class="titular">
+        <h1><span><i>Sube el</i></span><span><i>Villarrica.</i></span></h1>
+      </div>
+
+      <div class="escenario__velo"></div>
+      <div class="pie">
+        <div>
+        <p class="bajada">Un guía cada tres personas, desde Pucón hasta el cráter.</p>
+        <dl class="datos">
+          <div><dt>#1 en Pucón</dt><dd>Tripadvisor</dd></div>
+          <div><dt>4,8 de 5</dt><dd>141 opiniones en Google</dd></div>
+          <div><dt>Desde 2015</dt><dd>Agencia familiar</dd></div>
+        </dl>
+        </div>
+        <a class="reservar" href="https://wa.me/56983388317">Reservar por WhatsApp</a>
+      </div>
+
+      <div class="nube" id="nube"></div>
+    </div>
+  </section>
+
+  <section class="relato" id="relato">
+    <div>
+      <h2>Expediciones extraordinarias. Exclusivamente tuyas.</h2>
+      <p>Terra Volcano es una agencia de montaña de Pucón, fundada en 2015 por el escalador chileno Richard Diaz. La regla es simple: un guía cada tres personas, siempre.</p>
+    </div>
+    <img loading="lazy" src="media/grupo.webp" width="1400" height="1050" alt="Grupo de pasajeros con casco rojo y piolet, descansando en la nieve del volcán.">
+  </section>
+
+  <section class="pilares" aria-label="Por qué Terra Volcano">
+    <div><h3>Calidad y experiencia</h3><p>Aventuras de primer nivel, cuidadas hasta el último detalle.</p></div>
+    <div><h3>Compromiso</h3><p>Tomamos tu sueño como propio, con profesionalismo y trato cercano.</p></div>
+    <div><h3>Amamos lo que hacemos</h3><p>Celebramos cada logro y te acompañamos a superar tus límites.</p></div>
+    <div><h3>Familia y territorio</h3><p>Agencia familiar con guías en su mayoría locales. Al reservar apoyas a familias de Pucón.</p></div>
+  </section>
+
+  <section class="dia" id="dia">
+    <div class="dia__cuerpo">
+    <div class="dia__fija">
+      <h2>Tu día en el Villarrica.</h2>
+      <dl class="ficha">
+        <dt>Salida</dt><dd>6:00, desde la agencia</dd>
+        <dt>Duración</dt><dd>8 horas</dd>
+        <dt>Dificultad</dt><dd>Media, sin experiencia previa</dd>
+        <dt>Edad</dt><dd>Mayores de 18 años</dd>
+        <dt>Precio</dt><dd class="ficha__precio">150.000 CLP por persona</dd>
+      </dl>
+      <div class="dia__acciones">
+        <a class="reservar" href="https://wa.me/56983388317">Reservar por WhatsApp</a>
+        <button class="ruta" type="button" id="ver-ruta">Ver la ruta en 3D</button>
+        <a class="ruta" href="tour-villarrica.html">Ver ficha completa</a>
+      </div>
+    </div>
+
+    <ol class="pasos" id="pasos">
+      <li class="pasos__avance" id="avance" aria-hidden="true"></li>
+      <li class="paso"><h3>Salida desde Pucón</h3><p>Nos juntamos a las 6:00 en la agencia y partimos juntos hacia el volcán.</p></li>
+      <li class="paso"><h3>Control de CONAF</h3><p>Los guardaparques revisan los permisos de la agencia y el equipamiento técnico. Sin eso, nadie sube.</p></li>
+      <li class="paso"><h3>Centro de esquí</h3><p>Empieza el sendero a pie. Se reparte el equipo y se revisa el pronóstico.</p></li>
+      <li class="paso"><h3>Fin del andarivel</h3><p>Donde desembarcas si tomaste el telesilla. Ahorra cerca de una hora sobre arena volcánica y roca suelta.</p></li>
+      <li class="paso"><h3>La Capilla</h3><p>Parada técnica entre las estructuras de un andarivel abandonado. Acá se come, se hidrata y se calzan los crampones.</p></li>
+      <li class="paso"><h3>Falsa cumbre</h3><p>Una planicie que engaña: la pendiente hace creer que llegaste. Es el último respiro antes del tramo vertical.</p></li>
+      <li class="paso"><h3>Borde del cráter, 2.847 m</h3><p>Máscara de gas obligatoria por las fumarolas. Desde acá se ven los lagos y el Lanín.</p></li>
+      <li class="paso"><h3>La bajada y el cierre</h3><p>Al final del día compartimos una once con los guías y con todo el grupo.</p></li>
+    </ol>
+    </div>
+
+    <div class="incluye">
+      <div><h3>Tú traes</h3><p>Dos capas de ropa, protector solar, gorro, lentes de sol, dos litros de agua y algo para comer: sándwiches, barras, frutos secos o chocolate.</p></div>
+      <div><h3>Incluye</h3><ul>
+        <li>Entrada al parque nacional</li>
+        <li>Crampones, piolet, casco y máscara de gas</li>
+        <li>Mochila de 32 litros</li>
+        <li>Chaqueta, pantalón, bastones, guantes, polainas y botas</li>
+        <li>Guía en español e inglés</li>
+        <li>Seguro básico de accidentes</li>
+        <li>Traslado desde la agencia, ida y vuelta</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section class="rumbo" id="rumbo" aria-label="Tours por categoría">
+    <div class="rumbo__fija">
+      <img class="rumbo__foto activa" style="--n:0" loading="lazy" decoding="async" src="media/rumbo/ascensos.webp" alt="Grupo con los brazos en alto sobre una arista nevada." onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+      <img class="rumbo__foto" style="--n:1" loading="lazy" decoding="async" src="media/rumbo/ski.webp" alt="Esquiadores en la ladera nevada de un volcán." onerror="this.onerror=null;this.src='media/rumbo/ski.webp'">
+      <img class="rumbo__foto" style="--n:2" loading="lazy" decoding="async" src="media/rumbo/trekking.webp" alt="Grupo de pie en la orilla de un lago, con cerros detrás." onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+      <img class="rumbo__foto" style="--n:3" loading="lazy" decoding="async" src="media/rumbo/invierno.webp" alt="Una persona se desliza feliz por la nieve del volcán." onerror="this.onerror=null;this.src='media/rumbo/invierno.webp'">
+      <img class="rumbo__foto" style="--n:4" loading="lazy" decoding="async" src="https://media.tourtask.com/uploads/tv/tours/tour-1666-gallery-2573-1500.jpg?ts=1778169757000" alt="Canyoning en el Salto del Claro" onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+      <img class="rumbo__foto" style="--n:5" loading="lazy" decoding="async" src="https://media.tourtask.com/uploads/tv/tours/tour-1836-gallery-2676-1500.jpg?ts=1778169775000" alt="Trilogía Araucana" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+      <div class="rumbo__velo"></div>
+      <p class="rumbo__cabeza">Elige tu rumbo</p>
+      <div class="rumbo__panel activo">
+        <h2>Ascensos</h2>
+        <p>Volcanes de la Araucanía, con crampones y piolet.</p>
+        <ul class="rumbo__lista">
+          <li><b><a class="rumbo__enlace" href="tour-villarrica.html">Villarrica</a></b><span>8 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-quetrupillan.html">Quetrupillán</a></b><span>11 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-lanin.html">Lanín</a></b><span>2 días</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-llaima.html">Llaima</a></b><span>13 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-mocho-choshuenco.html">Mocho-Choshuenco</a></b><span>1 día</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-sollipulli.html">Sollipulli</a></b><span>19 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-lonquimay.html">Lonquimay</a></b><span>15 horas</span></li>
+        </ul>
+        <p class="rumbo__nota"><a href="tours.html#ascensos">Ver tours</a></p>
+      </div>
+      <div class="rumbo__panel">
+        <h2>Ski touring</h2>
+        <p>Se sube con esquís y se baja por nieve de volcán.</p>
+        <ul class="rumbo__lista">
+          <li><b><a class="rumbo__enlace" href="tour-ski-villarrica.html">Villarrica</a></b><span>10 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-ski-quetrupillan.html">Quetrupillán</a></b><span>10 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-ski-lanin.html">Lanín</a></b><span>1 día</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-ski-llaima.html">Llaima</a></b><span>13 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-ski-mocho-choshuenco.html">Mocho-Choshuenco</a></b><span>1 día</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-ski-sollipulli.html">Sollipulli</a></b><span>19 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-ski-lonquimay.html">Lonquimay</a></b><span>15 horas</span></li>
+        </ul>
+        <p class="rumbo__nota"><a href="tours.html#ski">Ver tours</a></p>
+      </div>
+      <div class="rumbo__panel">
+        <h2>Trekking</h2>
+        <p>Bosques, lagos y araucarias, a paso tranquilo.</p>
+        <ul class="rumbo__lista">
+          <li><b><a class="rumbo__enlace" href="tour-lagos-andinos.html">Lagos Andinos</a></b><span>8 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-huerquehue.html">Huerquehue</a></b><span>9 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-el-cani.html">Santuario El Cañi</a></b><span>10 horas</span></li>
+        </ul>
+        <p class="rumbo__nota"><a href="tours.html#trekking">Ver tours</a></p>
+      </div>
+      <div class="rumbo__panel">
+        <h2>Invierno</h2>
+        <p>Nieve para quienes parten de cero.</p>
+        <ul class="rumbo__lista">
+          <li><b><a class="rumbo__enlace" href="tour-clase-grupal.html">Clase grupal de esquí, 2 horas</a></b><span>9 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-clase-privada-2h.html">Clase privada de 2 horas con equipo</a></b><span>9 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-clase-privada-1h.html">Clase privada de 1 hora</a></b><span>9 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-nieve-sin-esquis.html">Nieve sin esquís</a></b><span>9 horas</span></li>
+        </ul>
+        <p class="rumbo__nota"><a href="tours.html#invierno">Ver tours</a></p>
+      </div>
+      <div class="rumbo__panel">
+        <h2>Otras actividades</h2>
+        <p>Rafting, canyoning y Huilo-Huilo, a un paso de Pucón.</p>
+        <ul class="rumbo__lista">
+          <li><b><a class="rumbo__enlace" href="tour-canyoning.html">Canyoning en el Salto del Claro</a></b><span>4 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-rafting-alto.html">Rafting alto Trancura</a></b><span>3 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-rafting-bajo.html">Rafting bajo Trancura</a></b><span>3 horas</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-huilo-huilo.html">Día completo en Huilo-Huilo</a></b><span>12 horas</span></li>
+        </ul>
+        <p class="rumbo__nota"><a href="tours.html#agua">Ver tours</a></p>
+      </div>
+      <div class="rumbo__panel">
+        <h2>Travesías</h2>
+        <p>Varios días de montaña, lejos de las rutas habituales.</p>
+        <ul class="rumbo__lista">
+          <li><b><a class="rumbo__enlace" href="tour-travesia-3-dias.html">Travesía Villarrica, 3 días</a></b><span>3 días</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-travesia-5-dias.html">Travesía Villarrica, 5 días</a></b><span>5 días</span></li>
+          <li><b><a class="rumbo__enlace" href="tour-trilogia-araucana.html">Trilogía Araucana</a></b><span>4 días</span></li>
+        </ul>
+        <p class="rumbo__nota"><a href="tours.html#travesias">Ver tours</a></p>
+      </div>
+      <div class="rumbo__dial">
+        <div class="mano">
+          <div class="rumbo__centro">
+            <div class="rumbo__arco"></div><i class="rumbo__marca" style="--a:-65deg"></i><i class="rumbo__marca" style="--a:-39deg"></i><i class="rumbo__marca" style="--a:-13deg"></i><i class="rumbo__marca" style="--a:13deg"></i><i class="rumbo__marca" style="--a:39deg"></i><i class="rumbo__marca" style="--a:65deg"></i><span class="rumbo__punto"></span>
+            <button class="rumbo__opcion rumbo__opcion--izq" type="button" style="--a:-65deg" aria-pressed="true">Ascensos</button>
+            <button class="rumbo__opcion rumbo__opcion--izq" type="button" style="--a:-39deg" aria-pressed="false">Ski touring</button>
+            <button class="rumbo__opcion rumbo__opcion--izq" type="button" style="--a:-13deg" aria-pressed="false">Trekking</button>
+            <button class="rumbo__opcion" type="button" style="--a:13deg" aria-pressed="false">Invierno</button>
+            <button class="rumbo__opcion" type="button" style="--a:39deg" aria-pressed="false">Otras actividades</button>
+            <button class="rumbo__opcion" type="button" style="--a:65deg" aria-pressed="false">Travesías</button>
+          </div>
+          <img class="mano__foto" loading="lazy" src="media/rumbo/mano.webp" width="904" height="979" alt="">
+          <img class="mano__aguja" loading="lazy" src="media/rumbo/aguja.webp" width="202" height="202" alt="">
+          <img class="mano__eje" loading="lazy" src="media/rumbo/eje.webp" width="45" height="54" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="galeria" id="galeria" aria-label="Galería de fotos">
+    <div class="galeria__escena" id="escena">
+      <div class="galeria__fija">
+        <div class="galeria__titulo">
+          <h2>Lo que se ve allá arriba.</h2>
+          <a class="galeria__saltar" href="#galeria-fin">Saltar fotos</a>
+        </div>
+      <figure class="lamina" style="--pos:64% 70%">
+        <div class="lamina__marco"><img loading="lazy" decoding="async" src="media/galeria/arista-grupo-m.webp" srcset="media/galeria/arista-grupo-m.webp 1100w, media/galeria/arista-grupo-g.webp 1900w" sizes="(max-width: 760px) 200vw, 100vw" width="1900" height="1425" alt="Un grupo en fila sobre una arista nevada, con el volcán y el cielo azul de fondo."></div>
+        <figcaption><span>1 / 6</span>Por la arista</figcaption>
+      </figure>
+      <figure class="lamina" style="--pos:50% 60%">
+        <div class="lamina__marco"><img loading="lazy" decoding="async" src="media/galeria/araucaria-m.webp" srcset="media/galeria/araucaria-m.webp 1100w, media/galeria/araucaria-g.webp 1900w" sizes="(max-width: 760px) 200vw, 100vw" width="1425" height="1900" alt="Una persona con raquetas y mochila en la nieve, junto a una araucaria nevada."></div>
+        <figcaption><span>2 / 6</span>Entre araucarias</figcaption>
+      </figure>
+      <figure class="lamina" style="--pos:52% 50%">
+        <div class="lamina__marco"><img loading="lazy" decoding="async" src="media/galeria/carpa-m.webp" srcset="media/galeria/carpa-m.webp 1100w, media/galeria/carpa-g.webp 1900w" sizes="(max-width: 760px) 200vw, 100vw" width="1900" height="1520" alt="Vista del amanecer sobre las montañas desde la entrada de una carpa."></div>
+        <figcaption><span>3 / 6</span>Amanecer desde la carpa</figcaption>
+      </figure>
+      <figure class="lamina" style="--pos:50% 70%">
+        <div class="lamina__marco"><img loading="lazy" decoding="async" src="media/galeria/volcan-atras-m.webp" srcset="media/galeria/volcan-atras-m.webp 1100w, media/galeria/volcan-atras-g.webp 1900w" sizes="(max-width: 760px) 200vw, 100vw" width="1900" height="1520" alt="Grupo de pasajeros de pie en la nieve con un volcán nevado detrás."></div>
+        <figcaption><span>4 / 6</span>Con el volcán de fondo</figcaption>
+      </figure>
+      <figure class="lamina" style="--pos:50% 50%">
+        <div class="lamina__marco"><img loading="lazy" decoding="async" src="media/galeria/arista-m.webp" srcset="media/galeria/arista-m.webp 1100w, media/galeria/arista-g.webp 1900w" sizes="(max-width: 760px) 200vw, 100vw" width="1520" height="1900" alt="Una persona con bastones camina por una arista de nieve."></div>
+        <figcaption><span>5 / 6</span>Paso a paso</figcaption>
+      </figure>
+      <figure class="lamina" style="--pos:46% 60%">
+        <div class="lamina__marco"><img loading="lazy" decoding="async" src="media/galeria/sentados-m.webp" srcset="media/galeria/sentados-m.webp 1100w, media/galeria/sentados-g.webp 1900w" sizes="(max-width: 760px) 200vw, 100vw" width="1900" height="1425" alt="Grupo de amigos sentados en la nieve, con un volcán detrás."></div>
+        <figcaption><span>6 / 6</span>Un descanso</figcaption>
+      </figure>
+      </div>
+    </div>
+    <div class="galeria__fin" id="galeria-fin">
+      <h2>La próxima foto puede ser la tuya.</h2>
+      <a class="reservar" href="https://wa.me/56983388317">Reservar por WhatsApp</a>
+    </div>
+  </section>
+
+  <section class="opiniones" id="opiniones">
+    <div class="opiniones__cabeza">
+      <h2>#1 en Pucón.</h2>
+      <div>
+        <p>Quienes ya subieron eligen a Terra Volcano para ascensos, ski touring y aventuras en Pucón: primer lugar en Tripadvisor y 4,8 de 5 en Google, con 141 opiniones.</p>
+        <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html">Ver opiniones en Tripadvisor</a>
+      </div>
+    </div>
+    <ul class="citas">
+      <li><figure><blockquote>La mejor experiencia que he tenido en Chile. Una agencia de alta calidad, con total dedicación a cada viajero.</blockquote><figcaption>Carlos B, en Tripadvisor</figcaption></figure></li>
+      <li><figure><blockquote>Excelente equipo de profesionales. Cuidaron muy bien a todo el grupo. La parte técnica de todos fue 100/100.</blockquote><figcaption>flyer13955555012, en Tripadvisor</figcaption></figure></li>
+      <li><figure><blockquote>Muy buenos guías. Se adaptaron a quienes iban más lento, y cuando algunos se devolvieron, fueron a buscarlos.</blockquote><figcaption>Elias Francisco V, en Tripadvisor</figcaption></figure></li>
+    </ul>
+    <div class="sellos">
+      <img loading="lazy" src="media/sellos/tripadvisor.jpg" width="250" height="130" alt="Tripadvisor Travelers' Choice 2024">
+      <img loading="lazy" src="media/sellos/sello-s.jpg" width="250" height="130" alt="Sello S de turismo sustentable">
+      <img loading="lazy" src="media/sellos/marca-chile.jpg" width="250" height="130" alt="Marca Chile">
+      <img loading="lazy" src="media/sellos/lemu.jpg" width="250" height="130" alt="Cooperativa Lemu">
+    </div>
+  </section>
+</main>
+
+<footer class="pie-sitio">
+  <h2>Nos vemos en Pucón.</h2>
+  <a class="reservar" href="https://wa.me/56983388317">Reservar por WhatsApp</a>
+  <div class="pie-sitio__fila">
+    <div><img loading="lazy" src="media/logo-blanco.png" width="191" height="50" alt="Terra Volcano">Agencia de montaña en Pucón desde 2015.</div>
+    <address style="font-style:normal">Av. Bernardo O'Higgins 717, Local 4<br>Boulevard Patagonia, Pucón, Chile<br><a href="https://wa.me/56983388317">+56 9 8338 8317</a></address>
+    <div><a href="nosotros.html">Nosotros</a><a href="contacto.html">Contacto</a><a href="https://www.instagram.com/terravolcano_pucon">Instagram</a><a href="https://www.facebook.com/puconterravolcano/">Facebook</a><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html">Tripadvisor</a></div>
+  </div>
+  <small>Turismo Aventura Richard Díaz Suazo EIRL</small>
+</footer>
+
+<dialog class="visor" id="visor-ruta" aria-label="Ver la ruta en 3D">
+  <button class="visor__cerrar" type="button" id="cerrar-ruta">Cerrar</button>
+  <iframe id="marco-ruta" title="Recorrido 3D del volcán Villarrica" allow="fullscreen"></iframe>
+</dialog>
+
+<script type="module" src="idioma.js"></script>
+<script>
+  const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* El recorrido 3D se carga solo al abrirlo: Google cobra cada apertura */
+  {
+    const visor = document.getElementById('visor-ruta');
+    const marco = document.getElementById('marco-ruta');
+    document.getElementById('ver-ruta').addEventListener('click', () => {
+      marco.src = 'recorrido/index.html';
+      visor.showModal();
+    });
+    const apagar = () => marco.removeAttribute('src');
+    document.getElementById('cerrar-ruta').addEventListener('click', () => { apagar(); visor.close(); });
+    visor.addEventListener('close', apagar);
+  }
+  if (!quieto) {
+    const banda = document.getElementById('ascenso');
+    const capa = document.getElementById('capa');
+    const nube = document.getElementById('nube');
+    const atras = document.getElementById('nube-atras');
+    let pendiente = false;
+
+    const pintar = () => {
+      pendiente = false;
+      const recorrido = banda.offsetHeight - innerHeight;
+      const p = Math.min(1, Math.max(0, scrollY / recorrido));
+      const e = Math.pow(p, 1.25);
+      nube.style.transform = `translate3d(0,${100 - e * 162}%,0)`;
+      atras.style.transform = `translate3d(0,${100 - e * 150}%,0)`;
+      capa.style.transform = `scale(${1 + p * 0.07})`;
+    };
+    const pedir = () => { if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); } };
+    addEventListener('scroll', pedir, { passive: true });
+    addEventListener('resize', pedir);
+    pintar();
+  }
+  if (!quieto) {
+    document.documentElement.classList.add('con-movimiento');
+    const lista = document.getElementById('pasos');
+    const avance = document.getElementById('avance');
+    const pasos = [...lista.querySelectorAll('.paso')];
+    let pendiente = false;
+
+    const subir = () => {
+      pendiente = false;
+      const caja = lista.getBoundingClientRect();
+      const linea = innerHeight * 0.55;
+      const p = Math.min(1, Math.max(0, (linea - caja.top) / caja.height));
+      avance.style.transform = `scaleY(${p})`;
+      pasos.forEach((paso) => paso.classList.toggle('activo', paso.getBoundingClientRect().top < linea));
+    };
+    addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(subir); } }, { passive: true });
+    subir();
+  }
+  {
+    const rumbo = document.getElementById('rumbo');
+    const fotos = [...rumbo.querySelectorAll('.rumbo__foto')];
+    const paneles = [...rumbo.querySelectorAll('.rumbo__panel')];
+    const opciones = [...rumbo.querySelectorAll('.rumbo__opcion')];
+    const giros = opciones.map((o) => parseFloat(o.style.getPropertyValue('--a')));
+    const fijada = !quieto && matchMedia('(min-width: 761px)').matches;
+    const ESPERA = 5000;
+    let actual = 0;
+    let segmento = 0;
+    let visible = false;
+    let reloj = 0;
+    let pendiente = false;
+
+    const elegir = (i) => {
+      if (i === actual) return;
+      actual = i;
+      rumbo.style.setProperty('--actual', i);
+      rumbo.style.setProperty('--giro', `${giros[i]}deg`);
+      fotos.forEach((f, n) => f.classList.toggle('activa', n === i));
+      paneles.forEach((p, n) => p.classList.toggle('activo', n === i));
+      opciones.forEach((o, n) => o.setAttribute('aria-pressed', n === i));
+    };
+
+    /* Si nadie toca nada, avanza sola como un carrusel */
+    const programar = () => {
+      clearTimeout(reloj);
+      if (quieto || !visible) return;
+      reloj = setTimeout(() => { elegir((actual + 1) % opciones.length); programar(); }, ESPERA);
+    };
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; programar(); }, { threshold: 0.6 })
+      .observe(rumbo.querySelector('.rumbo__fija'));
+    const dial = rumbo.querySelector('.rumbo__dial');
+    dial.addEventListener('mouseenter', () => clearTimeout(reloj));
+    dial.addEventListener('mouseleave', programar);
+
+    opciones.forEach((opcion, i) => opcion.addEventListener('click', () => {
+      elegir(i);
+      programar();
+      if (!fijada) return;
+      /* salto directo: con scroll suave pasaria por cada categoria intermedia y parpadearia */
+      segmento = i;
+      const recorrido = rumbo.offsetHeight - innerHeight;
+      scrollTo({ top: rumbo.offsetTop + recorrido * (i + 0.5) / opciones.length, behavior: 'instant' });
+    }));
+
+    if (fijada) {
+      const seguir = () => {
+        pendiente = false;
+        const recorrido = rumbo.offsetHeight - innerHeight;
+        const p = Math.min(0.999, Math.max(0, (scrollY - rumbo.offsetTop) / recorrido));
+        const s = Math.floor(p * opciones.length);
+        if (s !== segmento) { segmento = s; elegir(s); }
+        programar();
+      };
+      addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(seguir); } }, { passive: true });
+    } else {
+      let inicio = 0;
+      rumbo.addEventListener('touchstart', (e) => { inicio = e.touches[0].clientX; }, { passive: true });
+      rumbo.addEventListener('touchend', (e) => {
+        const d = e.changedTouches[0].clientX - inicio;
+        if (Math.abs(d) > 44) elegir((actual + (d < 0 ? 1 : -1) + opciones.length) % opciones.length);
+        programar();
+      }, { passive: true });
+    }
+  }
+  /* Galeria: la foto siguiente sube y descubre su imagen, solo con transform */
+  if (!quieto) {
+    const escena = document.getElementById('escena');
+    const laminas = [...escena.querySelectorAll('.lamina')];
+    let pendiente = false;
+
+    const avanzar = () => {
+      pendiente = false;
+      const caja = escena.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -caja.top / (caja.height - innerHeight))) * (laminas.length - 1);
+      laminas.forEach((lamina, i) => {
+        if (!i) return;
+        const t = Math.min(1, Math.max(0, (p - (i - 1) - 0.2) / 0.6));
+        lamina.style.transform = `translate3d(0,${(1 - t) * 100}%,0)`;
+        lamina.firstElementChild.style.transform = `translate3d(0,${(t - 1) * 100}%,0)`;
+      });
+      const siguiente = laminas[Math.min(laminas.length - 1, Math.ceil(p) + 1)];
+      siguiente.querySelector('img').loading = 'eager';
+    };
+    addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(avanzar); } }, { passive: true });
+    addEventListener('resize', avanzar);
+    avanzar();
+  }
+</script>
+</body>
+</html>

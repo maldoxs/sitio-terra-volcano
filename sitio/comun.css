@@ -1,0 +1,38 @@
+/* Piezas que comparten las tres paginas */
+.menu-movil{display:none;position:relative;margin-left:auto;font-size:15px;font-weight:700}
+.menu-movil summary{cursor:pointer;padding:6px 2px;list-style:none}
+.menu-movil summary::-webkit-details-marker{display:none}
+.menu-movil div{position:absolute;right:0;top:calc(100% + 8px);display:grid;gap:2px;min-width:170px;padding:10px;background:#0A0B0D;color:#F5F4F1;border-radius:2px}
+.menu-movil a{display:block;padding:9px 10px}
+/* Celular primero: todo lo que se toca mide al menos 44 px y el texto corrido 16 px */
+@media (max-width:760px){
+  html .barra>a{min-height:44px;display:flex;align-items:center;padding:0}
+  html .idioma button{min-width:44px;min-height:44px}
+  html .menu-movil summary{min-height:44px;display:flex;align-items:center}
+  html .pie-sitio__fila a{display:flex;align-items:center;min-height:44px;padding:0}
+  html .rumbo__enlace{padding:12px 0;min-height:44px}
+  html .rumbo__lista{font-size:16px}
+  html .rumbo__nota a,html .opiniones__cabeza a,html .tour-volver{display:inline-flex;align-items:center;min-height:44px;margin-top:0;padding:0}
+  html .filtros{gap:8px}
+  html .filtros button{min-height:44px}
+  html .datos dd{font-size:14px}
+  html .barra-reserva p{font-size:14px}
+  html .formulario label{font-size:16px}
+  html .tarjeta__precio small,html .tarjeta__dur{font-size:15px}
+  html .galeria__saltar{min-height:44px}
+}
+@media (max-width:760px){
+  .menu-movil{display:block}
+  .menu-movil summary{padding:10px 4px}
+  .menu-movil a{padding:12px 10px}
+  .idioma button{min-width:40px;min-height:40px}
+  .barra>a{display:block;padding:4px 0}
+  .pie-sitio__fila a{padding:7px 0}
+  .barra .idioma{margin-left:12px}
+}
+
+/* El menu pasa sobre fotos claras: una sombra arriba y la opcion activa en bloque */
+.barra{background:linear-gradient(180deg,rgba(6,18,46,.62) 0%,rgba(6,18,46,.28) 62%,rgba(6,18,46,0) 100%)}
+.barra nav{align-items:center}
+.barra nav a[aria-current]{margin:0 -12px;padding:7px 12px;border:0;border-radius:2px;background:var(--nieve);color:var(--obsidiana);font-weight:700}
+.menu-movil a[aria-current]{color:var(--azufre)}

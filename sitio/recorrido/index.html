@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ascenso al Villarrica en 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Public+Sans:wght@400;600&family=Roboto:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.121.0/Build/Cesium/Widgets/widgets.css">
+<script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.121.0/Build/Cesium/';</script>
+<script defer src="https://cdn.jsdelivr.net/npm/cesium@1.121.0/Build/Cesium/Cesium.js"></script>
+<style>
+  :root{
+    --panel:#fff; --texto:#1f1f1f; --suave:#5f6368; --borde:#dadce0;
+    --azul:#1a73e8; --azul-suave:#e8f0fe; --pin:#1976d2; --rojo:#d93025;
+    --sombra:0 1px 2px rgba(60,64,67,.3),0 2px 6px 2px rgba(60,64,67,.15);
+    --ancho-riel:0px; --ancho-panel:340px;
+    --ease:cubic-bezier(.22,.8,.24,1);
+    /* colores de la agencia, docs/paleta.md: azufre para cifras y avance sobre
+       oscuro, lava solo para la accion, obsidiana de fondo */
+    --azufre:#DAAD25; --lava:#D81226; --obsidiana:#0A0B0D; --nieve:#F5F4F1;
+    font-family:Roboto,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#000;color:var(--texto)}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+  svg{display:block}
+
+  #globo{position:fixed;inset:0}
+  #globo .cesium-widget-credits,#creditos-cesium{display:none}
+  /* Creditos ocultos por decision del proyecto. Las condiciones de Google Map Tiles
+     piden su logo y atribucion: antes de publicar hay que devolverlos. */
+  body.con-google .solo-esri{display:none!important}
+
+  /* telon de carga: cubre todo hasta que el volcan termina de cargar. El
+     loader va en <img> para que sus ids internos no choquen con otros SVG, y
+     no lleva animaciones CSS: se anima solo con SMIL. El fondo es solido, del
+     azul mas oscuro del cielo del loader, para que el volcan no se vea a medio
+     cargar detras. */
+  .telon{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#06112a;transition:opacity .45s ease-out}
+  .telon.saliendo{opacity:0}  /* se desvanece el fondo completo; el loader no se toca */
+  .telon[hidden]{display:none}
+  .telon img{display:block;width:160px;height:160px}
+
+  /* barra de carga fina, arriba */
+  .carga{position:fixed;top:0;left:0;right:0;height:3px;z-index:30;overflow:hidden;opacity:0;transition:opacity .3s}
+  .carga.activa{opacity:1}
+  .carga::before{content:"";position:absolute;inset:0;width:40%;background:var(--azul);animation:carga 1.1s ease-in-out infinite}
+  @keyframes carga{from{transform:translateX(-100%)}to{transform:translateX(260%)}}
+
+  /* riel de navegacion */
+  .riel{position:fixed;left:0;top:0;bottom:0;width:var(--ancho-riel);background:var(--panel);z-index:20;
+    display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:12px;box-shadow:1px 0 0 var(--borde)}
+  .riel__btn{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--suave);position:relative}
+  .riel__btn:hover{background:#f1f3f4}
+  .riel__btn[aria-pressed="true"]{color:var(--azul);background:var(--azul-suave)}
+  .riel__btn svg{width:24px;height:24px}
+  .riel__sep{flex:1}
+
+  /* panel del proyecto */
+  .panel{position:fixed;left:var(--ancho-riel);top:0;bottom:0;width:var(--ancho-panel);background:var(--panel);z-index:15;
+    display:flex;flex-direction:column;box-shadow:var(--sombra);transition:transform .25s cubic-bezier(.2,0,0,1)}
+  .panel.oculto{transform:translateX(calc(-100% - var(--ancho-riel)))}
+  .buscar{margin:12px 16px 8px;height:48px;border-radius:24px;background:#f1f3f4;display:flex;align-items:center;gap:12px;padding:0 16px;color:var(--suave)}
+  .buscar input{flex:1;border:0;background:none;font:inherit;font-size:15px;color:var(--texto);outline:none;min-width:0}
+  .proyecto{padding:12px 24px 12px;border-bottom:1px solid var(--borde)}
+  .proyecto__cejilla{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--suave)}
+  .proyecto h1{font-size:22px;font-weight:400;margin:6px 0 4px;line-height:1.25}
+  .proyecto p{margin:0;font-size:13px;color:var(--suave)}
+  .proyecto__acciones{display:flex;gap:8px;margin-top:14px}
+  .btn{height:36px;padding:0 16px 0 12px;border-radius:18px;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500}
+  .btn svg{width:18px;height:18px}
+  .btn--lleno{background:var(--azul);color:#fff}
+  .btn--lleno:hover{background:#1765cc;box-shadow:0 1px 2px rgba(60,64,67,.3)}
+  .btn--borde{border:1px solid var(--borde);color:var(--azul)}
+  .btn--borde:hover{background:var(--azul-suave)}
+
+  .lista{list-style:none;margin:0;padding:8px 0;overflow-y:auto;flex:1}
+  .lugar{display:grid;grid-template-columns:24px 1fr auto;gap:0 14px;align-items:center;padding:10px 20px 10px 22px;cursor:pointer;border-left:3px solid transparent}
+  .lugar:hover{background:#f8f9fa}
+  .lugar.activo{background:var(--azul-suave);border-left-color:var(--azul)}
+  .lugar__pin{width:20px;height:26px}
+  .lugar__nombre{font-size:15px;line-height:1.3}
+  .lugar__cota{font-size:13px;color:var(--suave);font-variant-numeric:tabular-nums}
+  .lugar__detalle{grid-column:2 / 4;font-size:13px;color:var(--suave);line-height:1.55;display:none;padding-top:6px}
+  .lugar.activo .lugar__detalle{display:block}
+  .lugar__detalle b{color:var(--texto);font-weight:500}
+
+  .capa-linea{display:flex;align-items:center;gap:10px;padding:12px 24px;border-top:1px solid var(--borde);font-size:14px}
+  .capa-linea input{accent-color:var(--azul);width:18px;height:18px;margin:0}
+  .fuentes{padding:10px 24px 14px;font-size:11px;line-height:1.5;color:var(--suave);border-top:1px solid var(--borde)}
+
+  /* El riel blanco y el panel del proyecto se reemplazaron por el engranaje.
+     Quedan en el DOM, ocultos, porque la lista y la presentacion los usan. */
+  .riel,.panel{display:none!important}
+
+  /* ventana de capas */
+  .capas{position:fixed;left:calc(var(--ancho-riel) + 8px);top:96px;z-index:25;width:280px;background:var(--panel);border-radius:8px;box-shadow:var(--sombra);padding:16px;display:none}
+  .capas.abierta{display:block}
+  .capas h2{font-size:14px;font-weight:500;margin:0 0 10px}
+  .capas__fila{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .opcion{flex:1;border:1px solid var(--borde);border-radius:8px;padding:10px 6px;font-size:12.5px;text-align:center;line-height:1.25}
+  .opcion[aria-pressed="true"]{border-color:var(--azul);color:var(--azul);background:var(--azul-suave)}
+  .capas__check{display:flex;align-items:center;gap:10px;font-size:13px;margin:-4px 0 12px}
+  .capas__check input{accent-color:var(--azul);width:16px;height:16px;margin:0}
+  .capas__nota{font-size:11px;color:var(--suave);line-height:1.45;margin:0}
+
+  .zoom{display:flex;flex-direction:row;border-radius:20px;background:rgba(10,11,13,.66);box-shadow:0 4px 14px rgba(0,0,0,.25);overflow:hidden}
+  .zoom button{flex:1;height:40px;display:grid;place-items:center;color:var(--nieve)}
+  .zoom button:hover{background:rgba(255,255,255,.08)}
+  .zoom button+button{border-left:1px solid rgba(255,255,255,.14)}
+  .zoom svg{width:20px;height:20px}
+
+  /* barra de estado sobre el mapa */
+  .estado{font-family:"Public Sans",system-ui,sans-serif;position:fixed;left:var(--ancho-riel);right:0;bottom:0;height:28px;z-index:10;display:flex;align-items:center;justify-content:flex-end;gap:18px;
+    padding:0 16px;font-size:12px;color:#fff;text-shadow:0 0 3px rgba(0,0,0,.9),0 0 1px #000;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}
+  /* Credito de las fotos y el relieve oculto por decision del usuario el
+     2026-11-03, avisado de que las condiciones de Esri piden mostrarlo. Para
+     volver a mostrarlo basta quitar display:none. */
+  .estado__credito{display:none;margin-right:auto;font-size:10px;color:rgba(255,255,255,.45);text-shadow:none;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis}
+  .escala{display:flex;align-items:center;gap:6px}
+  .escala__barra{height:6px;border:1.5px solid #fff;border-top:0;box-shadow:0 1px 2px rgba(0,0,0,.6)}
+
+  /* modo presentacion, abajo a la izquierda */
+  .presentacion{position:fixed;left:calc(var(--ancho-riel) + var(--ancho-panel) + 16px);bottom:44px;z-index:12;background:var(--panel);border-radius:8px;box-shadow:var(--sombra);
+    display:flex;align-items:center;gap:4px;padding:6px;min-width:300px;transition:left .25s cubic-bezier(.2,0,0,1)}
+  body.sin-panel .presentacion{left:calc(var(--ancho-riel) + 16px)}
+  .presentacion[hidden]{display:none}
+  .presentacion__btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--suave)}
+  .presentacion__btn:hover{background:#f1f3f4;color:var(--texto)}
+  .presentacion__btn:disabled{opacity:.35;cursor:default;background:none}
+  .presentacion__btn svg{width:22px;height:22px}
+  .presentacion__texto{flex:1;padding:0 8px;min-width:0}
+  .presentacion__n{font-size:12px;color:var(--suave);font-variant-numeric:tabular-nums}
+  .presentacion__nombre{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .presentacion__avance{height:3px;background:var(--borde);border-radius:2px;margin-top:6px;overflow:hidden}
+  .presentacion__avance i{display:block;height:100%;width:0;background:var(--azul);transition:width .4s}
+
+  /* altimetro, en el costado derecho: las paradas puestas por su cota real sobre un riel vertical.
+     El tramo de color sube hasta la parada activa y al lado va su altura y
+     su descripcion. Se suma a los pines del cerro, no los reemplaza. Solo se
+     anima transform y opacity. */
+  .altimetro{position:fixed;right:36px;top:214px;bottom:max(96px,18vh);width:440px;z-index:11;pointer-events:none;
+    font-family:"Public Sans",system-ui,sans-serif;color:#fff;transition:transform .45s var(--ease),opacity .45s var(--ease)}
+  .altimetro[hidden]{display:block;opacity:0}
+  .altimetro::before{content:"";position:absolute;right:-36px;top:-100vh;bottom:-100vh;width:300px;z-index:-1;
+    background:linear-gradient(270deg,rgba(10,11,13,.62),rgba(10,11,13,.38) 55%,rgba(10,11,13,0))}
+  .altimetro__riel{position:absolute;right:0;top:0;bottom:0;width:2px;border-radius:1px;background:rgba(255,255,255,.28)}
+  .altimetro__tramo{position:absolute;inset:0;border-radius:1px;background:var(--azufre);transform-origin:50% 100%;transform:scaleY(0);transition:transform 1.6s var(--ease)}
+  .altimetro__cursor{position:absolute;right:-4px;top:0;bottom:0;width:10px;transition:transform 1.6s var(--ease)}
+  .altimetro__cursor::before{content:"";position:absolute;top:-5px;left:0;width:10px;height:10px;border-radius:50%;background:var(--azufre);box-shadow:0 0 0 4px rgba(218,173,37,.25)}
+  /* antes de partir el punto late para indicar que hay una accion */
+  .altimetro__cursor::after{content:"";position:absolute;top:-5px;left:0;width:10px;height:10px;border-radius:50%;background:var(--azufre);opacity:0}
+  .altimetro.esperando .altimetro__cursor::before{animation:latido 1.4s var(--ease) infinite}
+  .altimetro.esperando .altimetro__cursor::after{animation:onda 1.4s var(--ease) infinite}
+  @keyframes latido{50%{opacity:.35}}
+  @keyframes onda{from{opacity:.6;transform:scale(1)}to{opacity:0;transform:scale(3)}}
+  .altimetro__lista{list-style:none;margin:0;padding:0;position:absolute;inset:0}
+  .altimetro__hito{position:absolute;right:0;top:0}
+  .altimetro__hito::before{content:"";position:absolute;right:-4px;top:-5px;width:10px;height:10px;box-sizing:border-box;border-radius:50%;
+    border:1.5px solid rgba(255,255,255,.75);background:rgba(10,11,13,.85);transition:background-color .45s var(--ease),border-color .45s var(--ease)}
+  .altimetro__hito.pasado::before{background:var(--azufre);border-color:var(--azufre)}
+  .altimetro__btn{position:absolute;right:-12px;top:-10px;white-space:nowrap;pointer-events:auto;font-size:13px;line-height:20px;padding:0 30px 0 6px;
+    letter-spacing:.01em;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 8px rgba(0,0,0,.5);opacity:.72;transform-origin:100% 50%;transition:transform .45s var(--ease),opacity .45s var(--ease)}
+  .altimetro__btn:hover{opacity:.9}
+  .altimetro__btn:focus-visible{outline:2px solid var(--azufre);outline-offset:2px;border-radius:4px}
+  .altimetro__btn[aria-current="step"]{opacity:1;font-weight:600}
+  .altimetro__ficha{position:fixed;left:22px;top:18px;z-index:12;width:300px;font-family:"Public Sans",system-ui,sans-serif;color:#fff}
+  .altimetro__ficha[hidden]{display:none}
+  .altimetro__ficha-in{padding:14px 18px 16px;border-radius:2px;background:rgba(10,11,13,.66);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .altimetro__ficha-in{transition:opacity .25s var(--ease)}
+  .altimetro__ficha-in.cambiando{opacity:0}
+  .altimetro__rotulo{margin:0;font-family:Archivo,sans-serif;font-weight:600;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+  .altimetro__cifra{margin:2px 0 8px;font-family:Archivo,sans-serif;font-weight:800;font-size:60px;line-height:.95;letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+    text-shadow:0 2px 12px rgba(0,0,0,.35)}
+  .altimetro__cifra small{font-size:22px;font-weight:600;letter-spacing:0;margin-left:4px;color:var(--azufre)}
+  .altimetro__nombre{margin:0 0 6px;font-family:Archivo,sans-serif;font-weight:600;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--azufre);text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .altimetro__nombre span{margin-left:10px;color:rgba(255,255,255,.62)}
+  .altimetro__texto{margin:0;font-size:14px;line-height:1.5;color:rgba(255,255,255,.88);text-shadow:0 1px 3px rgba(0,0,0,.7);text-wrap:pretty}
+  @media (prefers-reduced-motion:reduce){
+    .altimetro,.altimetro *,.altimetro *::before,.altimetro *::after,.altimetro__ficha *{transition:none!important;animation:none!important}
+  }
+
+  /* mando de la presentacion, arriba del altimetro: el engranaje con las
+     opciones, Play (avanza solo por las paradas), la vuelta 360 y el zoom. Reemplaza a la barra de abajo. */
+  .presentacion,.presentacion[hidden]{display:none}
+  .mando{position:fixed;right:22px;top:18px;z-index:13;
+    font-family:"Public Sans",system-ui,sans-serif;color:#fff;transition:transform .45s var(--ease)}
+  .mando__fila{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  /* los cuatro botones comparten alto y radio; Play, 360 y zoom tambien el ancho */
+  .interruptor,.vuelta,.zoom{width:116px}
+  .mando__engranaje{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(10,11,13,.66);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .mando__engranaje svg{width:17px;height:17px;transition:transform .45s var(--ease)}
+  .mando__engranaje[aria-expanded="true"] svg{transform:rotate(60deg)}
+  .mando__engranaje:focus-visible,.interruptor:focus-visible,.opciones button:focus-visible{outline:2px solid rgba(255,255,255,.75);outline-offset:2px}
+  /* boton de la vuelta 360, bajo Presentar */
+  .vuelta{display:flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0;border-radius:20px;background:rgba(10,11,13,.66);box-shadow:0 4px 14px rgba(0,0,0,.25);
+    font-family:Archivo,sans-serif;font-weight:600;font-size:11px;letter-spacing:.14em;color:#fff}
+  .vuelta svg{width:14px;height:14px;color:var(--azufre)}
+  .vuelta:hover{background:rgba(10,11,13,.85)}
+  .vuelta:focus-visible{outline:2px solid rgba(255,255,255,.75);outline-offset:2px}
+  .vuelta[aria-pressed="true"]{box-shadow:0 0 0 1.5px var(--azufre),0 4px 14px rgba(0,0,0,.25)}
+  .interruptor{display:flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0;border-radius:20px;background:rgba(10,11,13,.66);box-shadow:0 4px 14px rgba(0,0,0,.25);
+    font-family:Archivo,sans-serif;font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .interruptor svg{width:14px;height:14px;color:var(--azufre)}
+  .interruptor .ico-pausa,.interruptor[aria-pressed="true"] .ico-play{display:none}
+  .interruptor[aria-pressed="true"] .ico-pausa{display:block}
+  .opciones{position:absolute;right:0;top:calc(100% + 8px);width:300px;max-height:calc(100vh - 80px);overflow:auto;overscroll-behavior:contain;padding:8px 8px 14px;border-radius:2px;background:rgba(10,11,13,.9);box-shadow:0 10px 30px rgba(0,0,0,.35);
+    opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease)}
+  .opciones.abierta{opacity:1;transform:none;pointer-events:auto}
+  .opciones button,.opciones label{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:2px;font-size:14px;text-align:left;cursor:pointer}
+  .opciones button:hover,.opciones label:hover{background:rgba(255,255,255,.08)}
+  .opciones svg{width:18px;height:18px;flex:none;color:var(--azufre)}
+  .opciones input{accent-color:var(--azufre);width:18px;height:18px;margin:0;flex:none}
+  .opciones h2{margin:14px 12px 8px;font-family:Archivo,sans-serif;font-weight:600;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+  .opciones h2:first-child{margin-top:6px}
+  .opciones .capas__fila{display:flex;flex-wrap:wrap;gap:6px;margin:0 8px 8px}
+  .opciones .opcion{display:block;width:auto;flex:1;padding:9px 6px;border:1px solid rgba(255,255,255,.18);border-radius:2px;font-size:12.5px;text-align:center;color:#fff}
+  .opciones .opcion:hover{background:rgba(255,255,255,.08)}
+  .opciones .opcion[aria-pressed="true"]{border-color:var(--azufre);color:var(--azufre);background:rgba(218,173,37,.12)}
+  .opciones .capas__nota{margin:6px 12px 0;font-size:11.5px;line-height:1.5;color:rgba(255,255,255,.55)}
+  @media (prefers-reduced-motion:reduce){
+    .mando,.mando *{transition:none!important}
+  }
+
+  @media (max-width:760px),(max-height:500px){
+    :root{--ancho-riel:0px;--ancho-panel:100vw}
+    .riel{width:auto;bottom:auto;top:12px;left:12px;flex-direction:row;padding:0;border-radius:24px;box-shadow:var(--sombra);background:var(--panel)}
+    .riel__sep,.riel__btn--extra{display:none}
+    .panel{top:auto;height:62vh;border-radius:16px 16px 0 0}
+    .buscar{margin:10px 16px 4px;height:42px}
+    .proyecto{padding:8px 20px 10px}
+    .proyecto h1{font-size:19px;margin:2px 0}
+    .proyecto__acciones{margin-top:10px}
+    .lugar{padding:8px 16px 8px 18px}
+    .capa-linea{padding:8px 20px}
+    .fuentes{padding:6px 20px 10px;font-size:10px}
+    .panel.oculto{transform:translateY(100%)}
+    .presentacion,body.sin-panel .presentacion{left:12px;right:12px;bottom:40px;min-width:0}
+    body:not(.sin-panel) .presentacion{display:none}
+    /* Celular primero. Abajo: barra de puntos reducida y Play */
+    .estado{display:none}
+    .capas{left:12px;top:72px}
+    .altimetro__ficha{left:12px;right:12px;top:calc(10px + env(safe-area-inset-top));width:auto}
+    .altimetro__ficha-in{padding:10px 14px 12px;display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+    .altimetro__rotulo{display:none}
+    .altimetro__cifra{grid-row:span 2;margin:0;font-size:38px}
+    .altimetro__cifra small{font-size:15px}
+    .altimetro__nombre{margin:0;font-size:12px}
+    .altimetro__texto{grid-column:1/-1;margin-top:6px;font-size:14px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+    /* la misma barra de puntos, mas chica y abajo a la derecha */
+    .altimetro{right:calc(16px + env(safe-area-inset-right));top:auto;bottom:calc(74px + env(safe-area-inset-bottom));width:150px;height:300px}
+    .altimetro::before{display:none}
+    .altimetro__btn{top:-18px;font-size:12px;line-height:36px;padding:0 24px 0 6px}
+    .mando{left:12px;right:12px;top:auto;bottom:calc(14px + env(safe-area-inset-bottom))}
+    .mando__fila{flex-direction:row;align-items:center;justify-content:space-between;gap:8px}
+    /* en el telefono solo Play: el zoom es con los dedos */
+    .mando__engranaje,.vuelta,.zoom{display:none}
+    .interruptor{width:100%;height:44px;border-radius:22px}
+  }
+  /* telefono girado: la barra usa todo el alto disponible */
+  @media (max-height:500px) and (orientation:landscape){
+    .altimetro__ficha{left:max(12px,env(safe-area-inset-left));right:auto;width:342px}
+    .altimetro__texto{-webkit-line-clamp:2}
+    .altimetro{top:calc(16px + env(safe-area-inset-top));bottom:calc(74px + env(safe-area-inset-bottom));height:auto}
+    .mando{left:auto;right:max(12px,env(safe-area-inset-right));width:116px;bottom:calc(14px + env(safe-area-inset-bottom))}
+  }
+  /* aviso discreto en vertical: no bloquea nada y se va solo */
+  .girar{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));translate:-50% 0;z-index:12;display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:22px;background:rgba(10,11,13,.72);color:#fff;font:500 14px/1 "Public Sans",system-ui,sans-serif;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .4s}
+  .girar svg{width:18px;height:18px;color:var(--azufre)}
+  .girar.visible{opacity:1}
+  @media (max-width:760px) and (orientation:portrait){.girar{display:flex}}
+</style>
+</head>
+<body>
+<div id="globo" aria-busy="true"></div>
+<div class="telon" id="telon" role="status" aria-live="polite" hidden>
+  <picture>
+    <source srcset="media/loader-clavado-estatico.svg" media="(prefers-reduced-motion: reduce)">
+    <img src="media/loader-clavado.svg" width="160" height="160" alt="Cargando">
+  </picture>
+</div>
+<script>
+  /* Aparece solo si la carga demora mas de 300 ms y, una vez visible, queda
+     al menos 600 ms: asi no parpadea. recorrido.js llama a terminar() cuando
+     el volcan termino de cargar. */
+  window.telon = (function () {
+    var el = document.getElementById('telon'), zona = document.getElementById('globo');
+    var visibleDesde = null, listo = false;
+    var mostrar = setTimeout(function () {
+      if (!listo) { el.hidden = false; visibleDesde = performance.now(); }
+    }, 300);
+    return {
+      terminar: function () {
+        if (listo) return;
+        listo = true;
+        clearTimeout(mostrar);
+        var cerrar = function () {
+          zona.setAttribute('aria-busy', 'false');
+          el.classList.add('saliendo');
+          setTimeout(function () { el.hidden = true; }, 450);
+        };
+        if (visibleDesde === null) cerrar();
+        else setTimeout(cerrar, Math.max(0, 600 - (performance.now() - visibleDesde)));
+      },
+    };
+  })();
+</script>
+<div id="creditos-cesium"></div>
+<div class="carga" id="carga"></div>
+
+<nav class="riel" aria-label="Navegacion">
+  <button class="riel__btn" id="btn-panel" aria-pressed="true" title="Proyecto">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+  </button>
+  <button class="riel__btn" id="btn-capas" aria-pressed="false" title="Estilo del mapa">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 8.5 12 14l10-5.5L12 3zm-7.6 9.2L2 13.5 12 19l10-5.5-2.4-1.3L12 16.4l-7.6-4.2z"/></svg>
+  </button>
+  <span class="riel__sep"></span>
+  <button class="riel__btn riel__btn--extra" id="btn-pantalla" title="Pantalla completa">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z"/></svg>
+  </button>
+  <span style="height:12px"></span>
+</nav>
+
+<aside class="panel" id="panel">
+  <label class="buscar">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 14 15.5l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
+    <input id="buscar" type="search" placeholder="Buscar en el recorrido" autocomplete="off">
+  </label>
+  <div class="proyecto">
+    <div class="proyecto__cejilla">Proyecto</div>
+    <h1>Ascenso al Villarrica</h1>
+    <p id="resumen">8 lugares</p>
+    <div class="proyecto__acciones">
+      <button class="btn btn--lleno" id="btn-presentar">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Presentar
+      </button>
+      <button class="btn btn--borde" id="btn-general">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5L12 3z"/></svg>Vista general
+      </button>
+    </div>
+  </div>
+  <ul class="lista" id="lista"></ul>
+  <label class="capa-linea"><input type="checkbox" id="chk-linea"> Linea entre paradas</label>
+  <div class="fuentes" id="fuentes"></div>
+</aside>
+
+
+<div class="presentacion" id="presentacion" hidden>
+  <button class="presentacion__btn" id="btn-anterior" title="Lugar anterior"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg></button>
+  <button class="presentacion__btn" id="btn-play" title="Reproducir"><svg viewBox="0 0 24 24" fill="currentColor" id="ico-play"><path d="M8 5v14l11-7z"/></svg></button>
+  <button class="presentacion__btn" id="btn-siguiente" title="Lugar siguiente"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.6 7.4 13.2 12l-4.6 4.6L10 18l6-6z"/></svg></button>
+  <div class="presentacion__texto">
+    <div class="presentacion__n" id="pres-n">1 de 8</div>
+    <div class="presentacion__nombre" id="pres-nombre"></div>
+    <div class="presentacion__avance"><i id="pres-avance"></i></div>
+  </div>
+  <button class="presentacion__btn" id="btn-cerrar" title="Salir de la presentacion"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg></button>
+</div>
+
+<div class="girar" id="aviso-girar" role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M3 9a9 9 0 0 0 0 6M21 9a9 9 0 0 1 0 6"/></svg>Gira el teléfono para ver más</div>
+
+<div class="mando" id="mando">
+  <div class="mando__fila">
+  <button class="mando__engranaje" id="btn-opciones" aria-expanded="false" aria-controls="opciones" title="Opciones">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.2 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1l.4 2.6h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5L19.4 13zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>
+  </button>
+  <button class="interruptor" id="btn-presentar-modo" aria-pressed="false" title="Recorrer las paradas">
+    <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+    <svg class="ico-pausa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+    <span id="modo-estado">Play</span>
+  </button>
+  <button class="vuelta" id="btn-360" title="Vuelta 360 al volcán">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>360°
+  </button>
+  <div class="zoom">
+    <button id="btn-acercar" title="Acercar" aria-label="Acercar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+    <button id="btn-alejar" title="Alejar" aria-label="Alejar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13H5v-2h14z"/></svg></button>
+  </div>
+  </div>
+  <div class="opciones" id="opciones" role="group" aria-label="Opciones del recorrido">
+    <h2>Recorrido</h2>
+    <button id="opc-general">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5L12 3z"/></svg>Vista general
+    </button>
+    <label><input type="checkbox" id="opc-linea">Línea entre paradas</label>
+    <label class="solo-esri"><input type="checkbox" id="chk-nevado">Volcán nevado</label>
+    <button id="opc-pantalla">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z"/></svg>Pantalla completa
+    </button>
+  <h2 class="solo-esri">Relieve</h2>
+  <div class="capas__fila solo-esri" id="opc-relieve">
+    <button class="opcion" data-relieve="1" aria-pressed="false">Real</button>
+    <button class="opcion" data-relieve="1.3" aria-pressed="true">x1,3</button>
+    <button class="opcion" data-relieve="1.6" aria-pressed="false">x1,6</button>
+  </div>
+  <label class="solo-esri"><input type="checkbox" id="chk-sombra" checked>Sombreado del relieve</label>
+  <p class="capas__nota solo-esri">El relieve es un modelo de unos 30 m por punto. Exagerarlo y sombrearlo ayuda a leer las pendientes. Las cotas que se muestran son siempre las reales.</p>
+  </div>
+</div>
+
+<aside class="altimetro" id="altimetro" aria-label="Paradas por altura" hidden>
+  <div class="altimetro__riel"><i class="altimetro__tramo" id="alt-tramo"></i></div>
+  <div class="altimetro__cursor" id="alt-cursor" aria-hidden="true"></div>
+  <ol class="altimetro__lista" id="alt-lista"></ol>
+</aside>
+
+<!-- ficha de la parada activa, arriba a la izquierda -->
+<div class="altimetro__ficha" id="alt-ficha">
+    <div class="altimetro__ficha-in" id="alt-ficha-in" aria-live="polite">
+      <p class="altimetro__rotulo">Altitud</p>
+      <p class="altimetro__cifra"><span id="alt-cifra">0</span><small>m</small></p>
+      <p class="altimetro__nombre"><b id="alt-nombre"></b><span id="alt-paso"></span></p>
+      <p class="altimetro__texto" id="alt-texto"></p>
+    </div>
+</div>
+
+<footer class="estado">
+  <span class="estado__credito" id="credito"></span>
+  <span class="escala"><span class="escala__barra" id="escala-barra"></span><span id="escala-texto"></span></span>
+  <span id="estado-camara"></span>
+  <span id="estado-coord"></span>
+  <span id="estado-elev"></span>
+</footer>
+
+<!-- la version en la direccion evita que el navegador use una copia vieja -->
+<!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
+<script src="./config.js?v=20261104"></script>
+<script type="module" src="./recorrido.js?v=20261107i"></script>
+</body>
+</html>

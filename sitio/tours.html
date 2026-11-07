@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tours | Terra Volcano</title>
+<meta name="description" content="Ascensos, ski touring, trekking, invierno y travesías desde Pucón.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Public+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="paginas.css">
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header class="barra">
+  <a href="index.html" aria-label="Terra Volcano, inicio"><img src="media/logo-blanco.png" width="191" height="50" alt="Terra Volcano"></a>
+  <nav aria-label="Principal">
+    <a href="index.html">Inicio</a>
+    <a href="index.html#dia">Tu día</a>
+    <a href="tours.html" aria-current="page">Tours</a>
+    <a href="nosotros.html">Nosotros</a>
+    <a href="contacto.html">Contacto</a>
+  </nav>
+  <details class="menu-movil"><summary>Menú</summary><div><a href="index.html">Inicio</a><a href="index.html#dia">Tu día</a><a href="tours.html" aria-current="page">Tours</a><a href="nosotros.html">Nosotros</a><a href="contacto.html">Contacto</a></div></details>
+  <span class="idioma"><button type="button" data-idioma="es" aria-pressed="true">ES</button> / <button type="button" data-idioma="en" aria-pressed="false">EN</button></span>
+</header>
+
+<main>
+  <section class="tours-cabeza">
+    <h1>Elige tu próxima aventura.</h1>
+    <div class="filtros" role="group" aria-label="Filtrar tours"><button type="button" data-filtro="todos" aria-pressed="true">Todos</button><button type="button" data-filtro="ascensos" aria-pressed="false">Ascensos</button><button type="button" data-filtro="ski" aria-pressed="false">Ski touring</button><button type="button" data-filtro="trekking" aria-pressed="false">Trekking</button><button type="button" data-filtro="invierno" aria-pressed="false">Invierno</button><button type="button" data-filtro="agua" aria-pressed="false">Otras actividades</button><button type="button" data-filtro="travesias" aria-pressed="false">Travesías</button></div>
+  </section>
+  <ul class="tarjetas" id="tarjetas">
+      <li class="tarjeta" data-cat="ascensos"><a href="tour-villarrica.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1660-main-750.jpg?ts=1778169751000" loading=lazy width=750 height=500 alt="Ascenso al volcán Villarrica" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Ascenso al volcán Villarrica</h2>
+        <p class="tarjeta__dur">8 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>150.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ascensos"><a href="tour-quetrupillan.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1661-main-750.jpg?ts=1778169753000" loading=lazy width=750 height=500 alt="Ascenso al volcán Quetrupillán" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Ascenso al volcán Quetrupillán</h2>
+        <p class="tarjeta__dur">11 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>170.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ascensos"><a href="tour-lanin.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1658-main-750.jpg?ts=1778169749000" loading=lazy width=750 height=500 alt="Ascenso al volcán Lanín" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Ascenso al volcán Lanín</h2>
+        <p class="tarjeta__dur">2 días</p>
+        <p class="tarjeta__precio"><small>Grupo</small>320.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ascensos"><a href="tour-llaima.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1659-main-750.jpg?ts=1778169750000" loading=lazy width=750 height=500 alt="Ascenso al volcán Llaima" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Ascenso al volcán Llaima</h2>
+        <p class="tarjeta__dur">13 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>220.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ascensos"><a href="tour-mocho-choshuenco.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1663-main-750.jpg?ts=1778169756000" loading=lazy width=750 height=500 alt="Ascenso al Mocho-Choshuenco" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Ascenso al Mocho-Choshuenco</h2>
+        <p class="tarjeta__dur">1 día</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>400.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ascensos"><a href="tour-sollipulli.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1668-main-750.jpg?ts=1778169760000" loading=lazy width=750 height=500 alt="Ascenso al volcán Sollipulli" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Ascenso al volcán Sollipulli</h2>
+        <p class="tarjeta__dur">19 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>180.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ascensos"><a href="tour-lonquimay.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1764-main-750.jpg?ts=1778169767000" loading=lazy width=750 height=500 alt="Ascenso al volcán Lonquimay" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Ascenso al volcán Lonquimay</h2>
+        <p class="tarjeta__dur">15 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>180.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ski"><a href="tour-ski-villarrica.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1803-main-750.jpg?ts=1778169767000" loading=lazy width=750 height=500 alt="Ski touring en el Villarrica" onerror="this.onerror=null;this.src='media/rumbo/ski.webp'">
+        <h2>Ski touring en el Villarrica</h2>
+        <p class="tarjeta__dur">10 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>240.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ski"><a href="tour-ski-quetrupillan.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1805-main-750.jpg?ts=1778169769000" loading=lazy width=750 height=500 alt="Ski touring en el Quetrupillán" onerror="this.onerror=null;this.src='media/rumbo/ski.webp'">
+        <h2>Ski touring en el Quetrupillán</h2>
+        <p class="tarjeta__dur">10 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>270.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ski"><a href="tour-ski-lanin.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1806-main-750.jpg?ts=1778169770000" loading=lazy width=750 height=500 alt="Ski touring en el Lanín" onerror="this.onerror=null;this.src='media/rumbo/ski.webp'">
+        <h2>Ski touring en el Lanín</h2>
+        <p class="tarjeta__dur">1 día</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>490.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ski"><a href="tour-ski-llaima.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1809-main-750.jpg?ts=1778169771000" loading=lazy width=750 height=500 alt="Ski touring en el Llaima" onerror="this.onerror=null;this.src='media/rumbo/ski.webp'">
+        <h2>Ski touring en el Llaima</h2>
+        <p class="tarjeta__dur">13 horas</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>390.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ski"><a href="tour-ski-mocho-choshuenco.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1810-main-750.jpg?ts=1778169772000" loading=lazy width=750 height=500 alt="Ski touring en el Mocho-Choshuenco" onerror="this.onerror=null;this.src='media/rumbo/ski.webp'">
+        <h2>Ski touring en el Mocho-Choshuenco</h2>
+        <p class="tarjeta__dur">1 día</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>500.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ski"><a href="tour-ski-sollipulli.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1811-main-750.jpg?ts=1778169773000" loading=lazy width=750 height=500 alt="Ski touring en el Sollipulli" onerror="this.onerror=null;this.src='media/rumbo/ski.webp'">
+        <h2>Ski touring en el Sollipulli</h2>
+        <p class="tarjeta__dur">19 horas</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>280.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="ski"><a href="tour-ski-lonquimay.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1812-main-750.jpg?ts=1778169775000" loading=lazy width=750 height=500 alt="Ski touring en el Lonquimay" onerror="this.onerror=null;this.src='media/rumbo/ski.webp'">
+        <h2>Ski touring en el Lonquimay</h2>
+        <p class="tarjeta__dur">15 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>390.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="trekking"><a href="tour-lagos-andinos.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1662-main-750.jpg?ts=1778169754000" loading=lazy width=750 height=500 alt="Lagos Andinos" onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+        <h2>Lagos Andinos</h2>
+        <p class="tarjeta__dur">8 horas</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>100.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="trekking"><a href="tour-huerquehue.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1667-main-750.jpg?ts=1778169758000" loading=lazy width=750 height=500 alt="Parque Nacional Huerquehue" onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+        <h2>Parque Nacional Huerquehue</h2>
+        <p class="tarjeta__dur">9 horas</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>100.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="trekking"><a href="tour-el-cani.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1769-main-750.jpg?ts=1778169767000" loading=lazy width=750 height=500 alt="Santuario El Cañi" onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+        <h2>Santuario El Cañi</h2>
+        <p class="tarjeta__dur">10 horas</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>100.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="invierno"><a href="tour-clase-grupal.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1705-main-750.jpg?ts=1778169763000" loading=lazy width=750 height=500 alt="Clase grupal de esquí, 2 horas" onerror="this.onerror=null;this.src='media/rumbo/invierno.webp'">
+        <h2>Clase grupal de esquí, 2 horas</h2>
+        <p class="tarjeta__dur">9 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>110.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="invierno"><a href="tour-clase-privada-2h.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1728-main-750.jpg?ts=1778169764000" loading=lazy width=750 height=500 alt="Clase privada de 2 horas con equipo" onerror="this.onerror=null;this.src='media/rumbo/invierno.webp'">
+        <h2>Clase privada de 2 horas con equipo</h2>
+        <p class="tarjeta__dur">9 horas</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>160.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="invierno"><a href="tour-clase-privada-1h.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1706-main-750.jpg?ts=1778169763000" loading=lazy width=750 height=500 alt="Clase privada de 1 hora" onerror="this.onerror=null;this.src='media/rumbo/invierno.webp'">
+        <h2>Clase privada de 1 hora</h2>
+        <p class="tarjeta__dur">9 horas</p>
+        <p class="tarjeta__precio"><small>Privado, 2 personas</small>97.500 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="invierno"><a href="tour-nieve-sin-esquis.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1730-main-750.jpg?ts=1778169765000" loading=lazy width=750 height=500 alt="Nieve sin esquís" onerror="this.onerror=null;this.src='media/rumbo/invierno.webp'">
+        <h2>Nieve sin esquís</h2>
+        <p class="tarjeta__dur">9 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>50.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="agua"><a href="tour-canyoning.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1666-main-750.jpg?ts=1778169757000" loading=lazy width=750 height=500 alt="Canyoning en el Salto del Claro" onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+        <h2>Canyoning en el Salto del Claro</h2>
+        <p class="tarjeta__dur">4 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>60.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="agua"><a href="tour-rafting-alto.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1664-main-750.jpg?ts=1778169757000" loading=lazy width=750 height=500 alt="Rafting alto Trancura" onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+        <h2>Rafting alto Trancura</h2>
+        <p class="tarjeta__dur">3 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>52.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="agua"><a href="tour-rafting-bajo.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1665-main-750.jpg?ts=1778169757000" loading=lazy width=750 height=500 alt="Rafting bajo Trancura" onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+        <h2>Rafting bajo Trancura</h2>
+        <p class="tarjeta__dur">3 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>42.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="agua"><a href="tour-huilo-huilo.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1669-main-750.jpg?ts=1778169761000" loading=lazy width=750 height=500 alt="Día completo en Huilo-Huilo" onerror="this.onerror=null;this.src='media/rumbo/trekking.webp'">
+        <h2>Día completo en Huilo-Huilo</h2>
+        <p class="tarjeta__dur">12 horas</p>
+        <p class="tarjeta__precio"><small>Grupo</small>50.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="travesias"><a href="tour-travesia-3-dias.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-2450-main-750.jpg?ts=1790342616000" loading=lazy width=750 height=500 alt="Travesía Villarrica, 3 días" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Travesía Villarrica, 3 días</h2>
+        <p class="tarjeta__dur">3 días</p>
+        <p class="tarjeta__precio"><small>Grupo</small>490.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="travesias"><a href="tour-travesia-5-dias.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-2453-main-750.jpg?ts=1790536019000" loading=lazy width=750 height=500 alt="Travesía Villarrica, 5 días" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Travesía Villarrica, 5 días</h2>
+        <p class="tarjeta__dur">5 días</p>
+        <p class="tarjeta__precio"><small>Grupo</small>690.000 CLP</p>
+      </a></li>
+      <li class="tarjeta" data-cat="travesias"><a href="tour-trilogia-araucana.html">
+        <img src="https://media.tourtask.com/uploads/tv/tours/tour-1836-main-750.jpg?ts=1778169775000" loading=lazy width=750 height=500 alt="Trilogía Araucana" onerror="this.onerror=null;this.src='media/rumbo/ascensos.webp'">
+        <h2>Trilogía Araucana</h2>
+        <p class="tarjeta__dur">4 días</p>
+        <p class="tarjeta__precio">A consultar</p>
+      </a></li>
+  </ul>
+</main>
+
+<footer class="pie-sitio">
+  <h2>Nos vemos en Pucón.</h2>
+  <a class="reservar" href="https://wa.me/56983388317">Reservar por WhatsApp</a>
+  <div class="pie-sitio__fila">
+    <div><img loading="lazy" src="media/logo-blanco.png" width="191" height="50" alt="Terra Volcano">Agencia de montaña en Pucón desde 2015.</div>
+    <address style="font-style:normal">Av. Bernardo O'Higgins 717, Local 4<br>Boulevard Patagonia, Pucón, Chile<br><a href="https://wa.me/56983388317">+56 9 8338 8317</a></address>
+    <div><a href="nosotros.html">Nosotros</a><a href="contacto.html">Contacto</a><a href="https://www.instagram.com/terravolcano_pucon">Instagram</a><a href="https://www.facebook.com/puconterravolcano/">Facebook</a></div>
+  </div>
+  <small>Turismo Aventura Richard Díaz Suazo EIRL</small>
+</footer>
+
+<script type="module" src="idioma.js"></script>
+<script>
+  const botones = [...document.querySelectorAll('[data-filtro]')];
+  const tarjetas = [...document.querySelectorAll('.tarjeta')];
+  const filtrar = (cat) => {
+    botones.forEach((b) => b.setAttribute('aria-pressed', b.dataset.filtro === cat));
+    tarjetas.forEach((t) => { t.hidden = cat !== 'todos' && t.dataset.cat !== cat; });
+  };
+  botones.forEach((b) => b.addEventListener('click', () => {
+    filtrar(b.dataset.filtro);
+    history.replaceState(null, '', b.dataset.filtro === 'todos' ? location.pathname + location.search : `#${b.dataset.filtro}`);
+  }));
+  const inicial = location.hash.slice(1);
+  if (botones.some((b) => b.dataset.filtro === inicial)) filtrar(inicial);
+</script>
+</body>
+</html>
