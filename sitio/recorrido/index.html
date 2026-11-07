@@ -140,7 +140,7 @@
      El tramo de color sube hasta la parada activa y al lado va su altura y
      su descripcion. Se suma a los pines del cerro, no los reemplaza. Solo se
      anima transform y opacity. */
-  .altimetro{position:fixed;right:36px;top:214px;bottom:max(96px,18vh);width:440px;z-index:11;pointer-events:none;
+  .altimetro{position:fixed;right:36px;top:48px;bottom:max(116px,18vh);width:440px;z-index:11;pointer-events:none;
     font-family:"Public Sans",system-ui,sans-serif;color:#fff;transition:transform .45s var(--ease),opacity .45s var(--ease)}
   .altimetro[hidden]{display:block;opacity:0}
   .altimetro::before{content:"";position:absolute;right:-36px;top:-100vh;bottom:-100vh;width:300px;z-index:-1;
@@ -181,15 +181,16 @@
     .altimetro,.altimetro *,.altimetro *::before,.altimetro *::after,.altimetro__ficha *{transition:none!important;animation:none!important}
   }
 
-  /* mando de la presentacion, arriba del altimetro: el engranaje con las
-     opciones, Play (avanza solo por las paradas), la vuelta 360 y el zoom. Reemplaza a la barra de abajo. */
+  /* mando de la presentacion: Play (avanza solo por las paradas), la vuelta 360
+     y el zoom abajo al centro; el engranaje con las opciones bajo la barra de paradas. Reemplaza a la barra de abajo. */
   .presentacion,.presentacion[hidden]{display:none}
-  .mando{position:fixed;right:22px;top:18px;z-index:13;
+  .mando{position:fixed;left:0;right:0;bottom:44px;z-index:13;pointer-events:none;
     font-family:"Public Sans",system-ui,sans-serif;color:#fff;transition:transform .45s var(--ease)}
-  .mando__fila{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .mando__fila{display:flex;align-items:center;justify-content:center;gap:8px}
+  .mando__fila>*,.opciones{pointer-events:auto}
   /* los cuatro botones comparten alto y radio; Play, 360 y zoom tambien el ancho */
   .interruptor,.vuelta,.zoom{width:116px}
-  .mando__engranaje{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(10,11,13,.66);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .mando__engranaje{position:fixed;right:16px;bottom:44px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(10,11,13,.66);box-shadow:0 4px 14px rgba(0,0,0,.25)}
   .mando__engranaje svg{width:17px;height:17px;transition:transform .45s var(--ease)}
   .mando__engranaje[aria-expanded="true"] svg{transform:rotate(60deg)}
   .mando__engranaje:focus-visible,.interruptor:focus-visible,.opciones button:focus-visible{outline:2px solid rgba(255,255,255,.75);outline-offset:2px}
@@ -205,7 +206,7 @@
   .interruptor svg{width:14px;height:14px;color:var(--azufre)}
   .interruptor .ico-pausa,.interruptor[aria-pressed="true"] .ico-play{display:none}
   .interruptor[aria-pressed="true"] .ico-pausa{display:block}
-  .opciones{position:absolute;right:0;top:calc(100% + 8px);width:300px;max-height:calc(100vh - 80px);overflow:auto;overscroll-behavior:contain;padding:8px 8px 14px;border-radius:2px;background:rgba(10,11,13,.9);box-shadow:0 10px 30px rgba(0,0,0,.35);
+  .opciones{position:fixed;right:16px;bottom:92px;width:300px;max-height:calc(100vh - 120px);overflow:auto;overscroll-behavior:contain;padding:8px 8px 14px;border-radius:2px;background:rgba(10,11,13,.9);box-shadow:0 10px 30px rgba(0,0,0,.35);
     opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease)}
   .opciones.abierta{opacity:1;transform:none;pointer-events:auto}
   .opciones button,.opciones label{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:2px;font-size:14px;text-align:left;cursor:pointer}

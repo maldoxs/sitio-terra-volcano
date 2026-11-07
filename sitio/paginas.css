@@ -110,10 +110,11 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .tour__cuerpo h2{margin:0 0 16px;font:700 clamp(30px,3.4vw,54px)/1 var(--display);font-stretch:84%;letter-spacing:-.016em}
 .tour__entrada{margin:0 0 16px;font:600 clamp(23px,2.3vw,34px)/1.2 var(--display);font-stretch:90%;letter-spacing:-.008em}
 .tour__cuerpo section>p:last-child{margin:0;max-width:40em}
-.tour__fotos{display:grid;grid-template-columns:7fr 5fr;gap:12px}
+.tour__fotos{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.tour__fotos{grid-template-columns:1fr}}
 .tour__fotos figure{margin:0;position:relative;overflow:hidden}
 .tour__fotos figure:nth-child(4n+2),.tour__fotos figure:nth-child(4n+3){grid-column:auto}
-.tour__fotos img{display:block;width:100%;height:clamp(180px,22vw,320px);object-fit:cover}
+.tour__fotos img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .tour__fotos figcaption{position:absolute;left:12px;bottom:10px;color:#fff;font-size:14px;font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .tour__pasos{margin:0;padding:0;list-style:none;counter-reset:paso}
 .tour__pasos li{counter-increment:paso;display:grid;grid-template-columns:52px 1fr;column-gap:8px;padding:14px 0;border-top:1px solid #d9d7d1}
