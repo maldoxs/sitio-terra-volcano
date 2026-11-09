@@ -28,6 +28,16 @@
 
   #globo{position:fixed;inset:0}
   #globo .cesium-widget-credits,#creditos-cesium{display:none}
+  /* Abierto desde el inicio (?visor) hay una X arriba a la derecha: el riel y la ficha le dejan espacio */
+  @media (min-width:761px) and (min-height:501px){
+    body.en-visor .altimetro{top:84px}
+  }
+  @media (max-width:760px),(max-height:500px){
+    body.en-visor .altimetro__ficha{right:calc(68px + env(safe-area-inset-right))}
+  }
+  @media (max-height:500px) and (orientation:landscape){
+    body.en-visor .altimetro{top:calc(68px + env(safe-area-inset-top))}
+  }
   /* Creditos ocultos por decision del proyecto. Las condiciones de Google Map Tiles
      piden su logo y atribucion: antes de publicar hay que devolverlos. */
   body.con-google .solo-esri{display:none!important}
@@ -275,27 +285,24 @@
 </head>
 <body>
 <div id="globo" aria-busy="true"></div>
-<div class="telon" id="telon" role="status" aria-live="polite" hidden>
+<script>if (new URLSearchParams(location.search).has('visor')) document.body.classList.add('en-visor');</script>
+<div class="telon" id="telon" role="status" aria-live="polite">
   <picture>
     <source srcset="media/loader-clavado-estatico.svg" media="(prefers-reduced-motion: reduce)">
     <img src="media/loader-clavado.svg" width="160" height="160" alt="Cargando">
   </picture>
 </div>
 <script>
-  /* Aparece solo si la carga demora mas de 300 ms y, una vez visible, queda
-     al menos 600 ms: asi no parpadea. recorrido.js llama a terminar() cuando
-     el volcan termino de cargar. */
+  /* Visible desde el primer cuadro, para que nunca se vea el mapa a medio
+     cargar, y al menos 600 ms: asi no parpadea. recorrido.js llama a
+     terminar() cuando el volcan termino de cargar. */
   window.telon = (function () {
     var el = document.getElementById('telon'), zona = document.getElementById('globo');
-    var visibleDesde = null, listo = false;
-    var mostrar = setTimeout(function () {
-      if (!listo) { el.hidden = false; visibleDesde = performance.now(); }
-    }, 300);
+    var visibleDesde = performance.now(), listo = false;
     return {
       terminar: function () {
         if (listo) return;
         listo = true;
-        clearTimeout(mostrar);
         var cerrar = function () {
           zona.setAttribute('aria-busy', 'false');
           el.classList.add('saliendo');
@@ -428,6 +435,6 @@
 <!-- la version en la direccion evita que el navegador use una copia vieja -->
 <!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
 <script src="./config.js?v=20261104"></script>
-<script type="module" src="./recorrido.js?v=20261107i"></script>
+<script type="module" src="./recorrido.js?v=20261109c"></script>
 </body>
 </html>

@@ -134,10 +134,15 @@
   .ruta{padding:15px 22px;border:1px solid var(--obsidiana);border-radius:2px;background:none;color:inherit;font:700 16px/1.2 var(--texto);cursor:pointer;transition:background .2s,color .2s}
   .ruta:hover{background:var(--obsidiana);color:var(--nieve)}
   .ruta:focus-visible{outline:2px solid var(--lava);outline-offset:3px}
-  .visor{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:var(--obsidiana)}
-  .visor::backdrop{background:var(--obsidiana)}
-  .visor iframe{display:block;width:100%;height:100%;border:0}
-  .visor__cerrar{position:absolute;left:50%;top:14px;translate:-50% 0;z-index:2;padding:12px 22px;border:0;border-radius:2px;background:var(--lava);color:#fff;font:700 15px/1 var(--texto);cursor:pointer}
+  /* El fondo es el mismo azul del cargador del recorrido: al abrir no hay destello */
+  .visor{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#06112a}
+  .visor::backdrop{background:#06112a}
+  .visor iframe{display:block;width:100%;height:100%;border:0;background:#06112a}
+  /* Cerrar: pastilla discreta arriba a la derecha; en celular queda solo la X */
+  .visor__cerrar{position:absolute;right:16px;top:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border:1px solid rgba(255,255,255,.28);border-radius:22px;background:rgba(6,18,46,.72);color:#fff;font:700 14px/1 var(--texto);cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .2s}
+  .visor__cerrar:hover{background:rgba(6,18,46,.92)}
+  .visor__cerrar:focus-visible{outline:2px solid var(--azufre);outline-offset:3px}
+  .visor__cerrar svg{width:18px;height:18px}
   .pasos{position:relative;list-style:none;margin:0;padding:0 0 0 clamp(26px,3vw,44px)}
   .pasos::before,.pasos__avance{content:"";position:absolute;left:4px;top:10px;bottom:10px;width:2px;background:#d9d7d1}
   .pasos__avance{background:var(--lava);transform:scaleY(0);transform-origin:top;will-change:transform}
@@ -261,9 +266,8 @@
     .reservar{justify-content:center}
     .relato{grid-template-columns:1fr}
     .con-movimiento .galeria__escena{height:calc(100svh + 5 * 70svh)}
-    /* en celular el boton va en su propia barra, sin tapar la ficha del recorrido */
-    .visor{padding-top:56px}
-    .visor__cerrar{left:auto;right:12px;top:6px;translate:none;min-height:44px}
+    .visor__cerrar{right:calc(12px + env(safe-area-inset-right));top:calc(10px + env(safe-area-inset-top));width:44px;padding:0;justify-content:center}
+    .visor__cerrar span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
     .pilares{grid-template-columns:1fr;gap:22px}
     .pilares div{padding:0;border-left:0}
     .opiniones__cabeza,.citas,.pie-sitio__fila{grid-template-columns:1fr}
@@ -589,7 +593,7 @@
 </footer>
 
 <dialog class="visor" id="visor-ruta" aria-label="Ver la ruta en 3D">
-  <button class="visor__cerrar" type="button" id="cerrar-ruta">Cerrar</button>
+  <button class="visor__cerrar" type="button" id="cerrar-ruta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Cerrar</span></button>
   <iframe id="marco-ruta" title="Recorrido 3D del volcán Villarrica" allow="fullscreen"></iframe>
 </dialog>
 
@@ -603,7 +607,7 @@
     const visor = document.getElementById('visor-ruta');
     const marco = document.getElementById('marco-ruta');
     document.getElementById('ver-ruta').addEventListener('click', () => {
-      marco.src = 'recorrido/index.html';
+      marco.src = 'recorrido/index.html?visor';
       visor.showModal();
     });
     const apagar = () => marco.removeAttribute('src');

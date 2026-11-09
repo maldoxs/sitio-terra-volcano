@@ -681,9 +681,35 @@ const linea = visor.entities.add({
 /* Puntos visibles o no. Al cargar no se ven: primero aparece el volcan y los
    puntos cuando termina de cargar. En la cumbre se esconden para dejar solo
    el crater, y vuelven al regresar a la Cafeteria. La linea sigue al panel. */
+/* Los puntos se van sumando a medida que se recorre: al cargar solo se ve la
+   Cafeteria, y cada parada a la que se llega (por Play o eligiendola) muestra
+   todas hasta ella. Cada punto nuevo entra creciendo. */
+let puntosVisibles = false;
+let alcance = 0;
+const entrar = (m) => {
+  const t0 = performance.now();
+  const paso = (ahora) => {
+    const k = Math.min(1, (ahora - t0) / 450);
+    const e = 1 + 2.2 * (k - 1) ** 3 + 1.2 * (k - 1) ** 2;  // crece con un pequeno rebote
+    m.billboard.scale = (marcas[estado.i] === m ? ESCALA_PIN_ACTIVO : ESCALA_PIN) * e;
+    m.label.scale = 0.5 * Math.min(1, k * 1.4);
+    if (k < 1) requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+};
 function mostrarPuntos(ver) {
-  marcas.forEach((m) => { m.show = ver; });
+  puntosVisibles = ver;
+  marcas.forEach((m, i) => {
+    const antes = m.show;
+    m.show = ver && i <= alcance;
+    if (m.show && !antes) entrar(m);
+  });
   linea.show = ver && document.getElementById('chk-linea').checked;
+}
+function ampliarAlcance(i) {
+  if (i <= alcance) return;
+  alcance = i;
+  if (puntosVisibles) mostrarPuntos(true);
 }
 mostrarPuntos(false);
 
@@ -1036,6 +1062,7 @@ function fumarola(meta, ms) {
 
 /* ---------- camara ---------- */
 
+const ACERCAR_INICIO = 0.7, CORRER_INICIO = 0.45;
 const deGE = (c) => ({ lat: c.lat, lng: c.lng, alt: c.alt, h: c.heading, t: c.tilt, r: c.range });
 
 function rumbo(a, b) {
@@ -1060,7 +1087,14 @@ const enVertical = (v) => {
 };
 function vistaDe(i) {
   const p = PARADAS[i];
-  if (i === 0) return enVertical(deGE(p.camara));
+  // la Cafeteria parte un 30 % mas cerca que la toma de Google Earth, con el
+  // centro corrido hacia ella para que no quede fuera de cuadro
+  // En vertical queda la toma original: mas cerca, la Cafeteria cae detras del boton Play
+  if (i === 0 && innerHeight > innerWidth) return enVertical(deGE(p.camara));
+  if (i === 0) {
+    const v = deGE(p.camara);
+    return enVertical({ ...v, lat: mezcla(v.lat, p.lat, CORRER_INICIO), lng: mezcla(v.lng, p.lng, CORRER_INICIO), alt: mezcla(v.alt, p.alt, CORRER_INICIO), r: v.r * ACERCAR_INICIO });
+  }
   if (i < DRON_DESDE) return deGE(p.camara);
   return { lat: p.lat, lng: p.lng, alt: p.suelo ?? p.alt, h: rumbo(p, PARADAS[i + 1] ?? p), t: 71, r: 480 };
 }
@@ -1444,6 +1478,7 @@ function pintarPresentacion() {
 }
 
 function seleccionar(i) {
+  ampliarAlcance(i);
   if (estado.i >= 0) marcas[estado.i].billboard.scale = ESCALA_PIN;
   estado.i = i;
   marcas[i].billboard.scale = ESCALA_PIN_ACTIVO;
