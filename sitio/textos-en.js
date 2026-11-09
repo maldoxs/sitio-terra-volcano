@@ -85,7 +85,7 @@ export const EN = {
   'Clase privada con equipo': 'Private lesson with gear',
   'Clase personalizada, con traslado y equipo.': 'A personal lesson, with transport and gear.',
   'Precio por persona, en pesos chilenos.': 'Price per person, in Chilean pesos.',
-  'Lo que se ve allá arriba.': 'What you see up there.',
+  'Lo que se ve allá arriba.': 'What you see up there.', 'Así se vive la montaña.': 'This is life in the mountains.',
   'Fotos de nuestras salidas, tal como salieron.': 'Photos from our trips, just as they came out.',
   'Por la arista': 'Along the ridge',
   'Entre araucarias': 'Among araucarias',
@@ -119,7 +119,7 @@ export const EN = {
   'Saltar fotos': 'Skip photos',
   'Menú': 'Menu', 'Inicio': 'Home', 'Contacto': 'Contact',
   /* nosotros */
-  'Somos de acá.': 'We are from here.',
+  'Somos de acá.': 'We are from here.', 'Somos locales.': 'We are locals.',
   'Somos una empresa local de escalada en Pucón, fundada por el escalador chileno Richard Diaz en 2015. Ofrecemos aventuras guiadas en la montaña y otras actividades al aire libre.': 'We are a local climbing company in Pucón, founded by Chilean climber Richard Diaz in 2015. We offer guided mountain adventures and other outdoor activities.',
   'Una pasión de toda la vida por los Andes, hecha oficio: guía experta, seguridad y las ganas de compartir estos paisajes.': 'A lifelong passion for the Andes turned into a craft: expert guidance, safety and the desire to share these landscapes.',
   'Propiedad y gestión familiar': 'Family-owned and family-run',

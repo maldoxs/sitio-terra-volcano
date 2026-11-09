@@ -91,6 +91,9 @@
   .datos div{margin:0}
   .datos dt{font:700 clamp(19px,1.8vw,26px)/1.1 var(--display);font-stretch:88%}
   .datos dd{margin:3px 0 0;font-weight:500}
+  .datos dt,.datos dd{position:relative}
+  .datos .contando{color:transparent!important}
+  .datos__cuenta{position:absolute;inset:0}
   .reservar{display:inline-flex;align-items:center;gap:12px;padding:16px 24px;background:var(--lava);color:#fff;font-weight:700;font-size:16px;border-radius:2px;white-space:nowrap;transition:background .2s}
   .reservar:hover{background:#b30e1f}
   .reservar:focus-visible,.barra a:focus-visible{outline:2px solid var(--azufre);outline-offset:3px}
@@ -517,7 +520,7 @@
     <div class="galeria__escena" id="escena">
       <div class="galeria__fija">
         <div class="galeria__titulo">
-          <h2>Lo que se ve allá arriba.</h2>
+          <h2>Así se vive la montaña.</h2>
           <a class="galeria__saltar" href="#galeria-fin">Saltar fotos</a>
         </div>
       <figure class="lamina" style="--pos:64% 70%">
@@ -606,6 +609,36 @@
     const apagar = () => marco.removeAttribute('src');
     document.getElementById('cerrar-ruta').addEventListener('click', () => { apagar(); visor.close(); });
     visor.addEventListener('close', apagar);
+  }
+  /* Cifras de la portada: cuentan rapido hasta su valor. El numero animado va en una capa
+     aparte, asi el texto real (el que traduce idioma.js) nunca cambia */
+  if (!quieto) {
+    const cifras = [...document.querySelectorAll('.datos dt, .datos dd')].filter((e) => /\d/.test(e.textContent));
+    const contar = (el) => {
+      const final = el.textContent;
+      const m = final.match(/(\d+)(?:([.,])(\d+))?/);
+      const valor = parseFloat(`${m[1]}.${m[3] || 0}`);
+      const decimales = m[3] ? m[3].length : 0;
+      const desde = final.trim().startsWith('#') ? 30 : valor > 1900 ? 1990 : 0;
+      const capa = document.createElement('span');
+      capa.className = 'datos__cuenta';
+      capa.setAttribute('aria-hidden', 'true');
+      capa.style.color = getComputedStyle(el).color;
+      el.classList.add('contando');
+      el.append(capa);
+      const t0 = performance.now();
+      const paso = (ahora) => {
+        const t = Math.min(1, (ahora - t0) / 1500);
+        const v = desde + (valor - desde) * (1 - (1 - t) ** 3);
+        let n = decimales ? v.toFixed(decimales) : String(Math.round(v));
+        if (m[2]) n = n.replace('.', m[2]);
+        capa.textContent = final.replace(m[0], n);
+        if (t < 1) requestAnimationFrame(paso);
+        else { capa.remove(); el.classList.remove('contando'); }
+      };
+      requestAnimationFrame(paso);
+    };
+    setTimeout(() => cifras.forEach(contar), 700);
   }
   if (!quieto) {
     const banda = document.getElementById('ascenso');
