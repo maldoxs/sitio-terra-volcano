@@ -681,11 +681,11 @@ const linea = visor.entities.add({
 /* Puntos visibles o no. Al cargar no se ven: primero aparece el volcan y los
    puntos cuando termina de cargar. En la cumbre se esconden para dejar solo
    el crater, y vuelven al regresar a la Cafeteria. La linea sigue al panel. */
-/* Los puntos se van sumando a medida que se recorre: al cargar solo se ve la
-   Cafeteria, y cada parada a la que se llega (por Play o eligiendola) muestra
+/* Los puntos se van sumando a medida que se recorre: al cargar no se ve
+   ninguno, y cada parada a la que se llega (por Play o eligiendola) muestra
    todas hasta ella. Cada punto nuevo entra creciendo. */
 let puntosVisibles = false;
-let alcance = 0;
+let alcance = -1;
 const entrar = (m) => {
   const t0 = performance.now();
   const paso = (ahora) => {
@@ -1327,11 +1327,30 @@ function presentar(desde) {
   panel.classList.add('oculto');
   btnPanel.setAttribute('aria-pressed', 'false');
   pintarPresentacion();
+  esperarInmersivo();
   ciclo(desde ?? (estado.i < 0 || estado.i >= PARADAS.length - 1 ? 0 : estado.i));
 }
 
+/* Mientras se presenta, a los 2,5 s sin tocar nada se esconden los controles
+   (y la X del visor del inicio, por mensaje); cualquier toque o tecla los
+   devuelve y vuelve a contar. */
+let reloj = 0;
+function inmersivo(on) {
+  document.body.classList.toggle('inmersivo', on);
+  if (parent !== window) parent.postMessage({ tipo: 'recorrido-inmersivo', on }, location.origin);
+}
+function esperarInmersivo() {
+  clearTimeout(reloj);
+  inmersivo(false);
+  if (estado.tocando) reloj = setTimeout(() => { if (estado.tocando) inmersivo(true); }, 2500);
+}
+['pointerdown', 'keydown', 'wheel'].forEach((t) => addEventListener(t, esperarInmersivo, { passive: true }));
+addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') esperarInmersivo(); }, { passive: true });
+
 function pausar() {
   estado.tocando = false;
+  clearTimeout(reloj);
+  inmersivo(false);
   $('btn-360').setAttribute('aria-pressed', 'false');
   fumarola(0, 2500);
   pintarPresentacion();
@@ -1545,6 +1564,7 @@ function vuelta360() {
   const fin = () => btn.setAttribute('aria-pressed', 'false');
   const desde = estado.vista || vistaDesdeCamara();
   const base = { ...VOLCAN_ENTERO, h: desde?.h ?? GENERAL.h };
+  mostrarPuntos(false);  // la vuelta muestra el volcan limpio; los puntos vuelven en la Cafeteria
   mostrarHumo(true);
   fumarola(0.22, 3000);
   const girar = () => {
@@ -1683,8 +1703,8 @@ visor.clock.shouldAnimate = true;
 pintarCreditos();
 pintarLista();
 completarCotas();
-// arranca puesto en la Cafeteria, el primer punto del recorrido
-seleccionar(0);
+// arranca mirando la Cafeteria, sin parada activa ni puntos: el primero
+// aparece cuando se elige la Cafeteria o se aprieta Play
 aplicar(vistaDe(0));
 
 /* Precarga en segundo plano. Medido en Chrome el 2026-10-31: al abrir la toma

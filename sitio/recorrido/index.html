@@ -28,6 +28,10 @@
 
   #globo{position:fixed;inset:0}
   #globo .cesium-widget-credits,#creditos-cesium{display:none}
+  /* Presentacion limpia: los controles se esconden solos y vuelven al tocar */
+  .mando,.estado{transition:opacity .4s}
+  body.inmersivo .mando,body.inmersivo .estado{opacity:0;pointer-events:none}
+  body.inmersivo .mando *{pointer-events:none}
   /* Abierto desde el inicio (?visor) hay una X arriba a la derecha: el riel y la ficha le dejan espacio */
   @media (min-width:761px) and (min-height:501px){
     body.en-visor .altimetro{top:84px}
@@ -415,7 +419,7 @@
 </aside>
 
 <!-- ficha de la parada activa, arriba a la izquierda -->
-<div class="altimetro__ficha" id="alt-ficha">
+<div class="altimetro__ficha" id="alt-ficha" hidden>
     <div class="altimetro__ficha-in" id="alt-ficha-in" aria-live="polite">
       <p class="altimetro__rotulo">Altitud</p>
       <p class="altimetro__cifra"><span id="alt-cifra">0</span><small>m</small></p>
@@ -435,6 +439,6 @@
 <!-- la version en la direccion evita que el navegador use una copia vieja -->
 <!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
 <script src="./config.js?v=20261104"></script>
-<script type="module" src="./recorrido.js?v=20261109c"></script>
+<script type="module" src="./recorrido.js?v=20261109d"></script>
 </body>
 </html>

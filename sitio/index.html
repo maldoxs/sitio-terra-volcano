@@ -141,6 +141,8 @@
   /* Cerrar: pastilla discreta arriba a la derecha; en celular queda solo la X */
   .visor__cerrar{position:absolute;right:16px;top:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border:1px solid rgba(255,255,255,.28);border-radius:22px;background:rgba(6,18,46,.72);color:#fff;font:700 14px/1 var(--texto);cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .2s}
   .visor__cerrar:hover{background:rgba(6,18,46,.92)}
+  .visor__cerrar{transition:background .2s,opacity .4s}
+  .visor__cerrar.oculto{opacity:0;pointer-events:none}
   .visor__cerrar:focus-visible{outline:2px solid var(--azufre);outline-offset:3px}
   .visor__cerrar svg{width:18px;height:18px}
   .pasos{position:relative;list-style:none;margin:0;padding:0 0 0 clamp(26px,3vw,44px)}
@@ -613,6 +615,12 @@
     const apagar = () => marco.removeAttribute('src');
     document.getElementById('cerrar-ruta').addEventListener('click', () => { apagar(); visor.close(); });
     visor.addEventListener('close', apagar);
+    // durante la presentacion el recorrido pide esconder la X para dejar la pantalla limpia
+    const cerrar = document.getElementById('cerrar-ruta');
+    addEventListener('message', (e) => {
+      if (e.origin === location.origin && e.data?.tipo === 'recorrido-inmersivo') cerrar.classList.toggle('oculto', e.data.on);
+    });
+    visor.addEventListener('close', () => cerrar.classList.remove('oculto'));
   }
   /* Cifras de la portada: cuentan rapido hasta su valor. El numero animado va en una capa
      aparte, asi el texto real (el que traduce idioma.js) nunca cambia */
