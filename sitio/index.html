@@ -31,17 +31,21 @@
   .foto img{display:block;width:100%;height:100%}
   .foto__capa{position:absolute;inset:0;will-change:transform;transform-origin:50% 62%}
 
-  /* Fumarola: el humo de la foto, recortado, sale del crater en tres bocanadas desfasadas.
+  /* Fumarola: el humo de la foto, recortado, sale del crater en cinco bocanadas desfasadas;
+     dos van espejadas para que no se repita la misma forma, corridas (--ox) para que
+     su columna caiga sobre la del humo original.
      El punto (left/top) es la base del humo dentro del bloque 16:9 */
   .fumarola{position:absolute;left:48%;top:33.4%;width:12.2%;aspect-ratio:245/193;translate:-50% -100%;pointer-events:none}
-  .fumarola i{position:absolute;inset:0;background:url(media/fumarola.webp) 0 0/100% 100%;transform-origin:50% 100%;opacity:0;animation:bocanada 13.5s linear infinite;will-change:transform,opacity}
-  .fumarola i:nth-child(2){animation-delay:-4.5s;--dx:-14%}
-  .fumarola i:nth-child(3){animation-delay:-9s;--dx:6%}
+  .fumarola i{position:absolute;inset:0;background:url(media/fumarola.webp) 0 0/100% 100%;transform-origin:50% 100%;opacity:0;animation:bocanada 24s linear infinite;will-change:transform,opacity}
+  .fumarola i:nth-child(2){animation-delay:-4.8s;--sx:-1;--ox:18%;--dx:-5%}
+  .fumarola i:nth-child(3){animation-delay:-9.6s;--dx:4%}
+  .fumarola i:nth-child(4){animation-delay:-14.4s;--sx:-1;--ox:18%;--dx:-2%}
+  .fumarola i:nth-child(5){animation-delay:-19.2s;--dx:7%}
   @keyframes bocanada{
-    0%{transform:translate(0,8%) scale(.45);opacity:0}
-    18%{opacity:1}
-    60%{opacity:.8}
-    100%{transform:translate(calc(18% + var(--dx,0%)),-75%) scale(1.45) rotate(3deg);opacity:0}
+    0%{transform:translate(var(--ox,0%),6%) scale(calc(var(--sx,1) * .55),.55);opacity:0}
+    14%{opacity:1}
+    55%{opacity:.9}
+    100%{transform:translate(calc(10% + var(--ox,0%) + var(--dx,0%)),-58%) scale(calc(var(--sx,1) * 1.3),1.3) rotate(2deg);opacity:0}
   }
   .nota{position:absolute;font:700 clamp(14px,1.1vw,17px)/1.25 var(--texto);color:var(--obsidiana);white-space:nowrap}
   .nota::before{content:"";position:absolute;background:currentColor}
@@ -299,7 +303,7 @@
             <source media="(max-width:760px)" srcset="media/cordada-vertical.webp">
             <img src="media/cordada.webp" width="1600" height="900" fetchpriority="high" alt="Una cordada sube en fila por la nieve hacia la cumbre humeante del volcán Villarrica, bajo un cielo azul.">
           </picture>
-          <div class="fumarola" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="fumarola" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
           <div class="nota nota--crater"><span>El cráter sigue activo</span></div>
           <div class="nota nota--tu"><span>Aquí vas tú</span></div>
         </div>
