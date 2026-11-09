@@ -1062,7 +1062,7 @@ function fumarola(meta, ms) {
 
 /* ---------- camara ---------- */
 
-const ACERCAR_INICIO = 0.7, CORRER_INICIO = 0.45;
+const ACERCAR_INICIO = 0.55, CORRER_INICIO = 0.55;
 const deGE = (c) => ({ lat: c.lat, lng: c.lng, alt: c.alt, h: c.heading, t: c.tilt, r: c.range });
 
 function rumbo(a, b) {
@@ -1087,12 +1087,12 @@ const enVertical = (v) => {
 };
 function vistaDe(i) {
   const p = PARADAS[i];
-  // la Cafeteria parte un 30 % mas cerca que la toma de Google Earth, con el
+  // al elegir la Cafeteria la camara queda un 45 % mas cerca que la toma de Google Earth, con el
   // centro corrido hacia ella para que no quede fuera de cuadro
   if (i === 0) {
     // en vertical se acerca menos y se corre mas: si no, la Cafeteria cae detras del boton Play
     const vertical = innerHeight > innerWidth;
-    const correr = vertical ? 0.65 : CORRER_INICIO, acercar = vertical ? 0.8 : ACERCAR_INICIO;
+    const correr = vertical ? 0.7 : CORRER_INICIO, acercar = vertical ? 0.7 : ACERCAR_INICIO;
     const v = deGE(p.camara);
     return enVertical({ ...v, lat: mezcla(v.lat, p.lat, correr), lng: mezcla(v.lng, p.lng, correr), alt: mezcla(v.alt, p.alt, correr), r: v.r * acercar });
   }
@@ -1178,15 +1178,16 @@ function animar(ms, cuadro, alTerminar) {
    como cuando se pasa por encima de una loma. Con `dron` el salto es menor y
    la aceleracion mas pareja, como un dron siguiendo el sendero. */
 const seno = (k) => (1 - Math.cos(Math.PI * k)) / 2;
-function volar(desde, hasta, alTerminar, msFijo, { dron = false } = {}) {
+function volar(desde, hasta, alTerminar, msFijo, { dron = false, directo = false } = {}) {
   const dist = metros(desde, hasta);
   const ms = (msFijo ?? (dron ? 2400 + dist * 3.2 : Math.min(5500, Math.max(2000, 1600 + dist * 1.6)))) * lento;
   // giro mas corto entre los dos rumbos. El % de JavaScript conserva el signo:
   // con rumbos acumulados sobre 360 (despues de dar vueltas) daba -360 y la
   // camara se daba una vuelta entera de mas al volver a la Cafeteria.
   const giro = ((((hasta.h - desde.h) % 360) + 540) % 360) - 180;
-  const salto = dron ? Math.min(0.14, dist / 3000) : Math.min(0.45, dist / 1600);
-  const curva = dron ? seno : suave;
+  // directo: sin el arco que aleja la camara a mitad de camino; avanza de frente
+  const salto = directo ? 0 : dron ? Math.min(0.14, dist / 3000) : Math.min(0.45, dist / 1600);
+  const curva = dron || directo ? seno : suave;
   animar(ms, (k) => {
     const e = curva(k), arco = Math.sin(Math.PI * e);
     aplicar({
@@ -1272,7 +1273,7 @@ function irA(i, alTerminar, { puntos = true, conHumo = false } = {}) {
   const hasta = vistaDe(i);
   const desde = estado.vista || vistaDesdeCamara();
   if (!desde || desde.r > 30000) volarLejos(hasta, alTerminar);
-  else volar(desde, hasta, alTerminar, undefined, { dron: i >= DRON_DESDE });
+  else volar(desde, hasta, alTerminar, i === 0 ? 2800 : undefined, { dron: i >= DRON_DESDE, directo: i === 0 });
 }
 
 /* Despues de la vuelta sobre la lava, la camara se aleja girando otra vuelta
@@ -1505,6 +1506,7 @@ function pintarPresentacion() {
 
 function seleccionar(i) {
   ampliarAlcance(i);
+  $('aviso-girar').classList.remove('visible');  // no queda encima de la ficha
   if (estado.i >= 0) marcas[estado.i].billboard.scale = ESCALA_PIN;
   estado.i = i;
   marcas[i].billboard.scale = ESCALA_PIN_ACTIVO;
