@@ -35,7 +35,8 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 /* Nosotros */
 .portada{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;background:var(--noche);color:#fff}
 .portada img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 18%}  /* el grupo queda entero bajo la barra */
-.portada::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,18,46,.94) 0%,rgba(6,18,46,.62) 38%,rgba(6,18,46,.08) 72%,rgba(6,18,46,.42) 100%)}
+/* Capa solo donde hace falta: abajo para el texto y una franja arriba para el menu; la foto queda limpia al centro */
+.portada::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,18,46,.88) 0%,rgba(6,18,46,.5) 26%,rgba(6,18,46,0) 52%),linear-gradient(180deg,rgba(6,18,46,.5) 0%,rgba(6,18,46,0) 20%)}
 .portada__texto{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,5vw,80px);align-items:end;width:100%;padding:0 var(--margen) clamp(32px,6svh,64px)}
 .portada h1{margin:0;font:700 clamp(64px,12vw,216px)/.86 var(--display);font-stretch:82%;letter-spacing:-.025em}
 .portada p{margin:0 0 12px;font-size:clamp(17px,1.35vw,20px);line-height:1.45}
@@ -136,7 +137,8 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .ficha__error{min-height:0;font-size:13px;font-weight:500;color:#ffb3b3}
 .ficha__error:empty{display:none}
 .ficha__trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.ficha__limpiar{min-height:44px;padding:0 18px;border:1.5px solid rgba(255,255,255,.45);border-radius:2px;background:none;color:#fff;font:700 15px var(--texto);cursor:pointer;transition:border-color .2s,background .2s}
+.ficha__limpiar{min-height:52px;padding:0 24px;border:1.5px solid rgba(255,255,255,.4);border-radius:999px;background:rgba(255,255,255,.04);color:#fff;font:700 15px var(--texto);cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.ficha__limpiar:active{transform:scale(.98)}
 .ficha__limpiar:hover{border-color:#fff;background:rgba(255,255,255,.06)}
 .ficha__limpiar:focus-visible{outline:0;outline-offset:3px}
 .reservar.enviando{opacity:.75;cursor:progress}
