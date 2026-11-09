@@ -250,7 +250,7 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .barra[data-claro]{color:inherit}
 .tours-cabeza h1{margin:0 0 clamp(20px,3vw,34px);font:700 clamp(50px,8.4vw,150px)/.9 var(--display);font-stretch:82%;letter-spacing:-.022em}
 .filtros{display:flex;flex-wrap:wrap;gap:8px}
-.filtros button{padding:10px 16px;border:1px solid rgba(255,255,255,.5);border-radius:2px;background:none;color:#fff;font:700 15px/1 var(--texto);cursor:pointer;transition:background .2s,color .2s}
+.filtros button{padding:11px 20px;border:1.5px solid rgba(255,255,255,.45);border-radius:999px;background:none;color:#fff;font:700 15px/1 var(--texto);cursor:pointer;transition:background .2s,color .2s}
 .filtros button:hover{background:rgba(255,255,255,.14)}
 .filtros button[aria-pressed="true"]{background:var(--nieve);color:var(--obsidiana);border-color:var(--nieve)}
 .tarjetas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,3vw,44px) clamp(16px,2vw,28px);margin:0;padding:clamp(34px,4vw,60px) var(--margen) clamp(70px,9vw,120px);list-style:none}

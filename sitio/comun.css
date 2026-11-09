@@ -64,5 +64,5 @@ input:autofill,textarea:autofill,select:autofill{background:transparent}
 .barra.barra--fija{position:fixed;z-index:20;color:var(--nieve);background:rgba(6,18,46,.94);box-shadow:0 6px 18px rgba(0,0,0,.18);transform:translateY(-100%);transition:transform .3s ease}
 .barra.barra--fija.barra--visible{transform:none}
 @media (prefers-reduced-motion:reduce){.barra.barra--fija{transition:none}}
-.barra nav a[aria-current]{margin:0 -12px;padding:7px 12px;border:0;border-radius:2px;background:var(--nieve);color:var(--obsidiana);font-weight:700}
+.barra nav a[aria-current]{margin:0 -14px;padding:7px 14px;border:0;border-radius:999px;background:var(--nieve);color:var(--obsidiana);font-weight:700}
 .menu-movil a[aria-current]{color:var(--azufre)}

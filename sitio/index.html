@@ -131,7 +131,9 @@
   .ficha dd{margin:0;font-weight:700}
   .ficha .ficha__precio{font:700 clamp(24px,2.2vw,32px)/1.1 var(--display);font-stretch:88%}
   .dia__acciones{display:flex;flex-wrap:wrap;gap:12px}
-  .ruta{padding:15px 22px;border:1px solid var(--obsidiana);border-radius:2px;background:none;color:inherit;font:700 16px/1.2 var(--texto);cursor:pointer;transition:background .2s,color .2s}
+  /* Botones secundarios: pastilla con borde, a juego con el boton rojo */
+  .ruta{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border:1.5px solid var(--obsidiana);border-radius:999px;background:none;color:inherit;font:700 16px/1.2 var(--texto);cursor:pointer;transition:background .2s,color .2s,transform .2s}
+  .ruta:active{transform:scale(.98)}
   .ruta:hover{background:var(--obsidiana);color:var(--nieve)}
   .ruta:focus-visible{outline:2px solid var(--lava);outline-offset:3px}
   /* El fondo es el mismo azul del cargador del recorrido: al abrir no hay destello */
@@ -291,7 +293,7 @@
     /* los nombres salen de cada marca como rayos: a la derecha se leen hacia afuera, a la izquierda hacia la marca */
     .rumbo__opcion{font-size:13.5px;padding:10px 7px;translate:0 -50%;transform-origin:0 50%;transform:rotate(calc(var(--a) - 90deg)) translateX(calc(var(--radio) + 6px))}
     .rumbo__opcion--izq{translate:-100% -50%;transform-origin:100% 50%;transform:rotate(calc(var(--a) + 90deg)) translateX(calc((var(--radio) + 6px) * -1))}
-    .rumbo__opcion[aria-pressed="true"]{color:var(--obsidiana);background:var(--nieve);border-radius:2px;opacity:1}
+    .rumbo__opcion[aria-pressed="true"]{color:var(--obsidiana);background:var(--nieve);border-radius:999px;opacity:1}
     /* el margen lateral la deja sola en su fila, y el superior da espacio a la curva */
     .mano{--ancho:min(58vw,270px);position:relative;left:calc(var(--ancho) * -.0813);top:auto;flex:0 0 var(--ancho);margin:calc(var(--radio) - var(--ancho) * .3715 + 84px) calc((100% - var(--ancho)) / 2) calc(var(--ancho) * -.03)}
     .dia__cuerpo{grid-template-columns:1fr}
