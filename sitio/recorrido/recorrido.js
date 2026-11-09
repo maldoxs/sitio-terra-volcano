@@ -1062,7 +1062,7 @@ function fumarola(meta, ms) {
 
 /* ---------- camara ---------- */
 
-const ACERCAR_INICIO = 0.55, CORRER_INICIO = 0.55;
+const CAMARA_CAFETERIA = 1643, CORRER_INICIO = 0.55;
 const deGE = (c) => ({ lat: c.lat, lng: c.lng, alt: c.alt, h: c.heading, t: c.tilt, r: c.range });
 
 function rumbo(a, b) {
@@ -1087,14 +1087,18 @@ const enVertical = (v) => {
 };
 function vistaDe(i) {
   const p = PARADAS[i];
-  // al elegir la Cafeteria la camara queda un 45 % mas cerca que la toma de Google Earth, con el
-  // centro corrido hacia ella para que no quede fuera de cuadro
+  // Cafeteria: centro corrido hacia ella para que no quede fuera de cuadro, y la
+  // distancia se calcula para que la camara quede a CAMARA_CAFETERIA metros de
+  // altura (la cifra "Camara" de abajo), sea cual sea la pantalla
   if (i === 0) {
-    // en vertical se acerca menos y se corre mas: si no, la Cafeteria cae detras del boton Play
-    const vertical = innerHeight > innerWidth;
-    const correr = vertical ? 0.7 : CORRER_INICIO, acercar = vertical ? 0.7 : ACERCAR_INICIO;
+    const correr = innerHeight > innerWidth ? 0.7 : CORRER_INICIO;
     const v = deGE(p.camara);
-    return enVertical({ ...v, lat: mezcla(v.lat, p.lat, correr), lng: mezcla(v.lng, p.lng, correr), alt: mezcla(v.alt, p.alt, correr), r: v.r * acercar });
+    const w = enVertical({ ...v, lat: mezcla(v.lat, p.lat, correr), lng: mezcla(v.lng, p.lng, correr), alt: mezcla(v.alt, p.alt, correr) });
+    const centro = w.alt * exag() + desfase;
+    // la cifra 1643 vale para el relieve de Google; con el de respaldo se usa la
+    // misma distancia sobre la Cafeteria (unos 430 m), porque su altura base es otra
+    const objetivo = google ? CAMARA_CAFETERIA : p.alt * exag() + desfase + 430;
+    return { ...w, r: Math.max(300, (objetivo - centro) / (Math.cos(rad(w.t)) * encuadre())) };
   }
   if (i < DRON_DESDE) return deGE(p.camara);
   return { lat: p.lat, lng: p.lng, alt: p.suelo ?? p.alt, h: rumbo(p, PARADAS[i + 1] ?? p), t: 71, r: 480 };
@@ -1264,7 +1268,8 @@ function orbitar(gradosPorSeg, ms, alTerminar) {
 
 function irA(i, alTerminar, { puntos = true, conHumo = false } = {}) {
   enMarcha = true;
-  esperarInmersivo();
+  // si los controles ya estan escondidos, llegar a otra parada no los devuelve
+  if (!document.body.classList.contains('inmersivo')) esperarInmersivo();
   partir();
   if (i === PARADAS.length - 1) { llegarCumbre(alTerminar, false); return; }
   if (!conHumo) mostrarHumo(false);
