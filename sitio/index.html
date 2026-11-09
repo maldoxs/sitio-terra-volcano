@@ -74,7 +74,7 @@
   .idioma{font-size:14px;font-weight:500;opacity:.85}
   .idioma button{padding:4px 2px;border:0;background:none;color:inherit;font:inherit;cursor:pointer;opacity:.75}
   .idioma button[aria-pressed="true"]{font-weight:700;opacity:1}
-  .idioma button:focus-visible{outline:2px solid var(--azufre);outline-offset:2px}
+  .idioma button:focus-visible{outline:0;outline-offset:2px}
 
   .titular{position:absolute;z-index:2;left:var(--margen);top:clamp(84px,13svh,150px);max-width:min(46vw,760px)}
   .titular h1{margin:0;font:700 clamp(56px,min(8.3vw,16.5svh),150px)/.9 var(--display);font-stretch:82%;letter-spacing:-.022em;text-wrap:balance}
@@ -96,7 +96,7 @@
   .datos__cuenta{position:absolute;inset:0}
   .reservar{display:inline-flex;align-items:center;gap:12px;padding:16px 24px;background:var(--lava);color:#fff;font-weight:700;font-size:16px;border-radius:2px;white-space:nowrap;transition:background .2s}
   .reservar:hover{background:#b30e1f}
-  .reservar:focus-visible,.barra a:focus-visible{outline:2px solid var(--azufre);outline-offset:3px}
+  .reservar:focus-visible,.barra a:focus-visible{outline:0;outline-offset:3px}
 
   /* Una sola imagen de nube, usada en dos capas a distinta velocidad */
   .nube{position:absolute;left:0;right:0;bottom:0;height:125svh;z-index:4;pointer-events:none;background:url(media/nube.webp) repeat-x 0 0/max(1600px,100vw) 100%;transform:translate3d(0,100%,0);will-change:transform}
@@ -143,7 +143,7 @@
   .visor__cerrar:hover{background:rgba(6,18,46,.92)}
   .visor__cerrar{transition:background .2s,opacity .4s}
   .visor__cerrar.oculto{opacity:0;pointer-events:none}
-  .visor__cerrar:focus-visible{outline:2px solid var(--azufre);outline-offset:3px}
+  .visor__cerrar:focus-visible{outline:0;outline-offset:3px}
   .visor__cerrar svg{width:18px;height:18px}
   .pasos{position:relative;list-style:none;margin:0;padding:0 0 0 clamp(26px,3vw,44px)}
   .pasos::before,.pasos__avance{content:"";position:absolute;left:4px;top:10px;bottom:10px;width:2px;background:#d9d7d1}

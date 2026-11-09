@@ -28,8 +28,10 @@
   <section class="hablemos" id="hablemos">
     <div class="hablemos__texto">
       <h1 class="hablemos__titulo">Tu aventura empieza con un mensaje.</h1>
-      <p class="hablemos__bajada">Elige qué quieres hacer y completa tus datos. Te respondemos por WhatsApp.</p>
-      <form class="ficha" id="formulario" data-tipo="ascenso">
+      <p class="hablemos__bajada">Elige qué quieres hacer y déjanos tus datos. Te respondemos al correo o por WhatsApp.</p>
+      <form class="ficha" id="formulario" name="contacto" method="POST" action="/contacto.html" data-netlify="true" netlify-honeypot="sitio-web" novalidate data-tipo="ascenso">
+        <input type="hidden" name="form-name" value="contacto">
+        <p class="ficha__trampa" aria-hidden="true"><label>No llenar este campo <input name="sitio-web" tabindex="-1" autocomplete="off"></label></p>
         <div class="frase__modos" role="radiogroup" aria-label="Qué quieres hacer">
           <label><input type="radio" name="tipo" value="ascenso" checked> Ascenso</label>
           <label><input type="radio" name="tipo" value="ski"> Ski touring</label>
@@ -39,18 +41,27 @@
           <label><input type="radio" name="tipo" value="otra"> Otra consulta</label>
         </div>
         <div class="ficha__campos">
-          <label class="ficha__campo ficha__campo--ancho solo-tour">Tour<select name="tour" required><option value="" disabled selected>Elige un tour</option></select></label>
-          <label class="ficha__campo solo-tour">Fecha<input type="date" name="fecha"></label>
-          <div class="ficha__campo solo-tour"><span id="et-personas">Personas</span><div class="ficha__contador"><button type="button" data-paso="-1" aria-label="Menos personas">−</button><input type="number" name="personas" min="1" max="40" value="2" required aria-labelledby="et-personas"><button type="button" data-paso="1" aria-label="Más personas">+</button></div></div>
-          <label class="ficha__campo">Nombre<input name="nombre" required autocomplete="name" placeholder="Tu nombre"></label>
-          <label class="ficha__campo">Correo<input type="email" name="correo" required autocomplete="email" placeholder="nombre@correo.cl"></label>
-          <label class="ficha__campo ficha__campo--ancho"><span class="solo-tour">Algo más para el guía <small>(opcional)</small></span><span class="solo-otra">Tu consulta</span><textarea name="mensaje" rows="2"></textarea></label>
+          <label class="ficha__campo ficha__campo--ancho solo-tour">Tour<select name="tour" required title="" aria-describedby="error-tour"><option value="" disabled selected>Elige un tour</option></select><span class="ficha__error" id="error-tour"></span></label>
+          <label class="ficha__campo solo-tour"><span>Fecha <small>(opcional)</small></span><input type="date" name="fecha" title="" aria-describedby="error-fecha"><span class="ficha__error" id="error-fecha"></span></label>
+          <div class="ficha__campo solo-tour"><span id="et-personas">Pasajeros</span><div class="ficha__contador"><button type="button" data-paso="-1" aria-label="Menos pasajeros">−</button><input type="number" name="personas" title="" min="1" max="40" value="2" required aria-labelledby="et-personas"><button type="button" data-paso="1" aria-label="Más pasajeros">+</button></div></div>
+          <label class="ficha__campo">Nombre<input name="nombre" required title="" autocomplete="name" maxlength="80" placeholder="Tu nombre" aria-describedby="error-nombre"><span class="ficha__error" id="error-nombre"></span></label>
+          <label class="ficha__campo">Correo<input type="email" name="correo" title="" required autocomplete="email" inputmode="email" maxlength="120" placeholder="nombre@correo.cl" aria-describedby="error-correo"><span class="ficha__error" id="error-correo"></span></label>
+          <label class="ficha__campo ficha__campo--ancho"><span>WhatsApp o teléfono <small>(opcional)</small></span><input type="tel" name="telefono" title="" autocomplete="tel" inputmode="tel" maxlength="20" pattern="\+?[0-9 ]{8,20}" placeholder="+56 9 1234 5678" aria-describedby="error-telefono"><span class="ficha__error" id="error-telefono"></span></label>
+          <label class="ficha__campo ficha__campo--ancho"><span class="solo-tour">Algo más para el guía <small>(opcional)</small></span><span class="solo-otra">Tu consulta</span><textarea name="mensaje" title="" rows="2" maxlength="1500" aria-describedby="error-mensaje"></textarea><span class="ficha__error" id="error-mensaje"></span></label>
         </div>
         <div class="frase__pie">
-          <button class="reservar" type="submit">Enviar por WhatsApp</button>
+          <button class="reservar" type="submit" id="enviar"><span>Enviar</span></button>
+          <button class="ficha__limpiar" type="reset">Limpiar</button>
           <button class="frase__sonido" type="button" id="sonido" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="onda-sonido" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="tachado" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sonido de radio</button>
         </div>
+        <p class="ficha__estado" id="estado" role="status" aria-live="polite"></p>
+        <p class="ficha__whatsapp">¿Prefieres conversar al tiro? <a id="por-whatsapp" href="https://wa.me/56983388317" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p>
       </form>
+      <div class="ficha__exito" id="exito" hidden tabindex="-1">
+        <h2>Mensaje recibido.</h2>
+        <p>Gracias. Te respondemos al correo que nos dejaste.</p>
+        <button class="reservar" type="button" id="otro-mensaje">Enviar otro mensaje</button>
+      </div>
       <select id="catalogo" hidden aria-hidden="true">
         <option value="Ascenso al volcán Villarrica" data-tipo="ascenso">Ascenso al volcán Villarrica</option>
         <option value="Ascenso al volcán Quetrupillán" data-tipo="ascenso">Ascenso al volcán Quetrupillán</option>
@@ -216,6 +227,8 @@
       o.stop(ini + .08);
     });
   };
+  // elegir el tipo de salida suena con un clic corto de un solo tono
+  formulario.querySelectorAll('[name=tipo]').forEach((r) => r.addEventListener('change', () => sonar([1500], .035)));
   const completos = new Set();
   const estaListo = (c) => !c.disabled && c.value.trim() !== '' && c.checkValidity();
   const camposDato = () => [...formulario.elements].filter((c) => c.name && c.name !== 'tipo' && c.type !== 'button' && c.type !== 'submit');
@@ -244,28 +257,114 @@
     }, 1200);
   });
 
-  /* El formulario arma el mensaje y lo abre en WhatsApp: no hay servidor de correo */
-  formulario.addEventListener('submit', (e) => {
-    e.preventDefault();
-    formulario.classList.add('revisada');
-    if (!formulario.reportValidity()) return;
+  /* Envio del formulario: lo recibe Netlify Forms (llega al panel y por correo).
+     Se valida campo por campo con mensajes propios; WhatsApp queda como opcion aparte. */
+  const errores = {
+    es: { nombre: 'Escribe tu nombre.', correo: 'Revisa tu correo: falta o no es válido.', tour: 'Elige un tour.', mensaje: 'Escribe tu consulta.', telefono: 'Revisa el número: solo dígitos y espacios, con + al inicio si quieres.', fecha: 'Elige una fecha desde hoy en adelante.', envio: 'No se pudo enviar. Revisa tu conexión e intenta de nuevo, o escríbenos por WhatsApp.', enviando: 'Enviando…' },
+    en: { nombre: 'Enter your name.', correo: 'Check your email: it is missing or not valid.', tour: 'Choose a tour.', mensaje: 'Write your question.', telefono: 'Check the number: digits and spaces, with an optional + at the start.', fecha: 'Choose a date from today on.', envio: 'It could not be sent. Check your connection and try again, or message us on WhatsApp.', enviando: 'Sending…' },
+  };
+  const textoError = (k) => errores[idioma()][k];
+  const estado = document.getElementById('estado');
+  const botonEnviar = document.getElementById('enviar');
+  const exito = document.getElementById('exito');
+  const hoy = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  formulario.elements.fecha.min = hoy;
+
+  const marcarError = (campo, mensaje) => {
+    const caja = document.getElementById(`error-${campo.name}`);
+    campo.setAttribute('aria-invalid', mensaje ? 'true' : 'false');
+    if (caja) caja.textContent = mensaje || '';
+  };
+  const validar = () => {
+    let primero = null;
+    ['tour', 'fecha', 'nombre', 'correo', 'telefono', 'mensaje'].forEach((n) => {
+      const c = formulario.elements[n];
+      if (c.disabled) { marcarError(c, ''); return; }
+      if (n === 'nombre' || n === 'mensaje') c.value = c.value.replace(/^\s+/, '');
+      const mal = !c.checkValidity() || (c.required && !c.value.trim());
+      marcarError(c, mal ? textoError(n) : '');
+      if (mal && !primero) primero = c;
+    });
+    return primero;
+  };
+  formulario.addEventListener('input', (e) => {
+    if (e.target.getAttribute('aria-invalid') === 'true' && e.target.checkValidity() && (!e.target.required || e.target.value.trim())) marcarError(e.target, '');
+  });
+
+  /* Mensaje armado para WhatsApp con lo que haya escrito, por si prefiere ese canal */
+  const armarTexto = () => {
     const d = new FormData(formulario);
     const en = idioma() === 'en';
-    const tour = selTour.selectedOptions[0].textContent.trim();
-    const fecha = d.get('fecha') ? new Date(`${d.get('fecha')}T12:00`).toLocaleDateString(en ? 'en-US' : 'es-CL', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
-    const extra = d.get('mensaje').trim();
-    const otra = d.get('tipo') === 'otra';
-    const texto = otra
-      ? (en ? `Hi, I'm ${d.get('nombre')}. My email is ${d.get('correo')}.` : `Hola, soy ${d.get('nombre')}. Mi correo es ${d.get('correo')}.`)
-      : en
-      ? `Hi, I'm ${d.get('nombre')}. I'm interested in the tour ${tour}${fecha ? ` on ${fecha}` : ''} with ${d.get('personas')} people. My email is ${d.get('correo')}.`
-      : `Hola, soy ${d.get('nombre')}. Me interesa el tour ${tour}${fecha ? ` el ${fecha}` : ''} con ${d.get('personas')} personas. Mi correo es ${d.get('correo')}.`;
+    const nombre = (d.get('nombre') || '').trim();
+    const tour = !selTour.disabled && selTour.value ? selTour.selectedOptions[0].textContent.trim() : '';
+    const f = d.get('fecha') ? new Date(`${d.get('fecha')}T12:00`).toLocaleDateString(en ? 'en-US' : 'es-CL', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    const partes = [];
+    if (nombre) partes.push(en ? `Hi, I'm ${nombre}.` : `Hola, soy ${nombre}.`);
+    else partes.push(en ? 'Hi!' : '¡Hola!');
+    if (tour) partes.push(en ? `I'm interested in ${tour}${f ? ` on ${f}` : ''} for ${d.get('personas')} passengers.` : `Me interesa ${tour}${f ? ` el ${f}` : ''} para ${d.get('personas')} pasajeros.`);
+    const extra = (d.get('mensaje') || '').trim();
+    return extra ? `${partes.join(' ')}\n\n${extra}` : partes.join(' ');
+  };
+  document.getElementById('por-whatsapp').addEventListener('click', (e) => {
+    e.currentTarget.href = `https://wa.me/56983388317?text=${encodeURIComponent(armarTexto())}`;
+  });
+
+  formulario.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (botonEnviar.disabled) return;  // evita doble envio
+    estado.textContent = '';
+    estado.classList.remove('error');
+    const malo = validar();
+    if (malo) { malo.focus(); return; }
+    botonEnviar.disabled = true;
+    formulario.setAttribute('aria-busy', 'true');
+    botonEnviar.classList.add('enviando');
+    estado.textContent = textoError('enviando');
     clearTimeout(silencio);
-    radio.classList.remove('transmitiendo');
-    radio.classList.add('recibido');
-    avisar('recibido');
-    sonar([900, 1200, 1600], .12);
-    open(`https://wa.me/56983388317?text=${encodeURIComponent(extra ? `${texto}\n\n${extra}` : texto)}`, '_blank', 'noopener');
+    radio.classList.add('transmitiendo');
+    avisar('transmitiendo');
+    try {
+      const datos = new URLSearchParams(new FormData(formulario));
+      const r = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: datos.toString() });
+      if (!r.ok) throw new Error(r.status);
+      radio.classList.remove('transmitiendo');
+      radio.classList.add('recibido');
+      avisar('recibido');
+      sonar([900, 1200, 1600], .12);
+      estado.textContent = '';
+      formulario.hidden = true;
+      exito.hidden = false;
+      exito.focus();
+    } catch {
+      radio.classList.remove('transmitiendo');
+      avisar('abierto');
+      estado.textContent = textoError('envio');
+      estado.classList.add('error');
+    } finally {
+      botonEnviar.disabled = false;
+      botonEnviar.classList.remove('enviando');
+      formulario.removeAttribute('aria-busy');
+    }
+  });
+
+  /* Limpiar: vuelve todo al inicio (tipo Ascenso, 2 personas, sin errores) */
+  formulario.addEventListener('reset', () => {
+    setTimeout(() => {
+      [...formulario.elements].forEach((c) => c.name && marcarError(c, ''));
+      estado.textContent = '';
+      estado.classList.remove('error');
+      completos.clear();
+      cambiarTipo();
+      marcarFecha();
+      radio.classList.remove('transmitiendo', 'recibido');
+      avisar('abierto');
+      formulario.elements.nombre.focus();
+    });
+  });
+  document.getElementById('otro-mensaje').addEventListener('click', () => {
+    formulario.reset();
+    exito.hidden = true;
+    formulario.hidden = false;
   });
 </script>
 </body>

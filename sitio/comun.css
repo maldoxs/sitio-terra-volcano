@@ -4,6 +4,17 @@
 .menu-movil summary::-webkit-details-marker{display:none}
 .menu-movil div{position:absolute;right:0;top:calc(100% + 8px);display:grid;gap:2px;min-width:170px;padding:10px;background:#0A0B0D;color:#F5F4F1;border-radius:2px}
 .menu-movil a{display:block;padding:9px 10px}
+/* Sin contornos de foco en ningun elemento del sitio (pedido del proyecto; la senal para teclado queda pendiente) */
+:focus,:focus-visible{outline:none}
+/* Autocompletar del navegador: sin el fondo claro que pinta Chrome/Safari.
+   El fondo no se puede quitar directo; se le da una transicion eterna para que
+   nunca llegue a verse, y el texto sigue del color del campo */
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus,
+textarea:-webkit-autofill,select:-webkit-autofill{
+  -webkit-text-fill-color:currentColor;caret-color:currentColor;
+  -webkit-box-shadow:0 0 0 1000px transparent inset;
+  transition:background-color 99999s ease-in-out 0s}
+input:autofill,textarea:autofill,select:autofill{background:transparent}
 /* Celular primero: todo lo que se toca mide al menos 44 px y el texto corrido 16 px */
 @media (max-width:760px){
   html .barra>a{min-height:44px;display:flex;align-items:center;padding:0}
