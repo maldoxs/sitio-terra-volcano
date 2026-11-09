@@ -26,21 +26,61 @@
 </header>
 <main>
   <section class="hablemos" id="hablemos">
-    <div>
+    <div class="hablemos__texto">
       <h1>Hablemos antes de subir.</h1>
-      <p class="hablemos__bajada">Cuéntanos qué quieres hacer y cuándo. Te respondemos por WhatsApp.</p>
-      <form class="formulario" id="formulario">
-        <label>Nombre<input name="nombre" required autocomplete="name"></label>
-        <label>Correo electrónico<input name="correo" type="email" required autocomplete="email"></label>
-        <label class="ancho">¿Qué te gustaría hacer?<textarea name="mensaje" rows="3" required></textarea></label>
-        <button class="reservar" type="submit">Enviar por WhatsApp</button>
+      <p class="hablemos__bajada">Completa la frase y te respondemos por WhatsApp.</p>
+      <form class="frase" id="formulario" data-modo="tour">
+        <div class="frase__modos" role="radiogroup" aria-label="Tipo de consulta">
+          <label><input type="radio" name="modo" value="tour" checked> Quiero reservar un tour</label>
+          <label><input type="radio" name="modo" value="otra"> Tengo otra consulta</label>
+        </div>
+        <p class="frase__texto">
+          Hola, soy <input class="frase__campo" name="nombre" required autocomplete="name" size="9" placeholder="tu nombre" aria-label="Nombre"><span class="frase__tour">. Me interesa el tour <select class="frase__campo frase__campo--tour" name="tour" required aria-label="Tour">
+            <option value="" disabled selected>elige uno</option>
+            <option>Ascenso al volcán Villarrica</option>
+            <option>Ascenso al volcán Quetrupillán</option>
+            <option>Ascenso al volcán Lanín</option>
+            <option>Ascenso al volcán Llaima</option>
+            <option>Ascenso al Mocho-Choshuenco</option>
+            <option>Ascenso al volcán Sollipulli</option>
+            <option>Ascenso al volcán Lonquimay</option>
+            <option>Ski touring en el Villarrica</option>
+            <option>Ski touring en el Quetrupillán</option>
+            <option>Ski touring en el Lanín</option>
+            <option>Ski touring en el Llaima</option>
+            <option>Ski touring en el Mocho-Choshuenco</option>
+            <option>Ski touring en el Sollipulli</option>
+            <option>Ski touring en el Lonquimay</option>
+            <option>Travesía Villarrica, 3 días</option>
+            <option>Travesía Villarrica, 5 días</option>
+            <option>Trilogía Araucana</option>
+            <option>Lagos Andinos</option>
+            <option>Parque Nacional Huerquehue</option>
+            <option>Santuario El Cañi</option>
+            <option>Día completo en Huilo-Huilo</option>
+            <option>Nieve sin esquís</option>
+            <option>Rafting alto Trancura</option>
+            <option>Rafting bajo Trancura</option>
+            <option>Canyoning en el Salto del Claro</option>
+            <option>Clase grupal de esquí, 2 horas</option>
+            <option>Clase privada de 1 hora</option>
+            <option>Clase privada de 2 horas con equipo</option>
+            <option>que me recomienden</option>
+          </select> el <input class="frase__campo frase__campo--fecha" type="date" name="fecha" aria-label="Fecha"> con <input class="frase__campo frase__campo--num" type="number" name="personas" min="1" max="40" value="2" required aria-label="Personas"> personas</span>. Mi correo es <input class="frase__campo" type="email" name="correo" required autocomplete="email" size="12" placeholder="tu correo" aria-label="Correo electrónico">.
+        </p>
+        <label class="frase__extra"><span class="solo-tour">¿Algo más que deba saber el guía? <span>(opcional)</span></span><span class="solo-otra">Escribe tu consulta</span><textarea name="mensaje" rows="2"></textarea></label>
+        <div class="frase__pie">
+          <button class="reservar" type="submit">Enviar por WhatsApp</button>
+          <button class="frase__sonido" type="button" id="sonido" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="onda-sonido" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="tachado" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sonido de radio</button>
+        </div>
       </form>
     </div>
-    <div class="brujula-viva" aria-hidden="true">
-      <p class="brujula-viva__nota">Mueve el cursor: la aguja te sigue.</p>
-      <img class="brujula-viva__foto" src="media/rumbo/mano.webp" width="904" height="979" alt="">
-      <img class="brujula-viva__aguja" id="aguja" src="media/rumbo/aguja.webp" width="202" height="202" alt="">
-      <img class="brujula-viva__eje" src="media/rumbo/eje.webp" width="45" height="54" alt="">
+    <div class="radio-viva" id="radio" aria-hidden="true">
+      <img class="radio-viva__foto" src="media/rumbo/radio.webp" width="620" height="941" alt="">
+      <span class="radio-viva__ondas"><i></i><i></i><i></i></span>
+      <span class="radio-viva__pantalla"></span>
+      <span class="radio-viva__boton"></span>
+      <p class="radio-viva__globo" id="globo">Canal abierto. Te escuchamos.</p>
     </div>
   </section>
 
@@ -74,35 +114,136 @@
 <script src="navegacion.js" defer></script>
 <script type="module" src="idioma.js"></script>
 <script>
-  /* El formulario arma el mensaje y lo abre en WhatsApp: no hay servidor de correo */
-  document.getElementById('formulario').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const d = new FormData(e.target);
-    const texto = `${d.get('mensaje')}\n\n${d.get('nombre')} (${d.get('correo')})`;
-    open(`https://wa.me/56983388317?text=${encodeURIComponent(texto)}`, '_blank', 'noopener');
+  /* La radio reacciona al formulario: transmite mientras escribes y confirma al enviar */
+  const formulario = document.getElementById('formulario');
+  const radio = document.getElementById('radio');
+  const globo = document.getElementById('globo');
+  const avisos = {
+    es: { abierto: 'Canal abierto. Te escuchamos.', transmitiendo: 'Transmitiendo…', listo: 'Todo listo. Aprieta enviar.', recibido: 'Recibido, cambio.' },
+    en: { abierto: 'Channel open. We hear you.', transmitiendo: 'Transmitting…', listo: 'All set. Hit send.', recibido: 'Copy that, over.' },
+  };
+  const idioma = () => (document.documentElement.lang === 'en' ? 'en' : 'es');
+  const avisar = (clave) => {
+    const texto = avisos[idioma()][clave];
+    if (globo.textContent === texto) return;
+    globo.textContent = texto;
+    globo.classList.remove('salta');
+    void globo.offsetWidth;
+    globo.classList.add('salta');
+  };
+  /* La fecha vacia se ve apagada, como los otros espacios sin llenar */
+  const fecha = formulario.elements.fecha;
+  const marcarFecha = () => fecha.classList.toggle('vacio', !fecha.value);
+  fecha.addEventListener('input', marcarFecha);
+  marcarFecha();
+  /* Dos tipos de mensaje: reservar un tour o cualquier otra consulta.
+     Los campos del tour se desactivan en "otra", asi no se piden ni se envian */
+  const camposTour = [...formulario.querySelectorAll('.frase__tour .frase__campo')];
+  const cambiarModo = () => {
+    const modo = formulario.elements.modo.value;
+    formulario.dataset.modo = modo;
+    camposTour.forEach((c) => { c.disabled = modo !== 'tour'; });
+    formulario.elements.mensaje.required = modo === 'otra';
+  };
+  formulario.querySelectorAll('[name=modo]').forEach((r) => r.addEventListener('change', cambiarModo));
+  cambiarModo();
+
+  /* Sonido de radio hecho en el navegador, sin archivos: chasquido y doble tono al completar un dato */
+  const botonSonido = document.getElementById('sonido');
+  let conSonido = true;
+  try { conSonido = localStorage.getItem('sonido-radio') !== 'no'; } catch { /* sin almacenamiento */ }
+  const pintarSonido = () => botonSonido.setAttribute('aria-pressed', conSonido);
+  pintarSonido();
+  botonSonido.addEventListener('click', () => {
+    conSonido = !conSonido;
+    pintarSonido();
+    try { localStorage.setItem('sonido-radio', conSonido ? 'si' : 'no'); } catch { /* sin almacenamiento */ }
+    if (conSonido) sonar([1400, 1800]);
+  });
+  let audio = null;
+  const sonar = (tonos, ruido = .06) => {
+    if (!conSonido) return;
+    audio ??= new (window.AudioContext || window.webkitAudioContext)();
+    const t0 = audio.currentTime;
+    const largo = Math.floor(audio.sampleRate * ruido);
+    const buffer = audio.createBuffer(1, largo, audio.sampleRate);
+    const datos = buffer.getChannelData(0);
+    for (let i = 0; i < largo; i++) datos[i] = (Math.random() * 2 - 1) * (1 - i / largo);
+    const chasquido = audio.createBufferSource();
+    chasquido.buffer = buffer;
+    const filtro = audio.createBiquadFilter();
+    filtro.type = 'bandpass';
+    filtro.frequency.value = 2200;
+    const volRuido = audio.createGain();
+    volRuido.gain.value = .12;
+    chasquido.connect(filtro).connect(volRuido).connect(audio.destination);
+    chasquido.start(t0);
+    tonos.forEach((f, i) => {
+      const o = audio.createOscillator();
+      const g = audio.createGain();
+      const ini = t0 + ruido + i * .08;
+      o.type = 'square';
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0, ini);
+      g.gain.linearRampToValueAtTime(.035, ini + .008);
+      g.gain.setValueAtTime(.035, ini + .065);
+      g.gain.linearRampToValueAtTime(0, ini + .075);
+      o.connect(g).connect(audio.destination);
+      o.start(ini);
+      o.stop(ini + .08);
+    });
+  };
+  const completos = new Set();
+  const estaListo = (c) => !c.disabled && c.value.trim() !== '' && c.checkValidity();
+  const camposDato = () => [...formulario.elements].filter((c) => c.name && !['modo'].includes(c.name) && c.type !== 'button' && c.type !== 'submit');
+  camposDato().forEach((c) => { if (estaListo(c)) completos.add(c.name); });
+  const revisarDatos = () => {
+    let nuevo = false;
+    camposDato().forEach((c) => {
+      const ok = estaListo(c);
+      if (ok && !completos.has(c.name)) { completos.add(c.name); nuevo = true; }
+      if (!ok) completos.delete(c.name);
+    });
+    if (nuevo) sonar([1200, 1600]);
+  };
+  /* El texto libre se da por completo al salir del campo, no letra a letra */
+  formulario.addEventListener('change', revisarDatos);
+
+  let silencio = 0;
+  formulario.addEventListener('input', () => {
+    radio.classList.add('transmitiendo');
+    radio.classList.remove('recibido');
+    avisar('transmitiendo');
+    clearTimeout(silencio);
+    silencio = setTimeout(() => {
+      radio.classList.remove('transmitiendo');
+      avisar(formulario.checkValidity() ? 'listo' : 'abierto');
+    }, 1200);
   });
 
-  /* La aguja apunta al cursor */
-  if (matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const aguja = document.getElementById('aguja');
-    const zona = document.getElementById('hablemos');
-    let giro = 0;
-    let pendiente = false;
-    let x = 0;
-    let y = 0;
-    const seguir = () => {
-      pendiente = false;
-      const c = aguja.getBoundingClientRect();
-      const a = Math.atan2(y - (c.top + c.height / 2), x - (c.left + c.width / 2)) * 180 / Math.PI + 90;
-      const destino = a + 62.5;
-      giro += ((destino - giro + 540) % 360) - 180;
-      aguja.style.setProperty('--rumbo', `${giro}deg`);
-    };
-    zona.addEventListener('pointermove', (e) => {
-      x = e.clientX; y = e.clientY;
-      if (!pendiente) { pendiente = true; requestAnimationFrame(seguir); }
-    });
-  }
+  /* El formulario arma el mensaje y lo abre en WhatsApp: no hay servidor de correo */
+  formulario.addEventListener('submit', (e) => {
+    e.preventDefault();
+    formulario.classList.add('revisada');
+    if (!formulario.reportValidity()) return;
+    const d = new FormData(formulario);
+    const en = idioma() === 'en';
+    const tour = formulario.elements.tour.selectedOptions[0].textContent.trim();
+    const fecha = d.get('fecha') ? new Date(`${d.get('fecha')}T12:00`).toLocaleDateString(en ? 'en-US' : 'es-CL', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    const extra = d.get('mensaje').trim();
+    const otra = d.get('modo') === 'otra';
+    const texto = otra
+      ? (en ? `Hi, I'm ${d.get('nombre')}. My email is ${d.get('correo')}.` : `Hola, soy ${d.get('nombre')}. Mi correo es ${d.get('correo')}.`)
+      : en
+      ? `Hi, I'm ${d.get('nombre')}. I'm interested in the tour ${tour}${fecha ? ` on ${fecha}` : ''} with ${d.get('personas')} people. My email is ${d.get('correo')}.`
+      : `Hola, soy ${d.get('nombre')}. Me interesa el tour ${tour}${fecha ? ` el ${fecha}` : ''} con ${d.get('personas')} personas. Mi correo es ${d.get('correo')}.`;
+    clearTimeout(silencio);
+    radio.classList.remove('transmitiendo');
+    radio.classList.add('recibido');
+    avisar('recibido');
+    sonar([900, 1200, 1600], .12);
+    open(`https://wa.me/56983388317?text=${encodeURIComponent(extra ? `${texto}\n\n${extra}` : texto)}`, '_blank', 'noopener');
+  });
 </script>
 </body>
 </html>

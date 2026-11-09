@@ -12,9 +12,10 @@ const piezas = () => {
     const n = paseo.currentNode;
     if (n.nodeValue.trim() && !['SCRIPT', 'STYLE'].includes(n.parentElement.tagName)) lista.push([n, 'nodeValue']);
   }
-  document.querySelectorAll('[alt],[aria-label]').forEach((e) => {
+  document.querySelectorAll('[alt],[aria-label],[placeholder]').forEach((e) => {
     if (e.alt) lista.push([e, 'alt']);
     if (e.hasAttribute('aria-label')) lista.push([e, 'aria-label']);
+    if (e.placeholder) lista.push([e, 'placeholder']);
   });
   return lista;
 };
