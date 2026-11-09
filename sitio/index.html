@@ -130,7 +130,10 @@
   .ficha dt{color:#555a63}
   .ficha dd{margin:0;font-weight:700}
   .ficha .ficha__precio{font:700 clamp(24px,2.2vw,32px)/1.1 var(--display);font-stretch:88%}
-  .dia__acciones{display:flex;flex-wrap:wrap;gap:12px}
+  /* Reservar arriba a todo el ancho; los dos secundarios debajo, del mismo tamano */
+  .dia__acciones{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:560px}
+  .dia__acciones .reservar{grid-column:1/-1;justify-content:center}
+  .dia__acciones .ruta{width:100%;padding:0 12px;text-align:center}
   /* Botones secundarios: pastilla con borde, a juego con el boton rojo */
   .ruta{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border:1.5px solid var(--obsidiana);border-radius:999px;background:none;color:inherit;font:700 16px/1.2 var(--texto);cursor:pointer;transition:background .2s,color .2s,transform .2s}
   .ruta:active{transform:scale(.98)}
@@ -210,7 +213,28 @@
   .opiniones h2{margin:0;font:700 clamp(46px,6.4vw,110px)/.94 var(--display);font-stretch:84%;letter-spacing:-.02em}
   .opiniones__cabeza p{margin:0;max-width:30em}
   .opiniones__cabeza a{display:inline-block;margin-top:12px;font-weight:700;color:var(--lava);text-underline-offset:3px;text-decoration:underline}
-  .citas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,4vw,64px);margin:0;padding:0;list-style:none}
+  /* Opiniones en carrusel: pista con desplazamiento por tarjetas. Tres a la vista en
+     escritorio, una y media en celular para invitar a deslizar. Los mandos aparecen
+     solo si hay mas opiniones que las que caben. */
+  .citas{--ver:3;--gap:clamp(24px,4vw,64px);display:flex;gap:var(--gap);margin:0;padding:0 0 6px;list-style:none;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-x:contain}
+  .citas::-webkit-scrollbar{display:none}
+  .citas>li{flex:0 0 calc((100% - (var(--ver) - 1) * var(--gap)) / var(--ver));scroll-snap-align:start}
+  .citas figcaption a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+  .citas figcaption a:hover{color:var(--lava)}
+  .carrusel__mandos{display:flex;align-items:center;gap:14px;margin-top:clamp(24px,3vw,36px)}
+  .carrusel__mandos[hidden]{display:none}
+  .carrusel__flecha{display:grid;place-items:center;width:46px;height:46px;border:1.5px solid var(--obsidiana);border-radius:50%;background:none;color:var(--obsidiana);cursor:pointer;transition:background .2s,color .2s,transform .2s}
+  .carrusel__flecha:hover{background:var(--obsidiana);color:var(--nieve)}
+  .carrusel__flecha:active{transform:scale(.95)}
+  .carrusel__flecha svg{width:20px;height:20px}
+  .carrusel__puntos{display:flex;gap:8px}
+  .carrusel__puntos button{width:8px;height:8px;padding:0;border:0;border-radius:999px;background:rgba(10,11,13,.25);cursor:pointer;transition:width .3s,background .3s}
+  .carrusel__puntos button[aria-current="true"]{width:26px;background:var(--obsidiana)}
+  /* Cifras de la portada enlazadas: toda la cifra es el enlace */
+  .datos div{position:relative}
+  .datos dt a{color:inherit;text-decoration:none}
+  .datos dt a::after{content:"";position:absolute;inset:-6px -10px}
+  .datos dt a:hover{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
   .citas blockquote{margin:0;font:600 clamp(21px,1.9vw,29px)/1.2 var(--display);font-stretch:90%;letter-spacing:-.008em}
   .citas figure{margin:0;border-top:2px solid var(--obsidiana);padding-top:16px}
   .citas figcaption{margin-top:14px;font-size:15px;color:#555a63}
@@ -274,7 +298,8 @@
     .visor__cerrar span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
     .pilares{grid-template-columns:1fr;gap:22px}
     .pilares div{padding:0;border-left:0}
-    .opiniones__cabeza,.citas,.pie-sitio__fila{grid-template-columns:1fr}
+    .opiniones__cabeza,.pie-sitio__fila{grid-template-columns:1fr}
+    .citas{--ver:1.15;--gap:20px}
     /* En celular la brujula va abajo, con la lista arriba y las categorias entre ambas */
     .rumbo{height:auto;--radio:min(31vw,130px)}
     .rumbo__fija{position:relative;height:auto;min-height:100svh;display:flex;flex-direction:column;padding-top:22px}
@@ -299,7 +324,7 @@
     .dia__cuerpo{grid-template-columns:1fr}
     .dia__fija{position:static}
     .dia__acciones .reservar{width:100%;justify-content:center}
-    .dia__acciones .ruta{flex:1 1 40%;padding:14px 10px;text-align:center;font-size:15px}
+    .dia__acciones .ruta{font-size:15px}
     .incluye{grid-template-columns:1fr;gap:24px}
     .incluye ul{columns:1}
   }
@@ -353,9 +378,9 @@
         <div>
         <p class="bajada">Un guía cada tres personas, desde Pucón hasta el cráter.</p>
         <dl class="datos">
-          <div><dt>#1 en Pucón</dt><dd>Tripadvisor</dd></div>
-          <div><dt>4,8 de 5</dt><dd>141 opiniones en Google</dd></div>
-          <div><dt>Desde 2015</dt><dd>Agencia familiar</dd></div>
+          <div><dt><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">#1 en Pucón</a></dt><dd>Tripadvisor</dd></div>
+          <div><dt><a href="https://www.google.com/maps/search/?api=1&query=Terra%20Volcano%20Puc%C3%B3n" target="_blank" rel="noopener">4,8 de 5</a></dt><dd>141 opiniones en Google</dd></div>
+          <div><dt><a href="nosotros.html">Desde 2015</a></dt><dd>Agencia familiar</dd></div>
         </dl>
         </div>
         <a class="reservar" href="https://wa.me/56983388317">Reservar por WhatsApp</a>
@@ -571,11 +596,18 @@
         <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html">Ver opiniones en Tripadvisor</a>
       </div>
     </div>
-    <ul class="citas">
-      <li><figure><blockquote>La mejor experiencia que he tenido en Chile. Una agencia de alta calidad, con total dedicación a cada viajero.</blockquote><figcaption>Carlos B, en Tripadvisor</figcaption></figure></li>
-      <li><figure><blockquote>Excelente equipo de profesionales. Cuidaron muy bien a todo el grupo. La parte técnica de todos fue 100/100.</blockquote><figcaption>flyer13955555012, en Tripadvisor</figcaption></figure></li>
-      <li><figure><blockquote>Muy buenos guías. Se adaptaron a quienes iban más lento, y cuando algunos se devolvieron, fueron a buscarlos.</blockquote><figcaption>Elias Francisco V, en Tripadvisor</figcaption></figure></li>
+    <div class="carrusel" id="carrusel" aria-roledescription="carrusel" aria-label="Opiniones de viajeros">
+    <ul class="citas" id="citas">
+      <li><figure><blockquote>La mejor experiencia que he tenido en Chile. Una agencia de alta calidad, con total dedicación a cada viajero.</blockquote><figcaption>Carlos B, en <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Excelente equipo de profesionales. Cuidaron muy bien a todo el grupo. La parte técnica de todos fue 100/100.</blockquote><figcaption>flyer13955555012, en <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Muy buenos guías. Se adaptaron a quienes iban más lento, y cuando algunos se devolvieron, fueron a buscarlos.</blockquote><figcaption>Elias Francisco V, en <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Tripadvisor</a></figcaption></figure></li>
     </ul>
+    <div class="carrusel__mandos" id="mandos" hidden>
+      <button type="button" class="carrusel__flecha" id="cita-ant" aria-label="Opinión anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="carrusel__puntos" id="puntos"></div>
+      <button type="button" class="carrusel__flecha" id="cita-sig" aria-label="Opinión siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    </div>
     <div class="sellos">
       <img loading="lazy" src="media/sellos/tripadvisor.jpg" width="250" height="130" alt="Tripadvisor Travelers' Choice 2024">
       <img loading="lazy" src="media/sellos/sello-s.jpg" width="250" height="130" alt="Sello S de turismo sustentable">
@@ -623,6 +655,59 @@
       if (e.origin === location.origin && e.data?.tipo === 'recorrido-inmersivo') cerrar.classList.toggle('oculto', e.data.on);
     });
     visor.addEventListener('close', () => cerrar.classList.remove('oculto'));
+  }
+  /* Carrusel de opiniones: flechas, puntos, deslizar y avance solo cada 6 s.
+     Se detiene al pasar el mouse, al tocar o al enfocar, y no avanza solo si hay
+     movimiento reducido. Si todas las opiniones caben, no muestra mandos. */
+  {
+    const pista = document.getElementById('citas');
+    const mandos = document.getElementById('mandos');
+    const puntos = document.getElementById('puntos');
+    const tarjetas = [...pista.children];
+    let reloj = 0;
+    let quieta = false;
+    const porVista = () => Math.max(1, Math.round(pista.clientWidth / tarjetas[0].getBoundingClientRect().width));
+    const paginas = () => Math.max(1, tarjetas.length - porVista() + 1);
+    const actual = () => Math.round(pista.scrollLeft / (tarjetas[1] ? tarjetas[1].offsetLeft - tarjetas[0].offsetLeft : 1));
+    const ir = (i) => {
+      const n = paginas();
+      const j = (i + n) % n;
+      pista.scrollTo({ left: tarjetas[j].offsetLeft - tarjetas[0].offsetLeft });
+    };
+    const pintar = () => {
+      const n = paginas();
+      mandos.hidden = n < 2;
+      if (puntos.children.length !== n) {
+        puntos.replaceChildren(...Array.from({ length: n }, (_, i) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('aria-label', `Opinión ${i + 1} de ${n}`);
+          b.addEventListener('click', () => { ir(i); reiniciar(); });
+          return b;
+        }));
+      }
+      const a = Math.min(actual(), n - 1);
+      [...puntos.children].forEach((b, i) => b.setAttribute('aria-current', String(i === a)));
+    };
+    const reiniciar = () => {
+      clearInterval(reloj);
+      if (quieto || quieta || paginas() < 2) return;
+      reloj = setInterval(() => ir(actual() + 1), 6000);
+    };
+    document.getElementById('cita-ant').addEventListener('click', () => { ir(actual() - 1); reiniciar(); });
+    document.getElementById('cita-sig').addEventListener('click', () => { ir(actual() + 1); reiniciar(); });
+    let espera = 0;
+    pista.addEventListener('scroll', () => { cancelAnimationFrame(espera); espera = requestAnimationFrame(pintar); }, { passive: true });
+    const carrusel = document.getElementById('carrusel');
+    const parar = (v) => () => { quieta = v; reiniciar(); };
+    carrusel.addEventListener('pointerenter', parar(true));
+    carrusel.addEventListener('pointerleave', parar(false));
+    carrusel.addEventListener('focusin', parar(true));
+    carrusel.addEventListener('focusout', parar(false));
+    pista.addEventListener('touchstart', parar(true), { passive: true });
+    addEventListener('resize', () => { pintar(); reiniciar(); });
+    pintar();
+    reiniciar();
   }
   /* Cifras de la portada: cuentan rapido hasta su valor. El numero animado va en una capa
      aparte, asi el texto real (el que traduce idioma.js) nunca cambia */

@@ -155,6 +155,7 @@ export const EN = {
   'Tour': 'Tour', 'Fecha': 'Date', 'Personas': 'People',
   '¿Algo más que deba saber el guía?': 'Anything else your guide should know?', '(opcional)': '(optional)',
   'Canal abierto. Te escuchamos.': 'Channel open. We hear you.',
+  'Opiniones de viajeros': 'Traveler reviews', 'Opinión anterior': 'Previous review', 'Opinión siguiente': 'Next review',
   'Elige qué quieres hacer y déjanos tus datos. Te respondemos al correo o por WhatsApp.': 'Choose what you want to do and leave us your details. We reply by email or WhatsApp.',
   'WhatsApp o teléfono': 'WhatsApp or phone', 'Pasajeros': 'Passengers', 'Menos pasajeros': 'Fewer passengers', 'Más pasajeros': 'More passengers', 'Enviar': 'Send', 'Limpiar': 'Clear',
   '¿Prefieres conversar al tiro?': 'Rather chat right away?', 'Escríbenos por WhatsApp': 'Message us on WhatsApp',
