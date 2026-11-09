@@ -3,6 +3,7 @@ import { EN_TOURS } from './textos-tours.js';
 /* Textos en ingles del home. Se carga solo cuando el visitante usa ingles. */
 export const EN = {
   'Ascenso': 'Ascent', 'Tu día': 'Your day', 'Tours': 'Tours', 'Nosotros': 'About us',
+  'Volver a Tours': 'Back to Tours',
   'Un guía cada tres personas, desde Pucón hasta el cráter.': 'One guide for every three people, from Pucón to the crater.',
   'El cráter sigue activo': 'The crater is still active',
   'Aquí vas tú': 'This is you',
