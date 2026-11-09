@@ -1062,7 +1062,7 @@ function fumarola(meta, ms) {
 
 /* ---------- camara ---------- */
 
-const CAMARA_CAFETERIA = 1643, CORRER_INICIO = 0.55;
+const CAMARA_CAFETERIA = 1643, CORRER_INICIO = 0.8;
 const deGE = (c) => ({ lat: c.lat, lng: c.lng, alt: c.alt, h: c.heading, t: c.tilt, r: c.range });
 
 function rumbo(a, b) {
@@ -1091,13 +1091,13 @@ function vistaDe(i) {
   // distancia se calcula para que la camara quede a CAMARA_CAFETERIA metros de
   // altura (la cifra "Camara" de abajo), sea cual sea la pantalla
   if (i === 0) {
-    const correr = innerHeight > innerWidth ? 0.7 : CORRER_INICIO;
+    const correr = CORRER_INICIO;  // con el centro casi sobre la Cafeteria, a 1643 m queda delante de la camara
     const v = deGE(p.camara);
     const w = enVertical({ ...v, lat: mezcla(v.lat, p.lat, correr), lng: mezcla(v.lng, p.lng, correr), alt: mezcla(v.alt, p.alt, correr) });
     const centro = w.alt * exag() + desfase;
     // la cifra 1643 vale para el relieve de Google; con el de respaldo se usa la
-    // misma distancia sobre la Cafeteria (unos 430 m), porque su altura base es otra
-    const objetivo = google ? CAMARA_CAFETERIA : p.alt * exag() + desfase + 430;
+    // misma altura sobre la Cafeteria (200 m: 1643 - 1443), porque su altura base es otra
+    const objetivo = google ? CAMARA_CAFETERIA : p.alt * exag() + desfase + (CAMARA_CAFETERIA - p.alt);
     return { ...w, r: Math.max(300, (objetivo - centro) / (Math.cos(rad(w.t)) * encuadre())) };
   }
   if (i < DRON_DESDE) return deGE(p.camara);
