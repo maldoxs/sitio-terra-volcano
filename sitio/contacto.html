@@ -27,53 +27,60 @@
 <main>
   <section class="hablemos" id="hablemos">
     <div class="hablemos__texto">
-      <h1>Hablemos antes de subir.</h1>
-      <p class="hablemos__bajada">Completa la frase y te respondemos por WhatsApp.</p>
-      <form class="frase" id="formulario" data-modo="tour">
-        <div class="frase__modos" role="radiogroup" aria-label="Tipo de consulta">
-          <label><input type="radio" name="modo" value="tour" checked> Quiero reservar un tour</label>
-          <label><input type="radio" name="modo" value="otra"> Tengo otra consulta</label>
+      <h1 class="hablemos__titulo">Tu aventura empieza con un mensaje.</h1>
+      <p class="hablemos__bajada">Elige qué quieres hacer y completa tus datos. Te respondemos por WhatsApp.</p>
+      <form class="ficha" id="formulario" data-tipo="ascenso">
+        <div class="frase__modos" role="radiogroup" aria-label="Qué quieres hacer">
+          <label><input type="radio" name="tipo" value="ascenso" checked> Ascenso</label>
+          <label><input type="radio" name="tipo" value="ski"> Ski touring</label>
+          <label><input type="radio" name="tipo" value="excursion"> Excursión</label>
+          <label><input type="radio" name="tipo" value="aventura"> Aventura</label>
+          <label><input type="radio" name="tipo" value="clases"> Clases de esquí</label>
+          <label><input type="radio" name="tipo" value="otra"> Otra consulta</label>
         </div>
-        <p class="frase__texto">
-          Hola, soy <input class="frase__campo" name="nombre" required autocomplete="name" size="9" placeholder="tu nombre" aria-label="Nombre"><span class="frase__tour">. Me interesa el tour <select class="frase__campo frase__campo--tour" name="tour" required aria-label="Tour">
-            <option value="" disabled selected>elige uno</option>
-            <option>Ascenso al volcán Villarrica</option>
-            <option>Ascenso al volcán Quetrupillán</option>
-            <option>Ascenso al volcán Lanín</option>
-            <option>Ascenso al volcán Llaima</option>
-            <option>Ascenso al Mocho-Choshuenco</option>
-            <option>Ascenso al volcán Sollipulli</option>
-            <option>Ascenso al volcán Lonquimay</option>
-            <option>Ski touring en el Villarrica</option>
-            <option>Ski touring en el Quetrupillán</option>
-            <option>Ski touring en el Lanín</option>
-            <option>Ski touring en el Llaima</option>
-            <option>Ski touring en el Mocho-Choshuenco</option>
-            <option>Ski touring en el Sollipulli</option>
-            <option>Ski touring en el Lonquimay</option>
-            <option>Travesía Villarrica, 3 días</option>
-            <option>Travesía Villarrica, 5 días</option>
-            <option>Trilogía Araucana</option>
-            <option>Lagos Andinos</option>
-            <option>Parque Nacional Huerquehue</option>
-            <option>Santuario El Cañi</option>
-            <option>Día completo en Huilo-Huilo</option>
-            <option>Nieve sin esquís</option>
-            <option>Rafting alto Trancura</option>
-            <option>Rafting bajo Trancura</option>
-            <option>Canyoning en el Salto del Claro</option>
-            <option>Clase grupal de esquí, 2 horas</option>
-            <option>Clase privada de 1 hora</option>
-            <option>Clase privada de 2 horas con equipo</option>
-            <option>que me recomienden</option>
-          </select> el <input class="frase__campo frase__campo--fecha" type="date" name="fecha" aria-label="Fecha"> con <input class="frase__campo frase__campo--num" type="number" name="personas" min="1" max="40" value="2" required aria-label="Personas"> personas</span>. Mi correo es <input class="frase__campo" type="email" name="correo" required autocomplete="email" size="12" placeholder="tu correo" aria-label="Correo electrónico">.
-        </p>
-        <label class="frase__extra"><span class="solo-tour">¿Algo más que deba saber el guía? <span>(opcional)</span></span><span class="solo-otra">Escribe tu consulta</span><textarea name="mensaje" rows="2"></textarea></label>
+        <div class="ficha__campos">
+          <label class="ficha__campo ficha__campo--ancho solo-tour">Tour<select name="tour" required><option value="" disabled selected>Elige un tour</option></select></label>
+          <label class="ficha__campo solo-tour">Fecha<input type="date" name="fecha"></label>
+          <div class="ficha__campo solo-tour"><span id="et-personas">Personas</span><div class="ficha__contador"><button type="button" data-paso="-1" aria-label="Menos personas">−</button><input type="number" name="personas" min="1" max="40" value="2" required aria-labelledby="et-personas"><button type="button" data-paso="1" aria-label="Más personas">+</button></div></div>
+          <label class="ficha__campo">Nombre<input name="nombre" required autocomplete="name" placeholder="Tu nombre"></label>
+          <label class="ficha__campo">Correo<input type="email" name="correo" required autocomplete="email" placeholder="nombre@correo.cl"></label>
+          <label class="ficha__campo ficha__campo--ancho"><span class="solo-tour">Algo más para el guía <small>(opcional)</small></span><span class="solo-otra">Tu consulta</span><textarea name="mensaje" rows="2"></textarea></label>
+        </div>
         <div class="frase__pie">
           <button class="reservar" type="submit">Enviar por WhatsApp</button>
           <button class="frase__sonido" type="button" id="sonido" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="onda-sonido" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="tachado" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sonido de radio</button>
         </div>
       </form>
+      <select id="catalogo" hidden aria-hidden="true">
+        <option value="Ascenso al volcán Villarrica" data-tipo="ascenso">Ascenso al volcán Villarrica</option>
+        <option value="Ascenso al volcán Quetrupillán" data-tipo="ascenso">Ascenso al volcán Quetrupillán</option>
+        <option value="Ascenso al volcán Lanín" data-tipo="ascenso">Ascenso al volcán Lanín</option>
+        <option value="Ascenso al volcán Llaima" data-tipo="ascenso">Ascenso al volcán Llaima</option>
+        <option value="Ascenso al Mocho-Choshuenco" data-tipo="ascenso">Ascenso al Mocho-Choshuenco</option>
+        <option value="Ascenso al volcán Sollipulli" data-tipo="ascenso">Ascenso al volcán Sollipulli</option>
+        <option value="Ascenso al volcán Lonquimay" data-tipo="ascenso">Ascenso al volcán Lonquimay</option>
+        <option value="Travesía Villarrica, 3 días" data-tipo="ascenso">Travesía Villarrica, 3 días</option>
+        <option value="Travesía Villarrica, 5 días" data-tipo="ascenso">Travesía Villarrica, 5 días</option>
+        <option value="Trilogía Araucana" data-tipo="ascenso">Trilogía Araucana</option>
+        <option value="Ski touring en el Villarrica" data-tipo="ski">Ski touring en el Villarrica</option>
+        <option value="Ski touring en el Quetrupillán" data-tipo="ski">Ski touring en el Quetrupillán</option>
+        <option value="Ski touring en el Lanín" data-tipo="ski">Ski touring en el Lanín</option>
+        <option value="Ski touring en el Llaima" data-tipo="ski">Ski touring en el Llaima</option>
+        <option value="Ski touring en el Mocho-Choshuenco" data-tipo="ski">Ski touring en el Mocho-Choshuenco</option>
+        <option value="Ski touring en el Sollipulli" data-tipo="ski">Ski touring en el Sollipulli</option>
+        <option value="Ski touring en el Lonquimay" data-tipo="ski">Ski touring en el Lonquimay</option>
+        <option value="Lagos Andinos" data-tipo="excursion">Lagos Andinos</option>
+        <option value="Parque Nacional Huerquehue" data-tipo="excursion">Parque Nacional Huerquehue</option>
+        <option value="Santuario El Cañi" data-tipo="excursion">Santuario El Cañi</option>
+        <option value="Día completo en Huilo-Huilo" data-tipo="excursion">Día completo en Huilo-Huilo</option>
+        <option value="Nieve sin esquís" data-tipo="excursion">Nieve sin esquís</option>
+        <option value="Rafting alto Trancura" data-tipo="aventura">Rafting alto Trancura</option>
+        <option value="Rafting bajo Trancura" data-tipo="aventura">Rafting bajo Trancura</option>
+        <option value="Canyoning en el Salto del Claro" data-tipo="aventura">Canyoning en el Salto del Claro</option>
+        <option value="Clase grupal de esquí, 2 horas" data-tipo="clases">Clase grupal de esquí, 2 horas</option>
+        <option value="Clase privada de 1 hora" data-tipo="clases">Clase privada de 1 hora</option>
+        <option value="Clase privada de 2 horas con equipo" data-tipo="clases">Clase privada de 2 horas con equipo</option>
+      </select>
     </div>
     <div class="radio-viva" id="radio" aria-hidden="true">
       <img class="radio-viva__foto" src="media/rumbo/radio.webp" width="620" height="941" alt="">
@@ -136,17 +143,33 @@
   const marcarFecha = () => fecha.classList.toggle('vacio', !fecha.value);
   fecha.addEventListener('input', marcarFecha);
   marcarFecha();
-  /* Dos tipos de mensaje: reservar un tour o cualquier otra consulta.
-     Los campos del tour se desactivan en "otra", asi no se piden ni se envian */
-  const camposTour = [...formulario.querySelectorAll('.frase__tour .frase__campo')];
-  const cambiarModo = () => {
-    const modo = formulario.elements.modo.value;
-    formulario.dataset.modo = modo;
-    camposTour.forEach((c) => { c.disabled = modo !== 'tour'; });
-    formulario.elements.mensaje.required = modo === 'otra';
+  /* Cada tipo de salida muestra solo sus tours; "Otra consulta" oculta tour, fecha y personas
+     y pide el texto. Los tours se copian desde #catalogo, que el traductor ya tradujo */
+  const catalogo = document.getElementById('catalogo');
+  const selTour = formulario.elements.tour;
+  const camposTour = [...formulario.querySelectorAll('.solo-tour select, .solo-tour input')];
+  const llenarTours = () => {
+    const tipo = formulario.elements.tipo.value;
+    const previo = selTour.value;
+    [...selTour.options].slice(1).forEach((o) => o.remove());
+    [...catalogo.options].filter((o) => o.dataset.tipo === tipo).forEach((o) => selTour.add(o.cloneNode(true)));
+    selTour.value = [...selTour.options].some((o) => o.value === previo) ? previo : '';
   };
-  formulario.querySelectorAll('[name=modo]').forEach((r) => r.addEventListener('change', cambiarModo));
-  cambiarModo();
+  const cambiarTipo = () => {
+    const otra = formulario.elements.tipo.value === 'otra';
+    formulario.dataset.tipo = formulario.elements.tipo.value;
+    camposTour.forEach((c) => { c.disabled = otra; });
+    formulario.elements.mensaje.required = otra;
+    if (!otra) llenarTours();
+  };
+  formulario.querySelectorAll('[name=tipo]').forEach((r) => r.addEventListener('change', cambiarTipo));
+  new MutationObserver(llenarTours).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  cambiarTipo();
+  formulario.querySelectorAll('[data-paso]').forEach((b) => b.addEventListener('click', () => {
+    const n = formulario.elements.personas;
+    n.value = Math.min(40, Math.max(1, (Number(n.value) || 1) + Number(b.dataset.paso)));
+    n.dispatchEvent(new Event('input', { bubbles: true }));
+  }));
 
   /* Sonido de radio hecho en el navegador, sin archivos: chasquido y doble tono al completar un dato */
   const botonSonido = document.getElementById('sonido');
@@ -195,7 +218,7 @@
   };
   const completos = new Set();
   const estaListo = (c) => !c.disabled && c.value.trim() !== '' && c.checkValidity();
-  const camposDato = () => [...formulario.elements].filter((c) => c.name && !['modo'].includes(c.name) && c.type !== 'button' && c.type !== 'submit');
+  const camposDato = () => [...formulario.elements].filter((c) => c.name && c.name !== 'tipo' && c.type !== 'button' && c.type !== 'submit');
   camposDato().forEach((c) => { if (estaListo(c)) completos.add(c.name); });
   const revisarDatos = () => {
     let nuevo = false;
@@ -228,10 +251,10 @@
     if (!formulario.reportValidity()) return;
     const d = new FormData(formulario);
     const en = idioma() === 'en';
-    const tour = formulario.elements.tour.selectedOptions[0].textContent.trim();
+    const tour = selTour.selectedOptions[0].textContent.trim();
     const fecha = d.get('fecha') ? new Date(`${d.get('fecha')}T12:00`).toLocaleDateString(en ? 'en-US' : 'es-CL', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
     const extra = d.get('mensaje').trim();
-    const otra = d.get('modo') === 'otra';
+    const otra = d.get('tipo') === 'otra';
     const texto = otra
       ? (en ? `Hi, I'm ${d.get('nombre')}. My email is ${d.get('correo')}.` : `Hola, soy ${d.get('nombre')}. Mi correo es ${d.get('correo')}.`)
       : en

@@ -107,6 +107,28 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .frase__sonido svg{width:22px;height:22px}
 .frase__sonido[aria-pressed="true"] .tachado,.frase__sonido[aria-pressed="false"] .onda-sonido{display:none}
 .frase__sonido:focus-visible{outline:2px solid var(--azufre);outline-offset:3px}
+/* Ficha de contacto (propuesta B): tipo de salida en botones y campos con linea inferior */
+.hablemos h1.hablemos__titulo{font-size:clamp(44px,5.4vw,92px);max-width:10.5em}
+.ficha{max-width:680px}
+.ficha__campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 28px}
+.ficha__campo{display:grid;gap:4px;align-content:start;font-size:13px;font-weight:700;color:#c9d2e6}
+.ficha__campo--ancho{grid-column:1/-1}
+.ficha__campo small{font-size:13px;font-weight:400}
+.ficha__campo input,.ficha__campo select,.ficha__campo textarea{width:100%;padding:8px 0;border:0;border-bottom:2px solid rgba(255,255,255,.5);border-radius:0;background:none;color:#fff;font:500 19px/1.3 var(--texto);outline:0;resize:none;transition:border-color .2s}
+.ficha__campo input::placeholder{color:rgba(255,255,255,.4)}
+.ficha__campo :is(input,select,textarea):focus{border-color:var(--azufre)}
+.ficha__campo :is(input,select,textarea):focus-visible{outline:2px solid var(--azufre);outline-offset:4px}
+.ficha__campo select{appearance:none;padding-right:1.4em;cursor:pointer;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23DAAD25' stroke-width='2'/%3E%3C/svg%3E") 100% 55%/.7em no-repeat}
+.ficha__campo select:invalid,.ficha__campo input.vacio{color:rgba(255,255,255,.4)}
+.ficha__campo option{color:var(--noche)}
+.ficha__campo input[type=date]{color-scheme:dark;cursor:pointer}
+.ficha__contador{display:flex;align-items:center;gap:10px;border-bottom:2px solid rgba(255,255,255,.5);padding:2px 0}
+.ficha__contador input{width:3ch;border:0;padding:4px 0;text-align:center;appearance:textfield;-moz-appearance:textfield}
+.ficha__contador input::-webkit-inner-spin-button,.ficha__contador input::-webkit-outer-spin-button{appearance:none;margin:0}
+.ficha__contador button{width:40px;height:40px;border:1.5px solid rgba(255,255,255,.45);border-radius:50%;background:none;color:#fff;font:500 20px/1 var(--texto);cursor:pointer}
+.ficha__contador button:hover{border-color:#fff}
+.revisada .ficha__campo :is(input,select,textarea):invalid{border-color:#ff8a8a}
+.ficha[data-tipo="otra"] .solo-tour,.ficha:not([data-tipo="otra"]) .solo-otra{display:none}
 .frase__extra{display:block;margin-top:clamp(18px,2.4vw,28px);font-size:15px;font-weight:700}
 .frase__extra span{font-weight:400;opacity:.7}
 .frase__extra textarea{display:block;width:100%;margin-top:6px;padding:8px 0;border:0;border-bottom:2px solid rgba(255,255,255,.5);border-radius:0;background:none;color:#fff;font:400 18px/1.4 var(--texto);resize:none;outline:0;transition:border-color .2s}
@@ -244,6 +266,8 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
   .hablemos::before{inset:0 0 auto;width:100%;height:min(100vw,600px);background-position:30% 0;-webkit-mask-image:linear-gradient(180deg,#000 40%,transparent 100%);mask-image:linear-gradient(180deg,#000 40%,transparent 100%)}
   .hablemos::after{background:linear-gradient(180deg,rgba(6,18,46,.35) 0%,rgba(6,18,46,.62) 45%,rgba(6,18,46,.62) 100%)}
   .frase__texto{font-size:clamp(23px,6.4vw,30px);line-height:1.75}
+  .ficha__campos{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 18px}
+  .ficha__campo:not(.solo-tour){grid-column:1/-1}
   .radio-viva{width:72%;margin:0 -6% -40px auto;justify-self:end}
   .radio-viva__globo{right:30%;font-size:13px;padding:8px 11px}
   .aca{min-height:92svh}
