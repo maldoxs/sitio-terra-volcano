@@ -179,6 +179,12 @@
   .altimetro__btn:hover{opacity:.9}
   .altimetro__btn:focus-visible{outline:2px solid var(--azufre);outline-offset:2px;border-radius:4px}
   .altimetro__btn[aria-current="step"]{opacity:1;font-weight:600}
+  /* Antes de elegir parada: sin cursor, y la Cafeteria parpadea en blanco para que se toque */
+  .altimetro.invita .altimetro__cursor{opacity:0}
+  .altimetro.invita .altimetro__hito:first-child::before{animation:invita 1.2s ease-in-out infinite}
+  .altimetro.invita .altimetro__hito:first-child .altimetro__btn{opacity:1;font-weight:600;animation:invita-texto 1.2s ease-in-out infinite}
+  @keyframes invita{50%{background:#fff;border-color:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.25),0 0 14px rgba(255,255,255,.8)}}
+  @keyframes invita-texto{50%{text-shadow:0 0 10px rgba(255,255,255,.95),0 1px 2px rgba(0,0,0,.9)}}
   .altimetro__ficha{position:fixed;left:22px;top:18px;z-index:12;width:300px;font-family:"Public Sans",system-ui,sans-serif;color:#fff}
   .altimetro__ficha[hidden]{display:none}
   .altimetro__ficha-in{padding:14px 18px 16px;border-radius:2px;background:rgba(10,11,13,.66);box-shadow:0 8px 24px rgba(0,0,0,.25)}
@@ -439,6 +445,6 @@
 <!-- la version en la direccion evita que el navegador use una copia vieja -->
 <!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
 <script src="./config.js?v=20261104"></script>
-<script type="module" src="./recorrido.js?v=20261109d"></script>
+<script type="module" src="./recorrido.js?v=20261109f"></script>
 </body>
 </html>

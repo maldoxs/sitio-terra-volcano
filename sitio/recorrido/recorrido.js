@@ -1089,11 +1089,12 @@ function vistaDe(i) {
   const p = PARADAS[i];
   // la Cafeteria parte un 30 % mas cerca que la toma de Google Earth, con el
   // centro corrido hacia ella para que no quede fuera de cuadro
-  // En vertical queda la toma original: mas cerca, la Cafeteria cae detras del boton Play
-  if (i === 0 && innerHeight > innerWidth) return enVertical(deGE(p.camara));
   if (i === 0) {
+    // en vertical se acerca menos y se corre mas: si no, la Cafeteria cae detras del boton Play
+    const vertical = innerHeight > innerWidth;
+    const correr = vertical ? 0.65 : CORRER_INICIO, acercar = vertical ? 0.8 : ACERCAR_INICIO;
     const v = deGE(p.camara);
-    return enVertical({ ...v, lat: mezcla(v.lat, p.lat, CORRER_INICIO), lng: mezcla(v.lng, p.lng, CORRER_INICIO), alt: mezcla(v.alt, p.alt, CORRER_INICIO), r: v.r * ACERCAR_INICIO });
+    return enVertical({ ...v, lat: mezcla(v.lat, p.lat, correr), lng: mezcla(v.lng, p.lng, correr), alt: mezcla(v.alt, p.alt, correr), r: v.r * acercar });
   }
   if (i < DRON_DESDE) return deGE(p.camara);
   return { lat: p.lat, lng: p.lng, alt: p.suelo ?? p.alt, h: rumbo(p, PARADAS[i + 1] ?? p), t: 71, r: 480 };
@@ -1261,6 +1262,8 @@ function orbitar(gradosPorSeg, ms, alTerminar) {
 /* ---------- presentacion ---------- */
 
 function irA(i, alTerminar, { puntos = true, conHumo = false } = {}) {
+  enMarcha = true;
+  esperarInmersivo();
   partir();
   if (i === PARADAS.length - 1) { llegarCumbre(alTerminar, false); return; }
   if (!conHumo) mostrarHumo(false);
@@ -1331,10 +1334,12 @@ function presentar(desde) {
   ciclo(desde ?? (estado.i < 0 || estado.i >= PARADAS.length - 1 ? 0 : estado.i));
 }
 
-/* Mientras se presenta, a los 2,5 s sin tocar nada se esconden los controles
-   (y la X del visor del inicio, por mensaje); cualquier toque o tecla los
-   devuelve y vuelve a contar. */
+/* Desde que el recorrido parte (Play, 360 o una parada elegida a mano), a los
+   2,5 s sin tocar nada se esconden los controles y la X del visor del inicio
+   (por mensaje). La barra de paradas no se esconde nunca. Cualquier toque o
+   tecla los devuelve y vuelve a contar. */
 let reloj = 0;
+let enMarcha = false;
 function inmersivo(on) {
   document.body.classList.toggle('inmersivo', on);
   if (parent !== window) parent.postMessage({ tipo: 'recorrido-inmersivo', on }, location.origin);
@@ -1342,15 +1347,14 @@ function inmersivo(on) {
 function esperarInmersivo() {
   clearTimeout(reloj);
   inmersivo(false);
-  if (estado.tocando) reloj = setTimeout(() => { if (estado.tocando) inmersivo(true); }, 2500);
+  if (enMarcha) reloj = setTimeout(() => inmersivo(true), 2500);
 }
 ['pointerdown', 'keydown', 'wheel'].forEach((t) => addEventListener(t, esperarInmersivo, { passive: true }));
 addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') esperarInmersivo(); }, { passive: true });
 
 function pausar() {
   estado.tocando = false;
-  clearTimeout(reloj);
-  inmersivo(false);
+  esperarInmersivo();
   $('btn-360').setAttribute('aria-pressed', 'false');
   fumarola(0, 2500);
   pintarPresentacion();
@@ -1442,8 +1446,11 @@ function contarHasta(meta) {
 }
 
 function marcarAltimetro(i) {
-  alti.caja.hidden = i < 0;
-  alti.caja.inert = i < 0;
+  // la barra de paradas siempre se ve; sin parada elegida no hay cursor y la
+  // Cafeteria parpadea en blanco invitando a empezar
+  alti.caja.hidden = false;
+  alti.caja.inert = false;
+  alti.caja.classList.toggle('invita', i < 0);
   alti.ficha.hidden = i < 0 || !alti.partio;
   if (i < 0 || i === alti.i || !alti.btns.length) return;
   const primera = alti.i == null;
@@ -1559,6 +1566,8 @@ $('chk-linea').addEventListener('change', (e) => { $('opc-linea').checked = e.ta
    la camara vuelve a la Cafeteria. */
 function vuelta360() {
   pausar(); cancelar();
+  enMarcha = true;
+  esperarInmersivo();
   const btn = $('btn-360');
   btn.setAttribute('aria-pressed', 'true');
   const fin = () => btn.setAttribute('aria-pressed', 'false');
@@ -1703,9 +1712,10 @@ visor.clock.shouldAnimate = true;
 pintarCreditos();
 pintarLista();
 completarCotas();
-// arranca mirando la Cafeteria, sin parada activa ni puntos: el primero
-// aparece cuando se elige la Cafeteria o se aprieta Play
-aplicar(vistaDe(0));
+// arranca con la toma amplia de Google Earth, sin parada activa ni puntos.
+// Al elegir la Cafeteria (o Play) la camara se acerca y recien ahi aparece su punto
+aplicar(enVertical(deGE(PARADAS[0].camara)));
+marcarAltimetro(-1);  // la barra se ve desde el inicio, con la Cafeteria invitando
 
 /* Precarga en segundo plano. Medido en Chrome el 2026-10-31: al abrir la toma
    del volcan entero por primera vez llegan cientos de teselas juntas y el
