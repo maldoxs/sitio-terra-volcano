@@ -41,6 +41,16 @@
   .fumarola i:nth-child(3){animation-delay:-9.6s;--dx:4%}
   .fumarola i:nth-child(4){animation-delay:-14.4s;--sx:-1;--ox:18%;--dx:-2%}
   .fumarola i:nth-child(5){animation-delay:-19.2s;--dx:7%}
+  /* Brote bajo: dos bocanadas espejadas que no suben, solo se inflan a ras del crater
+     para llenar el hueco entre el humo de la izquierda y la columna */
+  .fumarola i:nth-child(6),.fumarola i:nth-child(7){--sx:-1;--ox:-4%;animation-name:brote;animation-duration:16s}
+  .fumarola i:nth-child(7){animation-delay:-8s;--ox:2%}
+  @keyframes brote{
+    0%{transform:translate(var(--ox),4%) scale(-.5,.5);opacity:0}
+    20%{opacity:.95}
+    65%{opacity:.8}
+    100%{transform:translate(calc(var(--ox) + 4%),-22%) scale(-.95,.95);opacity:0}
+  }
   @keyframes bocanada{
     0%{transform:translate(var(--ox,0%),6%) scale(calc(var(--sx,1) * .55),.55);opacity:0}
     14%{opacity:1}
@@ -303,7 +313,7 @@
             <source media="(max-width:760px)" srcset="media/cordada-vertical.webp">
             <img src="media/cordada.webp" width="1600" height="900" fetchpriority="high" alt="Una cordada sube en fila por la nieve hacia la cumbre humeante del volcán Villarrica, bajo un cielo azul.">
           </picture>
-          <div class="fumarola" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="fumarola" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="nota nota--crater"><span>El cráter sigue activo</span></div>
           <div class="nota nota--tu"><span>Aquí vas tú</span></div>
         </div>
