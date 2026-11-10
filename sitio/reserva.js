@@ -12,7 +12,7 @@
       dias: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
       pasajeros: 'Pasajeros', menos: 'Quitar un pasajero', mas: 'Agregar un pasajero',
       anterior: 'Mes anterior', siguiente: 'Mes siguiente', divisa: 'Divisa',
-      pocos: 'Pocos cupos', total: 'Total', ver: 'Ver fechas y reservar',
+      total: 'Total', ver: 'Ver fechas y reservar',
       reservar: (d, n) => `Reservar el ${d} · ${n} ${n === 1 ? 'pasajero' : 'pasajeros'}`,
       quedan: (c) => (c === 0 ? 'completo' : `quedan ${c} cupos`),
       fecha: (d, m) => `${d} de ${m}`,
@@ -22,7 +22,7 @@
       dias: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
       pasajeros: 'Passengers', menos: 'Remove a passenger', mas: 'Add a passenger',
       anterior: 'Previous month', siguiente: 'Next month', divisa: 'Currency',
-      pocos: 'Few spots left', total: 'Total', ver: 'See dates and book',
+      total: 'Total', ver: 'See dates and book',
       reservar: (d, n) => `Book ${d} · ${n} ${n === 1 ? 'passenger' : 'passengers'}`,
       quedan: (c) => (c === 0 ? 'full' : `${c} spots left`),
       fecha: (d, m) => `${m} ${d}`,
@@ -34,6 +34,7 @@
   const t = () => TEXTOS[idioma()];
 
   let tasas = { CLP: 1 };
+  let orden = ['CLP'];
   let decimales = { CLP: 0 };
   let divisa = leer('divisa') || 'CLP';
 
@@ -58,18 +59,24 @@
         if (guardado) n.nodeValue = guardado.molde.replace('{}', formato(guardado.clp));
       }
     });
-    document.querySelectorAll('[data-divisa]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.divisa === divisa));
+    const nombres = new Intl.DisplayNames([idioma()], { type: 'currency' });
+    document.querySelectorAll('.divisas').forEach((caja) => {
+      caja.querySelector('b').textContent = divisa;
+      const lista = caja.querySelector('select');
+      lista.setAttribute('aria-label', t().divisa);
+      lista.innerHTML = orden.map((c) => `<option value="${c}">${c} · ${nombres.of(c).replace(/^./, (l) => l.toUpperCase())}</option>`).join('');
+      lista.value = divisa;
+    });
   };
 
+  /* Menu nativo encima de la pastilla: en el celular abre el selector del
+     sistema y la pastilla solo muestra el codigo elegido. */
   const selector = () => {
-    const caja = document.createElement('div');
+    const caja = document.createElement('label');
     caja.className = 'divisas';
-    caja.setAttribute('role', 'group');
-    caja.innerHTML = Object.keys(tasas).map((c) => `<button type="button" data-divisa="${c}" aria-pressed="${c === divisa}">${c}</button>`).join('');
-    caja.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-divisa]');
-      if (!b) return;
-      divisa = b.dataset.divisa;
+    caja.innerHTML = '<b></b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><select></select>';
+    caja.querySelector('select').addEventListener('change', (e) => {
+      divisa = e.target.value;
       guardar('divisa', divisa);
       todo();
     });
@@ -122,16 +129,15 @@
         const f = new Date(y, mo, d);
         const c = cupos(tour, f);
         const no = f <= hoy || c < s.n;
-        const pocos = !no && c <= 2;
         const elegido = s.fecha && +s.fecha === +f;
-        dias += `<button type="button" data-fecha="${+f}" class="${pocos ? 'pocos' : ''}" aria-pressed="${!!elegido}"${no ? ' disabled' : ''} aria-label="${x.fecha(d, x.meses[mo])}, ${x.quedan(f <= hoy ? 0 : c)}">${d}</button>`;
+        const esHoy = +f === +hoy;
+        dias += `<button type="button" data-fecha="${+f}" class="${esHoy ? 'hoy' : ''}"${esHoy ? ' aria-current="date"' : ''} aria-pressed="${!!elegido}"${no ? ' disabled' : ''} aria-label="${x.fecha(d, x.meses[mo])}, ${x.quedan(f <= hoy ? 0 : c)}">${d}</button>`;
       }
       caja.innerHTML = `
         <div class="agenda__fila"><span>${x.pasajeros}</span>
           <div class="agenda__contador"><button type="button" data-paso="-1" aria-label="${x.menos}"${s.n <= minimo ? ' disabled' : ''}>−</button><output aria-live="polite">${s.n}</output><button type="button" data-paso="1" aria-label="${x.mas}"${s.n >= 12 ? ' disabled' : ''}>+</button></div></div>
         <div class="agenda__mes"><button type="button" data-mes="-1" aria-label="${x.anterior}"${primerMes ? ' disabled' : ''}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><b>${x.meses[mo]} ${y}</b><button type="button" data-mes="1" aria-label="${x.siguiente}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
         <div class="agenda__grilla">${dias}</div>
-        <p class="agenda__nota"><i aria-hidden="true"></i>${x.pocos}</p>
         <p class="agenda__total"><span>${x.total}</span><b>${formato(clp * s.n)}</b></p>`;
       boton.textContent = s.fecha ? x.reservar(x.fecha(s.fecha.getDate(), x.meses[s.fecha.getMonth()]), s.n) : x.ver;
     };
@@ -173,6 +179,7 @@
     .then((d) => {
       tasas = d.clpPorUnidad;
       decimales = d.decimales;
+      orden = d.orden;
       if (!tasas[divisa]) divisa = 'CLP';
     })
     .catch(() => { divisa = 'CLP'; })

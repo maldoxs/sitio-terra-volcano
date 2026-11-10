@@ -228,10 +228,27 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .tour__pasos li::before{content:counter(paso);grid-row:span 2;font:700 26px/1.1 var(--display);font-stretch:84%;color:var(--lava)}
 .tour__pasos h3{margin:0;font:700 clamp(20px,1.8vw,26px)/1.15 var(--display);font-stretch:88%}
 .tour__pasos p{margin:4px 0 0;max-width:38em}
-.tour__lista{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,60px)}
-.tour__lista h2{font-size:clamp(25px,2.4vw,38px)}
-.tour__lista ul{margin:0 0 26px;padding:0;list-style:none}
-.tour__lista li{padding:8px 0;border-top:1px solid #d9d7d1;line-height:1.4}
+/* Incluye, No incluye y Que traer: cajas que se abren con el + */
+.tour__lista{display:grid;gap:12px;interpolate-size:allow-keywords}
+.plegable{border:1px solid #d9d7d1;border-radius:18px;background:rgba(255,255,255,.6);transition:background .25s,border-color .25s}
+.plegable:hover{border-color:#b9b6ae}
+.plegable[open]{background:#fff;border-color:#cfccc4}
+.plegable summary{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:clamp(12px,1.6vw,22px);padding:clamp(16px,1.8vw,22px) clamp(18px,2vw,26px);list-style:none;cursor:pointer}
+.plegable summary::-webkit-details-marker{display:none}
+.plegable__num{font:700 14px/1 var(--texto);color:var(--lava);letter-spacing:.04em}
+.plegable h2{margin:0;font-size:clamp(24px,2.2vw,34px)}
+.plegable__cuenta{font-size:14px;color:#6b6f78}
+.plegable__signo{position:relative;width:42px;height:42px;border:1.5px solid currentColor;border-radius:50%;transition:background .25s,color .25s,transform .35s cubic-bezier(.3,.7,.2,1)}
+.plegable__signo::before,.plegable__signo::after{content:"";position:absolute;left:50%;top:50%;width:14px;height:2px;margin:-1px 0 0 -7px;border-radius:2px;background:currentColor;transition:transform .35s cubic-bezier(.3,.7,.2,1)}
+.plegable__signo::after{transform:rotate(90deg)}
+.plegable summary:hover .plegable__signo{background:var(--obsidiana);color:#fff;border-color:var(--obsidiana)}
+.plegable[open] .plegable__signo{background:var(--obsidiana);color:#fff;border-color:var(--obsidiana);transform:rotate(180deg)}
+.plegable[open] .plegable__signo::after{transform:rotate(0)}
+.plegable::details-content{block-size:0;overflow:hidden;transition:block-size .35s cubic-bezier(.3,.7,.2,1),content-visibility .35s allow-discrete}
+.plegable[open]::details-content{block-size:auto}
+.plegable ul{margin:0;padding:0 clamp(18px,2vw,26px) clamp(14px,1.6vw,20px) calc(clamp(18px,2vw,26px) + 2.4em);list-style:none}
+.plegable li{padding:10px 0;border-top:1px solid #e6e3dc;line-height:1.45}
+@media (prefers-reduced-motion:reduce){.plegable::details-content,.plegable__signo,.plegable__signo::before,.plegable__signo::after{transition:none}}
 .reserva{position:sticky;top:24px;padding:clamp(20px,2vw,28px);background:var(--obsidiana);color:var(--nieve);border-radius:2px}
 .reserva p{margin:0}
 @media (min-width:761px) and (max-width:1050px){.tarjetas{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -244,14 +261,14 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .reserva .reservar{width:100%}
 .reserva__otro{display:block;margin-top:12px;text-align:center;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 /* Divisa, pasajeros y calendario de la tarjeta de reserva (reserva.js) */
-.divisas{display:flex;gap:6px}
-.divisas button{min-width:44px;min-height:32px;padding:0 10px;border:1px solid rgba(245,244,241,.3);border-radius:999px;background:none;color:inherit;font:700 12px/1 var(--texto);letter-spacing:.04em;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
-.divisas button:hover{border-color:rgba(245,244,241,.7)}
-.divisas button[aria-pressed="true"]{background:var(--nieve);color:var(--obsidiana);border-color:var(--nieve)}
+.divisas{position:relative;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px 0 14px;border:1px solid rgba(245,244,241,.35);border-radius:999px;font:700 13px/1 var(--texto);letter-spacing:.04em;cursor:pointer;transition:border-color .2s,background .2s}
+.divisas:hover{border-color:rgba(245,244,241,.8);background:rgba(245,244,241,.08)}
+.divisas:focus-within{border-color:var(--nieve)}
+.divisas svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.divisas select{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;font-size:16px}
 .reserva__cabeza{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .tours-cabeza .divisas{margin-top:14px}
-.tours-cabeza .divisas button{border-color:rgba(255,255,255,.45);color:#fff}
-.tours-cabeza .divisas button[aria-pressed="true"]{color:var(--obsidiana)}
+.tours-cabeza .divisas{color:#fff;border-color:rgba(255,255,255,.45)}
 .agenda{margin-top:18px;padding-top:16px;border-top:1px solid rgba(245,244,241,.26)}
 .agenda__fila,.agenda__mes,.agenda__total{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .agenda__fila span{color:#c9c8c4}
@@ -271,11 +288,8 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .agenda__grilla button{position:relative;justify-self:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:none;color:#fff;font:500 14px/1 var(--texto);cursor:pointer;transition:background .15s,color .15s}
 .agenda__grilla button:hover:not(:disabled){background:rgba(245,244,241,.14)}
 .agenda__grilla button:disabled{color:rgba(245,244,241,.28);cursor:default}
-.agenda__grilla button.pocos::after,.agenda__nota i{content:"";position:absolute;left:50%;bottom:4px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--azufre)}
 .agenda__grilla button[aria-pressed="true"]{background:var(--nieve);color:var(--obsidiana);font-weight:700}
-.agenda__grilla button[aria-pressed="true"]::after{background:var(--lava)}
-.agenda__nota{display:flex;align-items:center;gap:8px;margin-top:8px!important;font-size:13px;color:#c9c8c4}
-.agenda__nota i{position:static;margin:0}
+.agenda__grilla button.hoy{background:rgba(245,244,241,.16);color:#fff}
 .agenda__total{margin:14px 0 4px!important;padding-top:14px;border-top:1px solid rgba(245,244,241,.26)}
 .agenda__total span{color:#c9c8c4}
 .agenda__total b{font:700 24px/1 var(--display);font-stretch:88%}
@@ -324,7 +338,7 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
   .tour{grid-template-columns:1fr}
   .tarjetas{grid-template-columns:1fr}
   .reserva{position:static;order:-1}
-  .tour__lista{grid-template-columns:1fr}
+  .plegable ul{padding-left:clamp(18px,2vw,26px)}
   .brujula-viva{width:74%;margin:10px 0 -60px auto;justify-self:end}
   .brujula-viva__nota{display:none}
   .hablemos::before{inset:0 0 auto;width:100%;height:min(100vw,600px);background-position:30% 0;-webkit-mask-image:linear-gradient(180deg,#000 40%,transparent 100%);mask-image:linear-gradient(180deg,#000 40%,transparent 100%)}

@@ -198,6 +198,8 @@ export const EN = {
   'Nos juntamos a las 6:00 en la agencia para un día lleno de emociones y paisajes impresionantes. Llegaremos a la cumbre, a 2.847 metros sobre el nivel del mar. Es ideal para quienes buscan superar sus límites, conectar con la naturaleza y disfrutar un día inolvidable, en familia o con amigos. Nuestro equipo estará contigo en cada paso, cuidando tu seguridad y comodidad.': 'Join us from 6:00 AM at our agency for a day full of emotions and breathtaking landscapes. We will reach the summit at 2,847 meters above sea level. It is ideal for those who want to go beyond their limits, connect with nature and enjoy an unforgettable day with family or friends. Our team will be with you every step of the way, ensuring your safety and comfort.',
   'El día, paso a paso': 'The day, step by step',
   'No incluye': 'Not included', 'Qué traer': 'What to bring',
+  '1 ítem': '1 item', '2 ítems': '2 items', '3 ítems': '3 items', '4 ítems': '4 items', '5 ítems': '5 items', '6 ítems': '6 items', '7 ítems': '7 items', '8 ítems': '8 items', '9 ítems': '9 items', '10 ítems': '10 items',
+
   'Entrada al parque nacional (CONAF)': 'National park entry (CONAF)',
   'Chaqueta, cubrepantalón, bastones, guantes, polainas y botas de media montaña': 'Wind jacket, overpants, hiking poles, gloves, gaiters and mid-high mountain boots',
   'Crampones, mochila de 32 litros, piolet, casco y máscara de gas': 'Crampons, 32-liter backpack, ice axe, helmet and gas mask',
