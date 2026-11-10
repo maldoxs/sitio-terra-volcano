@@ -121,6 +121,7 @@ export const EN = {
   'Saltar fotos': 'Skip photos',
   'Menú': 'Menu', 'Inicio': 'Home', 'Contacto': 'Contact',
   /* nosotros */
+  'Cuatro personas abrazadas sonríen en la nieve, con casco y ropa de montaña, y un bosque detrás.': 'Four people with their arms around each other smile in the snow, wearing helmets and mountain clothing, with a forest behind them.',
   'Somos de acá.': 'We are from here.', 'Tres guías en la cumbre con la bandera de Chile, con el volcán Lanín al fondo.': 'Three guides on the summit with the Chilean flag, with Lanín Volcano behind.', 'Somos locales.': 'We are locals.',
   'Somos una empresa local de escalada en Pucón, fundada por el escalador chileno Richard Diaz en 2015. Ofrecemos aventuras guiadas en la montaña y otras actividades al aire libre.': 'We are a local climbing company in Pucón, founded by Chilean climber Richard Diaz in 2015. We offer guided mountain adventures and other outdoor activities.',
   'Una pasión de toda la vida por los Andes, hecha oficio: guía experta, seguridad y las ganas de compartir estos paisajes.': 'A lifelong passion for the Andes turned into a craft: expert guidance, safety and the desire to share these landscapes.',
