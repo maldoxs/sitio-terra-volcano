@@ -219,7 +219,9 @@
   .citas{--ver:3;--gap:clamp(24px,4vw,64px);display:flex;gap:var(--gap);margin:0;padding:0 0 6px;list-style:none;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-x:contain}
   .citas::-webkit-scrollbar{display:none}
   .citas>li{flex:0 0 calc((100% - (var(--ver) - 1) * var(--gap)) / var(--ver));scroll-snap-align:start}
-  .citas figcaption a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+  .citas figcaption{display:grid;gap:2px}
+  .citas figcaption b{color:var(--obsidiana);font-weight:700}
+  .citas figcaption a{width:fit-content;margin-top:6px;color:inherit;text-decoration:underline;text-underline-offset:3px}
   .citas figcaption a:hover{color:var(--lava)}
   .carrusel__mandos{display:flex;align-items:center;gap:14px;margin-top:clamp(24px,3vw,36px)}
   .carrusel__mandos[hidden]{display:none}
@@ -235,7 +237,7 @@
   .datos dt a{color:inherit;text-decoration:none}
   .datos dt a::after{content:"";position:absolute;inset:-6px -10px}
   .datos dt a:hover{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
-  .citas blockquote{margin:0;font:600 clamp(21px,1.9vw,29px)/1.2 var(--display);font-stretch:90%;letter-spacing:-.008em}
+  .citas blockquote{margin:0;font:600 clamp(19px,1.55vw,24px)/1.25 var(--display);font-stretch:90%;letter-spacing:-.006em}
   .citas figure{margin:0;border-top:2px solid var(--obsidiana);padding-top:16px}
   .citas figcaption{margin-top:14px;font-size:15px;color:#555a63}
   .sellos{display:flex;flex-wrap:wrap;gap:clamp(14px,2.4vw,34px);align-items:center;margin-top:clamp(40px,5vw,70px);mix-blend-mode:multiply}
@@ -378,8 +380,8 @@
         <div>
         <p class="bajada">Un guía cada tres personas, desde Pucón hasta el cráter.</p>
         <dl class="datos">
-          <div><dt><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">#1 en Pucón</a></dt><dd>Tripadvisor</dd></div>
-          <div><dt><a href="https://www.google.com/maps/search/?api=1&query=Terra%20Volcano%20Puc%C3%B3n" target="_blank" rel="noopener">4,8 de 5</a></dt><dd>141 opiniones en Google</dd></div>
+          <div><dt><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">#1 en Pucón</a></dt><dd>De 147 tours en Tripadvisor</dd></div>
+          <div><dt><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">5,0 de 5</a></dt><dd>666 opiniones en Tripadvisor</dd></div>
           <div><dt><a href="nosotros.html">Desde 2015</a></dt><dd>Agencia familiar</dd></div>
         </dl>
         </div>
@@ -592,15 +594,22 @@
     <div class="opiniones__cabeza">
       <h2>#1 en Pucón.</h2>
       <div>
-        <p>Quienes ya subieron eligen a Terra Volcano para ascensos, ski touring y aventuras en Pucón: primer lugar en Tripadvisor y 4,8 de 5 en Google, con 141 opiniones.</p>
+        <p>Quienes ya subieron eligen a Terra Volcano para ascensos, ski touring y aventuras en Pucón: N.º 1 de 147 tours en Tripadvisor, con 5,0 de 5 en 666 opiniones, y 4,8 de 5 en <a class="opiniones__google" href="https://www.google.com/maps/search/?api=1&query=Terra%20Volcano%20Puc%C3%B3n" target="_blank" rel="noopener">Google</a>.</p>
         <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html">Ver opiniones en Tripadvisor</a>
       </div>
     </div>
     <div class="carrusel" id="carrusel" aria-roledescription="carrusel" aria-label="Opiniones de viajeros">
     <ul class="citas" id="citas">
-      <li><figure><blockquote>La mejor experiencia que he tenido en Chile. Una agencia de alta calidad, con total dedicación a cada viajero.</blockquote><figcaption>Carlos B, en <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Tripadvisor</a></figcaption></figure></li>
-      <li><figure><blockquote>Excelente equipo de profesionales. Cuidaron muy bien a todo el grupo. La parte técnica de todos fue 100/100.</blockquote><figcaption>flyer13955555012, en <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Tripadvisor</a></figcaption></figure></li>
-      <li><figure><blockquote>Muy buenos guías. Se adaptaron a quienes iban más lento, y cuando algunos se devolvieron, fueron a buscarlos.</blockquote><figcaption>Elias Francisco V, en <a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Richard, nuestro guía, el más top! Soy de Andorra pero para que me entendáis, como un español, y con el se siente cercano, acogedor y muy profesional. No tuvimos suerte con el temporal pero la experiencia fue 10/5.</blockquote><figcaption><b>Seaside24792894894</b><span>Ascenso al Villarrica, oct. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Los guías de este viaje hicieron que la experiencia fuera completa. Fueron comprensivos, expertos, atentos y divertidos durante toda la subida al volcán. Sabían cómo mantener la moral alta a la vez que nos animaban. Me sentí seguro todo el tiempo.</blockquote><figcaption><b>Lila N</b><span>Ascenso al Villarrica, oct. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Una excelente experiencia, Felipe siempre atento y con el objetivo de alcanzar la cumbre un día maravilloso, agradecer el apoyo para alcanzar la cumbre y la bajada en culopatin 100% recomendables de inicio a fin.</blockquote><figcaption><b>Yissele C</b><span>Ascenso al Villarrica, oct. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Excelente atención, muy amables, hermosa experiencia!</blockquote><figcaption><b>Nicolás L</b><span>Ascenso al Villarrica, oct. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Personal muy, muy amable, todos hicieron que el día fuera muy agradable. Lo recomendaría al 100 %.</blockquote><figcaption><b>Harry T</b><span>Ascenso al Villarrica, oct. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Verdaderamente increíble, la mejor caminata en la que he estado.</blockquote><figcaption><b>Daniel L</b><span>Ascenso al Villarrica, oct. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Muy buen servicio la atención y acompañamiento de la agencia y el guía fue excelente.</blockquote><figcaption><b>Daniel Santiago A</b><span>Trekking por Lagunas Andinas, oct. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Muy buena agencia, brindan información a tiempo y si hay cambios de planes por clima u otros eventos, gestionan y solucionan para que tu experiencia en la ciudad sea agradable.</blockquote><figcaption><b>Josimar Arroyo D</b><span>Ski touring en el Villarrica, oct. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Experiencia excelente, reservé un par de viajes con Terra Volcano y quedé muy satisfecho con ambos. Mi guía de esquí para el volcán Villarrica es increíble, valora la seguridad por encima de todo, pero también quería que me lo pasara muy bien. Lo recomiendo encarecidamente.</blockquote><figcaption><b>Andrew Hanes</b><span>Ski touring en el Villarrica, sept. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
+      <li><figure><blockquote>Fue una excursión increíble con unos guías increíbles. Tenían muchos conocimientos y experiencia. ¡Lo volvería a hacer al 100 %!</blockquote><figcaption><b>Road40038998661</b><span>Ascenso al Villarrica, sept. 2026</span><a href="https://www.tripadvisor.cl/Attraction_Review-g294297-d19396299-Reviews-Terra_Volcano_Pucon-Pucon_Araucania_Region.html" target="_blank" rel="noopener">Leer en Tripadvisor</a></figcaption></figure></li>
     </ul>
     <div class="carrusel__mandos" id="mandos" hidden>
       <button type="button" class="carrusel__flecha" id="cita-ant" aria-label="Opinión anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
