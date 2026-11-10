@@ -33,13 +33,13 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .pie-sitio small{display:block;margin-top:40px;font-size:13px;opacity:.7}
 
 /* Nosotros */
-.portada{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;background:var(--noche);color:#fff}
+.portada{position:relative;min-height:74svh;display:flex;align-items:flex-end;overflow:hidden;background:var(--noche);color:#fff}
 .portada img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 18%}  /* el grupo queda entero bajo la barra */
 /* Capa solo donde hace falta: abajo para el texto y una franja arriba para el menu; la foto queda limpia al centro */
 .portada::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,18,46,.88) 0%,rgba(6,18,46,.5) 26%,rgba(6,18,46,0) 52%),linear-gradient(180deg,rgba(6,18,46,.5) 0%,rgba(6,18,46,0) 20%)}
 .portada__texto{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,5vw,80px);align-items:end;width:100%;padding:0 var(--margen) clamp(32px,6svh,64px)}
-.portada h1{margin:0;font:700 clamp(64px,12vw,216px)/.86 var(--display);font-stretch:82%;letter-spacing:-.025em}
-.portada p{margin:0 0 12px;font-size:clamp(17px,1.35vw,20px);line-height:1.45}
+.portada h1{margin:0;font:700 clamp(46px,7.4vw,128px)/.92 var(--display);font-stretch:82%;letter-spacing:-.022em}  /* mismo tamaño que la portada de los tours */
+.portada p{margin:0 0 8px;font-size:clamp(16px,1.2vw,18px);line-height:1.45}
 
 .familia{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:clamp(32px,6vw,100px);padding:clamp(70px,9vw,130px) var(--margen);align-items:center}
 .familia img{display:block;width:100%;height:auto;border-radius:2px}
@@ -243,6 +243,44 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .reserva dd{margin:0;font-weight:700}
 .reserva .reservar{width:100%}
 .reserva__otro{display:block;margin-top:12px;text-align:center;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+/* Divisa, pasajeros y calendario de la tarjeta de reserva (reserva.js) */
+.divisas{display:flex;gap:6px}
+.divisas button{min-width:44px;min-height:32px;padding:0 10px;border:1px solid rgba(245,244,241,.3);border-radius:999px;background:none;color:inherit;font:700 12px/1 var(--texto);letter-spacing:.04em;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.divisas button:hover{border-color:rgba(245,244,241,.7)}
+.divisas button[aria-pressed="true"]{background:var(--nieve);color:var(--obsidiana);border-color:var(--nieve)}
+.reserva__cabeza{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tours-cabeza .divisas{margin-top:14px}
+.tours-cabeza .divisas button{border-color:rgba(255,255,255,.45);color:#fff}
+.tours-cabeza .divisas button[aria-pressed="true"]{color:var(--obsidiana)}
+.agenda{margin-top:18px;padding-top:16px;border-top:1px solid rgba(245,244,241,.26)}
+.agenda__fila,.agenda__mes,.agenda__total{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.agenda__fila span{color:#c9c8c4}
+.agenda__contador{display:flex;align-items:center;gap:4px;padding:3px;border:1px solid rgba(245,244,241,.3);border-radius:999px}
+.agenda__contador button{width:38px;height:38px;border:0;border-radius:50%;background:rgba(245,244,241,.1);color:#fff;font:400 20px/1 var(--texto);cursor:pointer;transition:background .2s}
+.agenda__contador button:hover:not(:disabled){background:rgba(245,244,241,.22)}
+.agenda__contador button:disabled{opacity:.35;cursor:default}
+.agenda__contador output{min-width:28px;text-align:center;font-weight:700;font-size:17px}
+.agenda__mes{margin-top:18px}
+.agenda__mes b{font-size:16px;text-transform:capitalize}
+.agenda__mes button{width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:none;color:#fff;cursor:pointer;transition:background .2s}
+.agenda__mes button:hover:not(:disabled){background:rgba(245,244,241,.12)}
+.agenda__mes button:disabled{opacity:.25;cursor:default}
+.agenda__mes svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.agenda__grilla{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;margin-top:8px;text-align:center}
+.agenda__dia{padding:4px 0;font-size:12px;font-weight:700;color:#8d8c87}
+.agenda__grilla button{position:relative;justify-self:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:none;color:#fff;font:500 14px/1 var(--texto);cursor:pointer;transition:background .15s,color .15s}
+.agenda__grilla button:hover:not(:disabled){background:rgba(245,244,241,.14)}
+.agenda__grilla button:disabled{color:rgba(245,244,241,.28);cursor:default}
+.agenda__grilla button.pocos::after,.agenda__nota i{content:"";position:absolute;left:50%;bottom:4px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--azufre)}
+.agenda__grilla button[aria-pressed="true"]{background:var(--nieve);color:var(--obsidiana);font-weight:700}
+.agenda__grilla button[aria-pressed="true"]::after{background:var(--lava)}
+.agenda__nota{display:flex;align-items:center;gap:8px;margin-top:8px!important;font-size:13px;color:#c9c8c4}
+.agenda__nota i{position:static;margin:0}
+.agenda__total{margin:14px 0 4px!important;padding-top:14px;border-top:1px solid rgba(245,244,241,.26)}
+.agenda__total span{color:#c9c8c4}
+.agenda__total b{font:700 24px/1 var(--display);font-stretch:88%}
+/* con el calendario la tarjeta ya no cabe fija en pantallas bajas */
+@media (max-height:980px){.reserva{position:static}}
 
 
 /* Lista de tours */

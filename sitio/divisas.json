@@ -1,0 +1,15 @@
+{
+  "nota": "Tasas de prueba mientras no exista conexion con TourTask. Se leyeron del selector de divisa de terravolcano.com con el ascenso al Villarrica (150.000 CLP = 153,59 USD = 137,57 EUR).",
+  "fecha": "2026-11-09",
+  "base": "CLP",
+  "clpPorUnidad": {
+    "CLP": 1,
+    "USD": 976.63,
+    "EUR": 1090.35
+  },
+  "decimales": {
+    "CLP": 0,
+    "USD": 2,
+    "EUR": 2
+  }
+}
