@@ -215,6 +215,7 @@ export const EN = {
   /* textos alternativos y etiquetas */
   'Terra Volcano, inicio': 'Terra Volcano, home', 'Principal': 'Main',
   'Por qué Terra Volcano': 'Why Terra Volcano', 'Tours por categoría': 'Tours by category', 'Galería de fotos': 'Photo gallery',
+  'Un grupo de pasajeros con casco, bastones y crampones posa sonriendo en la nieve, con la cumbre del volcán Villarrica detrás.': 'A group of guests with helmets, poles and crampons smiles in the snow, with the summit of Villarrica Volcano behind them.',
   'Una cordada sube en fila por la nieve hacia la cumbre humeante del volcán Villarrica, bajo un cielo azul.': 'A roped team climbs in single file through the snow toward the smoking summit of Villarrica Volcano, under a blue sky.',
   'Grupo de pasajeros con casco rojo y piolet, descansando en la nieve del volcán.': 'A group with red helmets and ice axes resting on the snow of the volcano.',
   'Grupo con los brazos en alto sobre una arista nevada.': 'A group with raised arms on a snowy ridge.',
