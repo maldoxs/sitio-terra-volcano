@@ -2,7 +2,7 @@
    La divisa elegida se recuerda y convierte todos los precios en pesos del
    sitio con las tasas de divisas.json. En la ficha de cada tour la tarjeta
    suma pasajeros, un calendario del mes con los cupos y el total.
-   Los cupos son de prueba hasta conectar la disponibilidad de TourTask. */
+   Todos los dias salen disponibles hasta conectar la disponibilidad de TourTask. */
 (() => {
   const PRECIOS = '.reserva__precio, .barra-reserva b, .tarjeta__precio, .ficha__precio';
   const CLP = /(\d{1,3}(?:[.,]\d{3})+) CLP|CLP (\d{1,3}(?:[.,]\d{3})+)/;
@@ -83,15 +83,9 @@
     return caja;
   };
 
-  /* Cupos de prueba: un numero fijo por tour y fecha, para que la maqueta
-     no cambie en cada visita. */
-  const cupos = (tour, f) => {
-    let h = 7;
-    for (const c of `${tour}${f.getFullYear()}${f.getMonth()}${f.getDate()}`) h = (h * 31 + c.charCodeAt(0)) % 9973;
-    if (h % 9 === 0) return 0;
-    if (h % 4 === 0) return 2;
-    return 8;
-  };
+  /* Sin la disponibilidad de TourTask todos los dias futuros salen con
+     cupo para el maximo de pasajeros. */
+  const cupos = () => 12;
 
   const tarjetas = [];
   const armarTarjeta = (aside) => {
