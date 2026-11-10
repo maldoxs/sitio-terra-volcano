@@ -97,6 +97,7 @@ export const EN = {
   'Un descanso': 'Taking a break',
   'La próxima foto puede ser la tuya.': 'The next photo could be yours.',
   '#1 en Pucón.': '#1 in Pucón.',
+  '#1 en Tripadvisor.': '#1 on Tripadvisor.', 'De 147 tours en Pucón': 'Out of 147 tours in Pucón', 'Pie de página': 'Footer',
   'Quienes ya subieron eligen a Terra Volcano para ascensos, ski touring y aventuras en Pucón: N.º 1 de 147 tours en Tripadvisor, con 5,0 de 5 en 666 opiniones, y 4,8 de 5 en': 'Travelers rank Terra Volcano first for volcano ascents, ski touring and outdoor adventures in Pucón: No. 1 of 147 tours on Tripadvisor, rated 5.0 out of 5 across 666 reviews, and 4.8 out of 5 on', 'Google': 'Google',
   'Quienes ya subieron eligen a Terra Volcano para ascensos, ski touring y aventuras en Pucón: primer lugar en Tripadvisor y 4,8 de 5 en Google, con 141 opiniones.': 'Travelers rank Terra Volcano as the top choice for volcano ascents, ski touring and outdoor adventures in Pucón: first on Tripadvisor and 4.8 out of 5 on Google, with 141 reviews.',
   'Ver opiniones en Tripadvisor': 'Read reviews on Tripadvisor',
