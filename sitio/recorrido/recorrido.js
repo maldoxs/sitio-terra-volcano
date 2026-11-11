@@ -1093,6 +1093,13 @@ function vistaDe(i) {
   if (i === 0) {
     const correr = CORRER_INICIO;  // con el centro casi sobre la Cafeteria, a 1643 m queda delante de la camara
     const v = deGE(p.camara);
+    // En vertical (celular) la Cafeteria se muestra de lejos, con el volcan entero y el
+    // centro de esqui abajo. La cuenta de los 1643 m no sirve ahi: con el centro corrido
+    // hacia el crater daba una distancia negativa y la toma quedaba pegada a la ladera.
+    if (encuadre() !== 1) {
+      const k = 0.42;
+      return { lat: mezcla(p.lat, LAVA.lat, k), lng: mezcla(p.lng, LAVA.lng, k), alt: mezcla(p.alt, LAVA.suelo ?? 2850, k), h: v.h, t: 68, r: 3000 };
+    }
     const w = enVertical({ ...v, lat: mezcla(v.lat, p.lat, correr), lng: mezcla(v.lng, p.lng, correr), alt: mezcla(v.alt, p.alt, correr) });
     const centro = w.alt * exag() + desfase;
     // la cifra 1643 vale para el relieve de Google; con el de respaldo se usa la
@@ -1526,7 +1533,6 @@ function pintarPresentacion() {
 
 function seleccionar(i) {
   ampliarAlcance(i);
-  $('aviso-girar').classList.remove('visible');  // no queda encima de la ficha
   if (estado.i >= 0) marcas[estado.i].billboard.scale = ESCALA_PIN;
   estado.i = i;
   marcas[i].billboard.scale = ESCALA_PIN_ACTIVO;
@@ -1581,7 +1587,6 @@ if (document.fullscreenEnabled) {
   });
   if (embebido) parent.postMessage({ tipo: 'recorrido-pantalla-consulta' }, location.origin);
 }
-$('girar-seguir').addEventListener('click', () => $('aviso-girar').classList.add('descartado'));
 
 /* mando: Play y engranaje con opciones */
 const opciones = $('opciones'), btnOpciones = $('btn-opciones');
@@ -1781,15 +1786,9 @@ completarCotas();
 // Al elegir la Cafeteria (o Play) la camara se acerca y recien ahi aparece su punto
 // En vertical (celular) parte con el mismo encuadre lejano de la Cafeteria, con el
 // volcan entero en cuadro; la toma de Google Earth quedaba demasiado cerca
-// (si esa cuenta no da una distancia util, como pasa con el relieve de respaldo, queda la de antes)
-const tomaInicial = () => {
-  const amplia = enVertical(deGE(PARADAS[0].camara));
-  if (encuadre() === 1) return amplia;
-  const lejana = vistaDe(0);
-  return lejana.r > 300 ? lejana : amplia;
-};
+const tomaInicial = () => (encuadre() === 1 ? enVertical(deGE(PARADAS[0].camara)) : vistaDe(0));
 let intacto = true;  // nadie ha tocado la camara todavia
-addEventListener('pointerdown', (e) => { if (!e.target.closest?.('#aviso-girar')) intacto = false; });
+addEventListener('pointerdown', () => { intacto = false; });
 aplicar(tomaInicial());
 marcarAltimetro(-1);  // la barra se ve desde el inicio, con la Cafeteria invitando
 
@@ -1840,8 +1839,7 @@ function aparecerPuntos() {
 }
 
 /* Sugerencia de girar el telefono: solo en vertical, se va sola o al primer toque. */
-/* El aviso de girar ahora es una pantalla que se muestra sola en vertical
-   (ver .girar en index.html); aca no queda nada que hacer. */
+/* El aviso de girar el telefono se quito: el recorrido se ve en vertical. */
 function avisarGiro() {}
 setTimeout(aparecerPuntos, 25000);
 let empezo = false;
@@ -1860,4 +1858,4 @@ const dejar = google
   ? google.loadProgress.addEventListener((pendientes, procesando) => progreso(pendientes + procesando))
   : globo.tileLoadProgressEvent.addEventListener(progreso);
 
-window.recorrido = { visor, estado, irA, presentar, alejarGirando, fumarola, PARADAS };
+window.recorrido = { visor, estado, irA, presentar, alejarGirando, fumarola, PARADAS, aplicar, vistaDe };

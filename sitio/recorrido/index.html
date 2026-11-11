@@ -292,16 +292,6 @@
     .altimetro{top:calc(16px + env(safe-area-inset-top));bottom:calc(74px + env(safe-area-inset-bottom));height:auto}
     .mando{left:auto;right:max(12px,env(safe-area-inset-right));width:170px;bottom:calc(14px + env(safe-area-inset-bottom))}
   }
-  /* Telefono en vertical: una pantalla pide girarlo y tapa el recorrido hasta
-     que se gira. Queda una salida para quien tiene el giro bloqueado. */
-  .girar{position:fixed;inset:0;z-index:45;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;background:#06112a;color:#fff;font-family:"Public Sans",system-ui,sans-serif;text-align:center}
-  .girar svg{width:84px;height:84px;animation:girar-telefono 2.6s cubic-bezier(.5,0,.3,1) infinite}
-  .girar b{font:800 28px/1.05 Archivo,sans-serif;letter-spacing:-.01em}
-  .girar span{max-width:17em;font-size:16px;line-height:1.4;color:#c9d2e6}
-  .girar button{margin-top:10px;min-height:44px;padding:0 6px;font-size:15px;color:#fff;text-decoration:underline;text-underline-offset:4px}
-  @keyframes girar-telefono{0%,18%{transform:rotate(0)}55%,82%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
-  @media (max-width:760px) and (orientation:portrait) and (pointer:coarse){.girar:not(.descartado){display:flex}}
-  @media (prefers-reduced-motion:reduce){.girar svg{animation:none}}
   /* destello al centro cuando un toque en el mapa pone Play o Pausa */
   .destello{position:fixed;left:50%;top:50%;z-index:14;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;display:grid;place-items:center;background:rgba(10,11,13,.6);color:#fff;opacity:0;pointer-events:none}
   .destello.visible{animation:destello .7s ease-out}
@@ -396,7 +386,6 @@
   <button class="presentacion__btn" id="btn-cerrar" title="Salir de la presentacion"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg></button>
 </div>
 
-<div class="girar" id="aviso-girar" role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg><b>Gira el teléfono</b><span>El recorrido del volcán se ve en horizontal.</span><button type="button" id="girar-seguir">Seguir en vertical</button></div>
 
 <div class="destello" id="destello" data-estado="play" aria-hidden="true"><svg class="d-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="d-pausa" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></div>
 
@@ -470,6 +459,6 @@
 <!-- la version en la direccion evita que el navegador use una copia vieja -->
 <!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
 <script src="./config.js?v=20261104"></script>
-<script type="module" src="./recorrido.js?v=20261111e"></script>
+<script type="module" src="./recorrido.js?v=20261111f"></script>
 </body>
 </html>
