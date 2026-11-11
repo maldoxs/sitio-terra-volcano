@@ -342,23 +342,9 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
 .tarjeta__precio small{margin-right:6px;font-size:14px;font-weight:500;color:#555a63}
 
 .barra-reserva{display:none}
-.radio-mini{display:none}
 @media (max-width:760px){
-  /* Contacto: sin la bajada, para que el formulario empiece antes, y con una radio
-     chica que se queda arriba mientras se llenan los datos */
+  /* Contacto: sin la bajada, para que el formulario empiece antes */
   .hablemos__bajada{display:none}
-  .hablemos{overflow:clip}
-  .radio-mini{position:sticky;z-index:4;top:10px;display:flex;align-items:center;gap:12px;margin:0 0 18px;padding:8px 14px 8px 10px;border:1px solid rgba(245,244,241,.2);border-radius:16px;background:#0d1d45;transition:top .3s ease}
-  body:has(.barra--visible) .radio-mini{top:86px}
-  .radio-mini__radio{position:relative;flex:none;width:34px}
-  .radio-mini__radio img{display:block;width:100%;height:auto}
-  .radio-mini__radio i{position:absolute;left:calc(80.6% - 13px);top:-11px;width:26px;height:26px;border:1.5px solid rgba(255,255,255,.8);border-radius:50%;opacity:0;animation:onda 3.6s ease-out infinite}
-  .radio-mini__radio i:nth-child(3){animation-delay:-1.8s}
-  .radio-mini.transmitiendo i{animation-duration:1.1s}
-  .radio-mini.recibido i{border-color:#8fe3a0}
-  .radio-mini p{margin:0;padding:8px 12px;border-radius:14px 14px 14px 3px;background:#fff;color:var(--noche);font:700 14px/1.3 var(--texto)}
-  .radio-mini p.salta{animation:salta .35s cubic-bezier(.3,1.5,.5,1)}
-  .radio-mini.recibido p{background:#8fe3a0}
   .barra nav{display:none}
   .tour-volver{padding:8px 0}
   .reserva__otro{padding:10px 0}
@@ -373,7 +359,7 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
   .nudo,.nudo:nth-child(even){grid-template-columns:1fr;min-height:0;padding:20px 0}
   .nudo::before{left:12px;top:32px}
   .nudo>div,.nudo:nth-child(even)>div{grid-column:1;padding:0 0 0 38px;text-align:left}
-  .hablemos{grid-template-columns:1fr;padding-bottom:0}
+  .hablemos{grid-template-columns:1fr;padding-bottom:48px}
   .formulario{grid-template-columns:1fr}
   .tour{grid-template-columns:1fr}
   .tarjetas{grid-template-columns:1fr}
@@ -390,13 +376,13 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
   .frase__texto{font-size:clamp(23px,6.4vw,30px);line-height:1.75}
   .ficha__campos{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 18px}
   .ficha__campo:not(.solo-tour){grid-column:1/-1}
-  .radio-viva{width:72%;margin:0 -6% -40px auto;justify-self:end}
-  .radio-viva__globo{right:30%;font-size:13px;padding:8px 11px}
-  /* el texto va arriba y el mapa debajo, entero y sin nada encima */
-  .aca{min-height:0;display:flex;flex-direction:column;background:var(--noche)}
+  /* la radio no se muestra en el celular hasta tener una vista que funcione ahi */
+  .radio-viva,.frase__sonido,.ficha__whatsapp{display:none}
+  /* el texto ocupa el lugar de la ficha de Google (arriba a la izquierda del mapa) y la tapa */
+  .aca{min-height:92svh}
   .aca::after{display:none}
-  .aca__texto{position:static;order:-1;translate:none;width:auto;padding:44px var(--margen) 32px;pointer-events:auto}
-  .aca iframe{position:static;height:68svh}
+  .aca__texto{inset:0 0 auto;translate:none;width:auto;padding:30px var(--margen) 28px;background:var(--noche);pointer-events:auto}
+  .aca h2{font-size:44px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
