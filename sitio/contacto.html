@@ -31,6 +31,7 @@
       <form class="ficha" id="formulario" name="contacto" method="POST" action="/contacto.html" data-netlify="true" netlify-honeypot="sitio-web" novalidate data-tipo="ascenso">
         <input type="hidden" name="form-name" value="contacto">
         <p class="ficha__trampa" aria-hidden="true"><label>No llenar este campo <input name="sitio-web" tabindex="-1" autocomplete="off"></label></p>
+        <div class="radio-mini" id="radio-mini" aria-hidden="true"><span class="radio-mini__radio"><img src="media/rumbo/radio.webp" width="620" height="941" alt=""><i></i><i></i></span><p id="globo-mini">Canal abierto. Te escuchamos.</p></div>
         <div class="frase__modos" role="radiogroup" aria-label="Qué quieres hacer">
           <label><input type="radio" name="tipo" value="ascenso" checked> Ascenso</label>
           <label><input type="radio" name="tipo" value="ski"> Ski touring</label>
@@ -152,6 +153,22 @@
     void globo.offsetWidth;
     globo.classList.add('salta');
   };
+  /* Celular: una radio chica acompana arriba mientras se llena el formulario,
+     porque la grande queda debajo y no se alcanza a ver. Copia su mensaje y su estado */
+  {
+    const mini = document.getElementById('radio-mini');
+    const globoMini = document.getElementById('globo-mini');
+    const copiar = () => {
+      mini.classList.toggle('transmitiendo', radio.classList.contains('transmitiendo'));
+      mini.classList.toggle('recibido', radio.classList.contains('recibido'));
+      if (globoMini.textContent === globo.textContent) return;
+      globoMini.textContent = globo.textContent;
+      globoMini.classList.remove('salta');
+      void globoMini.offsetWidth;
+      globoMini.classList.add('salta');
+    };
+    new MutationObserver(copiar).observe(radio, { attributes: true, attributeFilter: ['class'], childList: true, characterData: true, subtree: true });
+  }
   /* La fecha vacia se ve apagada, como los otros espacios sin llenar */
   const fecha = formulario.elements.fecha;
   const marcarFecha = () => fecha.classList.toggle('vacio', !fecha.value);
