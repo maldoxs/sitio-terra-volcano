@@ -1122,7 +1122,7 @@ const tomaCrater = () => ({ lat: LAVA.lat, lng: LAVA.lng, alt: LAVA.suelo ?? 280
 const tomaCenital = () => ({ ...tomaCrater(), t: 0.4, r: 320 });
 const GENERAL = { lat: -39.4065, lng: -71.9466, alt: 1900, h: 138, t: 58, r: 6200 };
 
-const estado = { i: -1, vista: null, anim: null, tocando: false };
+const estado = { i: -1, vista: null, anim: null, tocando: false, pausado: false };
 let cargado = false;
 
 function aplicar(v) {
@@ -1156,6 +1156,7 @@ function vistaDesdeCamara() {
 }
 
 function cancelar() {
+  estado.pausado = false;  // cancelar o partir otra toma saca de la pausa
   if (estado.anim) { estado.anim.vivo = false; estado.anim = null; }
   camara.cancelFlight();
 }
@@ -1167,9 +1168,13 @@ function animar(ms, cuadro, alTerminar) {
   cancelar();
   const anim = { vivo: true };
   estado.anim = anim;
-  const t0 = performance.now();
+  let t0 = performance.now();
+  let previo = t0;
   const paso = (ahora) => {
     if (!anim.vivo) return;
+    // en pausa el reloj de la toma no corre: al seguir, retoma donde quedo
+    if (estado.pausado) { t0 += ahora - previo; previo = ahora; requestAnimationFrame(paso); return; }
+    previo = ahora;
     const k = Math.min(1, (ahora - t0) / ms);
     cuadro(k);
     if (k < 1) requestAnimationFrame(paso);
@@ -1353,13 +1358,22 @@ function inmersivo(on) {
 function esperarInmersivo() {
   clearTimeout(reloj);
   inmersivo(false);
-  if (enMarcha) reloj = setTimeout(() => inmersivo(true), 2500);
+  if (enMarcha && !estado.pausado) reloj = setTimeout(() => inmersivo(true), 2500);
 }
 ['pointerdown', 'keydown', 'wheel'].forEach((t) => addEventListener(t, esperarInmersivo, { passive: true }));
 addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') esperarInmersivo(); }, { passive: true });
 
+/* Play y Pausa del recorrido: la pausa congela la toma en curso y Play la
+   retoma en el mismo punto, sin volver a la primera parada. */
+function alternarPausa() {
+  if (!estado.tocando) { presentar(); return; }
+  estado.pausado = !estado.pausado;
+  esperarInmersivo();
+  pintarPresentacion();
+}
 function pausar() {
   estado.tocando = false;
+  estado.pausado = false;
   esperarInmersivo();
   $('btn-360').setAttribute('aria-pressed', 'false');
   fumarola(0, 2500);
@@ -1495,8 +1509,9 @@ window.addEventListener('resize', armarAltimetro);
 
 function pintarPresentacion() {
   marcarAltimetro(estado.i);
-  $('btn-presentar-modo').setAttribute('aria-pressed', String(estado.tocando));
-  $('modo-estado').textContent = estado.tocando ? 'Pausa' : 'Play';
+  const corriendo = estado.tocando && !estado.pausado;
+  $('btn-presentar-modo').setAttribute('aria-pressed', String(corriendo));
+  $('modo-estado').textContent = corriendo ? 'Pausa' : 'Play';
   if (estado.i < 0) { pres.hidden = true; return; }
   pres.hidden = false;
   const p = PARADAS[estado.i];
@@ -1546,9 +1561,20 @@ $('btn-cerrar').addEventListener('click', () => {
   estado.i = -1;
   pintarLista(); pintarPresentacion(); mostrarPanel(true);
 });
-$('btn-pantalla').addEventListener('click', () => {
-  if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.();
-});
+/* Pantalla completa. En Android, al entrar se fija la pantalla en horizontal;
+   el iPhone no permite pantalla completa para paginas, y ahi el boton no aparece. */
+const pantallaCompleta = () => {
+  if (document.fullscreenElement) { document.exitFullscreen(); return; }
+  document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
+};
+$('btn-pantalla').addEventListener('click', pantallaCompleta);
+if (document.fullscreenEnabled) {
+  const btn = $('btn-pantalla-movil');
+  btn.hidden = false;
+  btn.addEventListener('click', pantallaCompleta);
+  document.addEventListener('fullscreenchange', () => btn.setAttribute('aria-pressed', String(!!document.fullscreenElement)));
+}
+$('girar-seguir').addEventListener('click', () => $('aviso-girar').classList.add('descartado'));
 
 /* mando: Play y engranaje con opciones */
 const opciones = $('opciones'), btnOpciones = $('btn-opciones');
@@ -1559,7 +1585,7 @@ function abrirOpciones(abrir) {
 btnOpciones.addEventListener('click', () => abrirOpciones(!opciones.classList.contains('abierta')));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') abrirOpciones(false); });
 document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#mando')) abrirOpciones(false); });
-$('btn-presentar-modo').addEventListener('click', () => (estado.tocando ? (pausar(), cancelar()) : presentar()));
+$('btn-presentar-modo').addEventListener('click', alternarPausa);
 $('opc-linea').addEventListener('change', (e) => {
   $('chk-linea').checked = e.target.checked;
   $('chk-linea').dispatchEvent(new Event('change'));
@@ -1721,7 +1747,18 @@ pintarLista();
 completarCotas();
 // arranca con la toma amplia de Google Earth, sin parada activa ni puntos.
 // Al elegir la Cafeteria (o Play) la camara se acerca y recien ahi aparece su punto
-aplicar(enVertical(deGE(PARADAS[0].camara)));
+// En vertical (celular) parte con el mismo encuadre lejano de la Cafeteria, con el
+// volcan entero en cuadro; la toma de Google Earth quedaba demasiado cerca
+// (si esa cuenta no da una distancia util, como pasa con el relieve de respaldo, queda la de antes)
+const tomaInicial = () => {
+  const amplia = enVertical(deGE(PARADAS[0].camara));
+  if (encuadre() === 1) return amplia;
+  const lejana = vistaDe(0);
+  return lejana.r > 300 ? lejana : amplia;
+};
+let intacto = true;  // nadie ha tocado la camara todavia
+addEventListener('pointerdown', (e) => { if (!e.target.closest?.('#aviso-girar')) intacto = false; });
+aplicar(tomaInicial());
 marcarAltimetro(-1);  // la barra se ve desde el inicio, con la Cafeteria invitando
 
 /* Precarga en segundo plano. Medido en Chrome el 2026-10-31: al abrir la toma
@@ -1765,18 +1802,15 @@ function aparecerPuntos() {
   cargado = true;
   window.telon?.terminar();
   if (estado.i !== PARADAS.length - 1) mostrarPuntos(true);
-  asentarEnGoogle();
+  // con las alturas de Google ya medidas se reencuadra la toma inicial, si nadie movio nada
+  asentarEnGoogle().then(() => { if (intacto && estado.i < 0 && !enMarcha) aplicar(tomaInicial()); });
   avisarGiro();
 }
 
 /* Sugerencia de girar el telefono: solo en vertical, se va sola o al primer toque. */
-function avisarGiro() {
-  const aviso = $('aviso-girar');
-  const ocultar = () => aviso.classList.remove('visible');
-  aviso.classList.add('visible');
-  setTimeout(ocultar, 6000);
-  addEventListener('pointerdown', ocultar, { once: true });
-}
+/* El aviso de girar ahora es una pantalla que se muestra sola en vertical
+   (ver .girar en index.html); aca no queda nada que hacer. */
+function avisarGiro() {}
 setTimeout(aparecerPuntos, 25000);
 let empezo = false;
 let espera = null;
