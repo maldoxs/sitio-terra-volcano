@@ -165,6 +165,7 @@
   .incluye ul{margin:0;padding:0;list-style:none;columns:2;column-gap:32px;font-size:16px;line-height:1.5}
   .incluye li{break-inside:avoid;padding-bottom:4px}
   .incluye p{margin:0;font-size:16px;line-height:1.5}
+  .incluye h3 button{all:unset;box-sizing:border-box}
 
 
   /* Rumbo: la brujula elige la categoria y el paisaje gira hacia ella */
@@ -206,6 +207,7 @@
   .rumbo__lista li{align-items:start}
   .rumbo__enlace{text-decoration:underline;text-underline-offset:3px}
   .rumbo__nota a{color:inherit;font-weight:700;text-underline-offset:3px;text-decoration:underline}
+  .rumbo__pag{display:none}
 
   /* Opiniones y cierre */
   .opiniones{position:relative;z-index:5;background:var(--nieve);padding:clamp(70px,9vw,130px) var(--margen) clamp(40px,5vw,70px)}
@@ -249,13 +251,18 @@
   .citas blockquote{order:3;margin:0;font:400 16px/1.5 var(--texto);color:#2b2e34;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
   .citas figure>a{order:4;width:fit-content;margin-top:auto;padding-top:14px;color:#555a63;font-size:14px;text-decoration:underline;text-underline-offset:3px}
   .citas figure>a:hover{color:var(--lava)}
-  /* En escritorio las flechas van a los lados, a media altura de las cajas */
-  @media (min-width:761px){
-    .carrusel{position:relative}
-    .carrusel__flecha{position:absolute;z-index:2;top:calc((100% - 44px) / 2 - 24px);width:48px;height:48px;background:#fff;box-shadow:0 2px 10px rgba(10,11,13,.12)}
-    #cita-ant{left:-24px}
-    #cita-sig{right:-24px}
-    .carrusel__mandos{justify-content:center}
+  /* Las flechas van a los lados, a media altura de las cajas; abajo quedan los puntos */
+  .carrusel{position:relative}
+  .carrusel__flecha{position:absolute;z-index:2;top:calc((100% - 44px) / 2 - 24px);width:48px;height:48px;background:#fff;box-shadow:0 2px 10px rgba(10,11,13,.12)}
+  #cita-ant{left:-24px}
+  #cita-sig{right:-24px}
+  .carrusel__mandos{justify-content:center}
+  @media (max-width:760px){
+    .carrusel__flecha{top:calc((100% - 44px) / 2 - 18px);width:36px;height:36px}
+    .carrusel__flecha::after{content:"";position:absolute;inset:-6px}
+    .carrusel__flecha svg{width:18px;height:18px}
+    #cita-ant{left:-18px}
+    #cita-sig{right:-18px}
   }
   @media (max-width:1180px){.citas{--ver:3.3}}
   @media (max-width:900px){.citas{--ver:2.25}}
@@ -317,8 +324,10 @@
     .con-movimiento .galeria__escena{height:calc(100svh + 5 * 70svh)}
     .visor__cerrar{right:calc(12px + env(safe-area-inset-right));top:calc(10px + env(safe-area-inset-top));width:44px;padding:0;justify-content:center}
     .visor__cerrar span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-    .pilares{grid-template-columns:1fr;gap:22px}
-    .pilares div{padding:0;border-left:0}
+    .pilares{grid-template-columns:1fr;gap:0}
+    .pilares div{padding:22px 0;border-left:0;border-top:1px solid rgba(255,255,255,.28)}
+    .pilares div:first-child{padding-top:0;border-top:0}
+    .pilares div:last-child{padding-bottom:0}
     .opiniones__cabeza,.pie-sitio__fila{grid-template-columns:1fr}
     .citas{--ver:1.15;--gap:14px}
     /* En celular la brujula va abajo, con la lista arriba y las categorias entre ambas */
@@ -335,6 +344,14 @@
     .rumbo__enlace{display:block;padding:8px 0}
     .rumbo__panel .rumbo__nota{margin-top:0}
     .rumbo__nota a{display:inline-block;padding:10px 0}
+    /* tres tours a la vez y el resto por paginas, para que la brujula no se vaya de la pantalla */
+    .rumbo__lista li.fuera{display:none}
+    .rumbo__lista--pag{min-height:calc(var(--fila,49px) * 3)}
+    .rumbo__panel .rumbo__nota{display:flex;align-items:center;justify-content:space-between;gap:12px;opacity:1}
+    .rumbo__pag{display:flex;align-items:center;gap:10px;font-size:15px;font-variant-numeric:tabular-nums}
+    .rumbo__pag button{all:unset;box-sizing:border-box;display:grid;place-items:center;width:44px;height:44px;border:1.5px solid rgba(245,244,241,.7);border-radius:50%;cursor:pointer}
+    .rumbo__pag button[disabled]{opacity:.35;cursor:default}
+    .rumbo__pag svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .rumbo__dial{position:relative;z-index:2;left:auto;bottom:auto;width:auto;height:auto;margin-top:auto;padding:12px var(--margen) 0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px}
     /* los nombres salen de cada marca como rayos: a la derecha se leen hacia afuera, a la izquierda hacia la marca */
     .rumbo__opcion{font-size:13.5px;padding:10px 7px;translate:0 -50%;transform-origin:0 50%;transform:rotate(calc(var(--a) - 90deg)) translateX(calc(var(--radio) + 6px))}
@@ -348,6 +365,15 @@
     .dia__acciones .ruta{font-size:15px}
     .incluye{grid-template-columns:1fr;gap:24px}
     .incluye ul{columns:1}
+    /* Tu traes e Incluye: cajas que se abren con el + */
+    .incluye--plegable{gap:12px;border-top:0;padding-top:0}
+    .incluye--plegable>div{padding:0 18px;border:1px solid #d9d7d1;border-radius:18px;background:rgba(255,255,255,.6)}
+    .incluye--plegable>div.abierto{padding-bottom:20px;background:#fff}
+    .incluye--plegable h3{margin:0;font-size:22px}
+    .incluye--plegable h3 button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:68px;cursor:pointer}
+    .incluye--plegable h3 button::after{content:"";flex:none;width:42px;height:42px;border:1.5px solid currentColor;border-radius:50%;background:linear-gradient(currentColor,currentColor) center/14px 2px no-repeat,linear-gradient(currentColor,currentColor) center/2px 14px no-repeat;transition:transform .35s cubic-bezier(.3,.7,.2,1),background-size .35s}
+    .incluye--plegable>div.abierto h3 button::after{transform:rotate(180deg);background-size:14px 2px,2px 0}
+    .incluye--plegable>div:not(.abierto)>:not(h3){display:none}
   }
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none!important}
@@ -670,6 +696,21 @@
 <script>
   const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Tu traes e Incluye: en el celular cada bloque es una caja que se abre con el + */
+  {
+    const incluye = document.querySelector('.incluye');
+    incluye.classList.add('incluye--plegable');
+    [...incluye.children].forEach((caja) => {
+      const titulo = caja.querySelector('h3');
+      const boton = document.createElement('button');
+      boton.type = 'button';
+      boton.setAttribute('aria-expanded', 'false');
+      boton.append(...titulo.childNodes);
+      titulo.append(boton);
+      boton.addEventListener('click', () => boton.setAttribute('aria-expanded', caja.classList.toggle('abierto')));
+    });
+  }
+
   /* El recorrido 3D se carga solo al abrirlo: Google cobra cada apertura */
   {
     const visor = document.getElementById('visor-ruta');
@@ -845,6 +886,35 @@
     const dial = rumbo.querySelector('.rumbo__dial');
     dial.addEventListener('mouseenter', () => clearTimeout(reloj));
     dial.addEventListener('mouseleave', programar);
+
+    /* Celular: cada lista muestra tres tours y el resto se pasa con flechas.
+       En escritorio las clases no tienen efecto y la lista se ve entera. */
+    const POR_PAGINA = 3;
+    const flechaPag = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
+    paneles.forEach((panel) => {
+      const lista = panel.querySelector('.rumbo__lista');
+      const items = [...lista.children];
+      const total = Math.ceil(items.length / POR_PAGINA);
+      if (total < 2) return;
+      lista.classList.add('rumbo__lista--pag');
+      const mandos = document.createElement('span');
+      mandos.className = 'rumbo__pag';
+      mandos.innerHTML = `<button type="button" aria-label="Tours anteriores">${flechaPag('M15 6l-6 6 6 6')}</button><span aria-live="polite"></span><button type="button" aria-label="Más tours">${flechaPag('M9 6l6 6-6 6')}</button>`;
+      panel.querySelector('.rumbo__nota').append(mandos);
+      const [antes, cuenta, despues] = mandos.children;
+      let pag = 0;
+      const pintar = () => {
+        items.forEach((li, n) => li.classList.toggle('fuera', Math.floor(n / POR_PAGINA) !== pag));
+        cuenta.textContent = `${pag + 1} / ${total}`;
+        antes.disabled = pag === 0;
+        despues.disabled = pag === total - 1;
+      };
+      antes.addEventListener('click', () => { pag = Math.max(0, pag - 1); pintar(); programar(); });
+      despues.addEventListener('click', () => { pag = Math.min(total - 1, pag + 1); pintar(); programar(); });
+      pintar();
+    });
+    const fila = rumbo.querySelector('.rumbo__panel.activo .rumbo__lista li');
+    if (fila && fila.offsetHeight) rumbo.style.setProperty('--fila', `${fila.offsetHeight}px`);
 
     opciones.forEach((opcion, i) => opcion.addEventListener('click', () => {
       elegir(i);

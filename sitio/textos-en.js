@@ -5,6 +5,7 @@ export const EN = {
   'Ascenso': 'Ascent', 'Tu día': 'Your day', 'Tours': 'Tours', 'Nosotros': 'About us',
   'Volver a Tours': 'Back to Tours',
   'Volver': 'Back',
+  'Tours anteriores': 'Previous tours', 'Más tours': 'More tours', 'Abrir el menú': 'Open the menu', 'Cerrar el menú': 'Close the menu', 'Ver categorías de tours': 'See tour categories',
   'Un guía cada tres personas, desde Pucón hasta el cráter.': 'One guide for every three people, from Pucón to the crater.',
   'El cráter sigue activo': 'The crater is still active',
   'Aquí vas tú': 'This is you',

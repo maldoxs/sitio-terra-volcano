@@ -361,7 +361,11 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
   .formulario{grid-template-columns:1fr}
   .tour{grid-template-columns:1fr}
   .tarjetas{grid-template-columns:1fr}
-  .reserva{position:static;order:-1}
+  /* la reserva va despues de las fotos (o de la entrada, si el tour no tiene fotos) */
+  .tour{display:flex;flex-direction:column;align-items:stretch;gap:clamp(40px,5vw,70px)}
+  .tour__cuerpo{display:contents}
+  .reserva{position:static;order:1}
+  .tour__fotos~*,.tour:not(:has(.tour__fotos)) .tour__cuerpo>section:first-of-type~*{order:2}
   .plegable ul{padding-left:clamp(18px,2vw,26px)}
   .brujula-viva{width:74%;margin:10px 0 -60px auto;justify-self:end}
   .brujula-viva__nota{display:none}
@@ -372,9 +376,11 @@ button:focus-visible{text-decoration:underline;text-underline-offset:4px}
   .ficha__campo:not(.solo-tour){grid-column:1/-1}
   .radio-viva{width:72%;margin:0 -6% -40px auto;justify-self:end}
   .radio-viva__globo{right:30%;font-size:13px;padding:8px 11px}
-  .aca{min-height:92svh}
-  .aca::after{background:linear-gradient(0deg,rgba(6,18,46,.95) 0%,rgba(6,18,46,.8) 44%,rgba(6,18,46,0) 66%)}
-  .aca__texto{top:auto;bottom:26px;translate:none;width:auto;right:var(--margen)}
+  /* el texto va arriba y el mapa debajo, entero y sin nada encima */
+  .aca{min-height:0;display:flex;flex-direction:column;background:var(--noche)}
+  .aca::after{display:none}
+  .aca__texto{position:static;order:-1;translate:none;width:auto;padding:44px var(--margen) 32px;pointer-events:auto}
+  .aca iframe{position:static;height:68svh}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
