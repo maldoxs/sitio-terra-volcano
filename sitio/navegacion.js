@@ -28,3 +28,28 @@
     if (!pendiente) { pendiente = true; requestAnimationFrame(actualizar); }
   }, { passive: true });
 })();
+
+/* Volver de una ficha: si se llego desde otra pagina del sitio, el enlace
+   regresa a esa pagina tal como quedo, con su posicion y sus filtros. Quien
+   entra directo a la ficha conserva el enlace fijo a Tours. */
+(() => {
+  const enlaces = document.querySelectorAll('.tour-volver-tours');
+  if (!enlaces.length || !document.referrer) return;
+  let origen;
+  try { origen = new URL(document.referrer); } catch { return; }
+  if (origen.origin !== location.origin || origen.pathname === location.pathname) return;
+  const desdeTours = /\/tours(\.html)?$/.test(origen.pathname);
+  enlaces.forEach((a) => {
+    if (!desdeTours) {
+      a.href = origen.href;
+      a.textContent = 'Volver';
+    }
+    a.addEventListener('click', (e) => {
+      if (history.length < 2 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      const ficha = location.pathname;
+      history.back();
+      setTimeout(() => { if (location.pathname === ficha) location.href = a.href; }, 400);
+    });
+  });
+})();
