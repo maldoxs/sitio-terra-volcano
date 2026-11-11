@@ -40,7 +40,7 @@
     body.en-visor .altimetro__ficha{right:calc(68px + env(safe-area-inset-right))}
   }
   @media (max-height:500px) and (orientation:landscape){
-    body.en-visor .altimetro{top:calc(68px + env(safe-area-inset-top))}
+    body.en-visor .altimetro{top:calc(76px + env(safe-area-inset-top))}
   }
   /* Creditos ocultos por decision del proyecto. Las condiciones de Google Map Tiles
      piden su logo y atribucion: antes de publicar hay que devolverlos. */
@@ -302,6 +302,12 @@
   @keyframes girar-telefono{0%,18%{transform:rotate(0)}55%,82%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
   @media (max-width:760px) and (orientation:portrait) and (pointer:coarse){.girar:not(.descartado){display:flex}}
   @media (prefers-reduced-motion:reduce){.girar svg{animation:none}}
+  /* destello al centro cuando un toque en el mapa pone Play o Pausa */
+  .destello{position:fixed;left:50%;top:50%;z-index:14;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;display:grid;place-items:center;background:rgba(10,11,13,.6);color:#fff;opacity:0;pointer-events:none}
+  .destello.visible{animation:destello .7s ease-out}
+  .destello svg{width:34px;height:34px}
+  .destello[data-estado="play"] .d-pausa,.destello[data-estado="pausa"] .d-play{display:none}
+  @keyframes destello{0%{opacity:0;transform:scale(.7)}25%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15)}}
   /* boton de pantalla completa junto a Play, solo en el telefono y donde el navegador la permite */
   .pantalla-movil{display:none}
 </style>
@@ -392,6 +398,8 @@
 
 <div class="girar" id="aviso-girar" role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg><b>Gira el teléfono</b><span>El recorrido del volcán se ve en horizontal.</span><button type="button" id="girar-seguir">Seguir en vertical</button></div>
 
+<div class="destello" id="destello" data-estado="play" aria-hidden="true"><svg class="d-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="d-pausa" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></div>
+
 <div class="mando" id="mando">
   <div class="mando__fila">
   <button class="mando__engranaje" id="btn-opciones" aria-expanded="false" aria-controls="opciones" title="Opciones">
@@ -462,6 +470,6 @@
 <!-- la version en la direccion evita que el navegador use una copia vieja -->
 <!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
 <script src="./config.js?v=20261104"></script>
-<script type="module" src="./recorrido.js?v=20261111b"></script>
+<script type="module" src="./recorrido.js?v=20261111e"></script>
 </body>
 </html>

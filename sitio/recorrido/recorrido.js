@@ -1563,7 +1563,10 @@ $('btn-cerrar').addEventListener('click', () => {
 });
 /* Pantalla completa. En Android, al entrar se fija la pantalla en horizontal;
    el iPhone no permite pantalla completa para paginas, y ahi el boton no aparece. */
+const embebido = parent !== window;
 const pantallaCompleta = () => {
+  // dentro del visor del inicio la pantalla completa la maneja esa pagina, que conserva la X para cerrar
+  if (embebido) { parent.postMessage({ tipo: 'recorrido-pantalla' }, location.origin); return; }
   if (document.fullscreenElement) { document.exitFullscreen(); return; }
   document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
 };
@@ -1572,7 +1575,11 @@ if (document.fullscreenEnabled) {
   const btn = $('btn-pantalla-movil');
   btn.hidden = false;
   btn.addEventListener('click', pantallaCompleta);
-  document.addEventListener('fullscreenchange', () => btn.setAttribute('aria-pressed', String(!!document.fullscreenElement)));
+  document.addEventListener('fullscreenchange', () => { if (!embebido) btn.setAttribute('aria-pressed', String(!!document.fullscreenElement)); });
+  addEventListener('message', (e) => {
+    if (e.origin === location.origin && e.data?.tipo === 'recorrido-pantalla-estado') btn.setAttribute('aria-pressed', String(!!e.data.on));
+  });
+  if (embebido) parent.postMessage({ tipo: 'recorrido-pantalla-consulta' }, location.origin);
 }
 $('girar-seguir').addEventListener('click', () => $('aviso-girar').classList.add('descartado'));
 
@@ -1658,11 +1665,25 @@ $('btn-alejar').addEventListener('click', () => zoom(1 / 0.6));
 
 /* Si la persona toma el control con el raton, la camara es suya. */
 const lienzo = escena.canvas;
-['pointerdown', 'wheel', 'touchstart'].forEach((ev) => lienzo.addEventListener(ev, () => {
+/* Un toque quieto no le quita el recorrido a nadie: eso es Play o Pausa (mas
+   abajo, en LEFT_CLICK). La camara pasa a ser de la persona recien cuando
+   arrastra, pellizca con dos dedos o usa la rueda. */
+const tomarControl = () => {
   if (estado.anim || estado.tocando) { pausar(); cancelar(); }
   estado.vista = null;
+};
+let abajo = null;
+lienzo.addEventListener('pointerdown', (e) => {
   abrirOpciones(false);
-}, { passive: true }));
+  if (abajo) { abajo = 'varios'; tomarControl(); return; }
+  abajo = { x: e.clientX, y: e.clientY };
+}, { passive: true });
+lienzo.addEventListener('pointermove', (e) => {
+  if (!abajo || abajo === 'varios') return;
+  if (Math.hypot(e.clientX - abajo.x, e.clientY - abajo.y) > 8) { abajo = 'varios'; tomarControl(); }
+}, { passive: true });
+['pointerup', 'pointercancel'].forEach((ev) => addEventListener(ev, () => { abajo = null; }, { passive: true }));
+lienzo.addEventListener('wheel', () => { abrirOpciones(false); tomarControl(); }, { passive: true });
 
 const manejador = new C.ScreenSpaceEventHandler(lienzo);
 let raton = null;
@@ -1679,8 +1700,19 @@ manejador.setInputAction((m) => {
 manejador.setInputAction((c) => {
   const elegido = escena.pick(c.position);
   const id = elegido?.id?.id;
-  if (typeof id === 'string' && id.startsWith('parada-')) irA(Number(id.slice(7)));
+  if (typeof id === 'string' && id.startsWith('parada-')) { irA(Number(id.slice(7))); return; }
+  // Un toque (o un clic) en cualquier parte del mapa hace de Play y Pausa, como
+  // en un video. Arrastrar o pellizcar no cuenta: eso mueve la camara.
+  alternarPausa(); destellar();
 }, C.ScreenSpaceEventType.LEFT_CLICK);
+/* Senal breve al centro: muestra si el toque dejo el recorrido andando o en pausa */
+function destellar() {
+  const d = $('destello');
+  d.dataset.estado = estado.tocando && !estado.pausado ? 'play' : 'pausa';
+  d.classList.remove('visible');
+  void d.offsetWidth;
+  d.classList.add('visible');
+}
 
 window.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return;

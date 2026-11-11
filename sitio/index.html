@@ -150,6 +150,11 @@
   .visor__cerrar.oculto{opacity:0;pointer-events:none}
   .visor__cerrar:focus-visible{outline:0;outline-offset:3px}
   .visor__cerrar svg{width:18px;height:18px}
+  /* telefono girado: solo la X, para que no se monte sobre la barra de paradas */
+  @media (max-height:500px) and (orientation:landscape){
+    .visor__cerrar{right:calc(12px + env(safe-area-inset-right));top:calc(8px + env(safe-area-inset-top));width:44px;padding:0;justify-content:center}
+    .visor__cerrar span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  }
   .pasos{position:relative;list-style:none;margin:0;padding:0 0 0 clamp(26px,3vw,44px)}
   .pasos::before,.pasos__avance{content:"";position:absolute;left:4px;top:10px;bottom:10px;width:2px;background:#d9d7d1}
   .pasos__avance{background:var(--lava);transform:scaleY(0);transform-origin:top;will-change:transform}
@@ -718,7 +723,23 @@
     document.getElementById('ver-ruta').addEventListener('click', () => {
       marco.src = 'recorrido/index.html?visor';
       visor.showModal();
+      // en el telefono el recorrido parte a pantalla completa (donde el navegador la permite)
+      if (matchMedia('(max-width:760px), (pointer:coarse)').matches) completa(true);
     });
+    /* Pantalla completa de toda la pagina, con el visor encima: asi la X sigue a mano.
+       En Android ademas se fija en horizontal. El iPhone no la permite y no pasa nada. */
+    const completa = (on) => {
+      if (!on) { if (document.fullscreenElement) document.exitFullscreen(); return; }
+      document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
+    };
+    const avisarPantalla = () => marco.contentWindow?.postMessage({ tipo: 'recorrido-pantalla-estado', on: !!document.fullscreenElement }, location.origin);
+    document.addEventListener('fullscreenchange', avisarPantalla);
+    addEventListener('message', (e) => {
+      if (e.origin !== location.origin) return;
+      if (e.data?.tipo === 'recorrido-pantalla') completa(!document.fullscreenElement);
+      if (e.data?.tipo === 'recorrido-pantalla-consulta') avisarPantalla();
+    });
+    visor.addEventListener('close', () => completa(false));
     const apagar = () => marco.removeAttribute('src');
     document.getElementById('cerrar-ruta').addEventListener('click', () => { apagar(); visor.close(); });
     visor.addEventListener('close', apagar);
