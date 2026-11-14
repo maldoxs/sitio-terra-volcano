@@ -1618,20 +1618,9 @@ btnOpciones.addEventListener('click', () => abrirOpciones(!opciones.classList.co
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') abrirOpciones(false); });
 document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#mando')) abrirOpciones(false); });
 $('btn-presentar-modo').addEventListener('click', alternarPausa);
-/* Boton del centro (telefono): Play cuando esta detenido; mientras corre muestra Pausa
-   unos segundos, como en un video, y vuelve con cada toque en la pantalla */
+/* Boton del centro (telefono): se ve solo con el recorrido detenido */
 const enTelefono = () => matchMedia('(max-width:760px),(max-height:500px)').matches;
-let relojPausa = 0;
-function verPausa() {
-  document.body.classList.add('ver-pausa');
-  clearTimeout(relojPausa);
-  relojPausa = setTimeout(() => document.body.classList.remove('ver-pausa'), 3000);
-}
-$('play-centro').addEventListener('click', () => {
-  alternarPausa();
-  if (estado.tocando && !estado.pausado) verPausa();
-  else document.body.classList.remove('ver-pausa');
-});
+$('play-centro').addEventListener('click', alternarPausa);  // al partir, el boton se va de inmediato
 $('opc-linea').addEventListener('change', (e) => {
   $('chk-linea').checked = e.target.checked;
   $('chk-linea').dispatchEvent(new Event('change'));
@@ -1742,14 +1731,10 @@ manejador.setInputAction((c) => {
   if (typeof id === 'string' && id.startsWith('parada-')) { irA(Number(id.slice(7))); return; }
   // Un toque (o un clic) en cualquier parte del mapa hace de Play y Pausa, como
   // en un video. Arrastrar o pellizcar no cuenta: eso mueve la camara.
-  // En el telefono, tocar el mapa mientras corre solo muestra el boton de Pausa; detenido, parte.
-  // En el computador el clic sigue siendo Play y Pausa directo.
-  if (enTelefono()) {
-    if (estado.tocando && !estado.pausado) { verPausa(); return; }
-    alternarPausa(); verPausa();
-    return;
-  }
-  alternarPausa(); destellar();
+  // Un toque en cualquier parte es Play o Pausa. En el telefono sin destello: el boton
+  // del centro ya muestra el estado (aparece al pausar, se va al partir)
+  alternarPausa();
+  if (!enTelefono()) destellar();
 }, C.ScreenSpaceEventType.LEFT_CLICK);
 /* Senal breve al centro: muestra si el toque dejo el recorrido andando o en pausa */
 function destellar() {

@@ -288,11 +288,7 @@
     /* en el telefono el Play va al centro del mapa (.play-centro); abajo queda libre para la barra */
     .interruptor{display:none}
     body:not(.reproduciendo) .play-centro{display:grid}
-    /* Mientras corre, el boton muestra Pausa (como en un video): aparece al partir y con
-       cada toque en la pantalla, y se desvanece a los 3 s para no tapar el volcan */
-    body.reproduciendo .play-centro{display:grid;opacity:0;pointer-events:none;transition:opacity .4s}
-    body.reproduciendo.ver-pausa .play-centro{opacity:1;pointer-events:auto}
-    body.reproduciendo .play-centro::before{animation:none;opacity:0}
+    /* Mientras corre no hay boton encima: un toque en cualquier parte pausa y vuelve el Play */
   }
   @media (max-width:760px),(max-height:500px) and (orientation:landscape){
     .pantalla-movil:not([hidden]){flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:rgba(10,11,13,.66);box-shadow:0 4px 14px rgba(0,0,0,.25);color:#fff}
@@ -319,9 +315,10 @@
   @media (prefers-reduced-motion:reduce){.girar svg{animation:none}}
   /* destello al centro cuando un toque en el mapa pone Play o Pausa */
   /* Play grande al centro del mapa, solo en el telefono y mientras el recorrido no corre */
-  .play-centro{position:fixed;left:50%;top:50%;z-index:13;display:none;place-items:center;width:84px;height:84px;margin:-42px 0 0 -42px;padding:0;border:1.5px solid rgba(255,255,255,.75);border-radius:50%;background:rgba(255,255,255,.22);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;cursor:pointer;box-shadow:0 8px 26px rgba(0,0,0,.25)}
-  .play-centro::before{content:"";position:absolute;inset:-10px;border:1.5px solid rgba(255,255,255,.5);border-radius:50%;animation:play-latido 2.4s ease-out infinite}
-  .play-centro svg{width:36px;height:36px;margin-left:5px;fill:#fff}
+  .play-centro{position:fixed;left:50%;top:50%;z-index:13;display:none;place-items:center;width:68px;height:68px;margin:-34px 0 0 -34px;padding:0;border:0;border-radius:50%;background:rgba(10,11,13,.72);color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .play-centro::before{display:none;content:"";position:absolute;inset:-10px;border:1.5px solid rgba(10,11,13,.35);border-radius:50%;animation:play-latido 2.4s ease-out infinite}
+  /* fondo negro translucido, como el boton de escritorio y las pastillas de las paradas; el icono en blanco */
+  .play-centro svg{width:28px;height:28px;margin-left:4px;fill:#fff}
   .play-centro .ico-pausa{display:none;margin-left:0}
   body.reproduciendo .play-centro .ico-play{display:none}
   body.reproduciendo .play-centro .ico-pausa{display:block}
@@ -497,6 +494,6 @@
 <!-- la version en la direccion evita que el navegador use una copia vieja -->
 <!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
 <script src="./config.js?v=20261104"></script>
-<script type="module" src="./recorrido.js?v=20261114d"></script>
+<script type="module" src="./recorrido.js?v=20261114e"></script>
 </body>
 </html>
