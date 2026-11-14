@@ -7,10 +7,10 @@
   if (!botones.length) return;
   const estilo = document.createElement('style');
   estilo.textContent = `
-    .visor-ruta{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#06112a}
+    .visor-ruta{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#000}
     .visor-ruta::backdrop{background:#000}
     html.con-visor,html.con-visor body{background:#000}
-    .visor-ruta iframe{display:block;width:100%;height:100%;border:0;background:#06112a}
+    .visor-ruta iframe{display:block;width:100%;height:100%;border:0;background:#000}
     .visor-ruta__cerrar{position:absolute;right:16px;top:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border:1px solid rgba(255,255,255,.28);border-radius:22px;background:rgba(6,18,46,.72);color:#fff;font:700 14px/1 var(--texto,system-ui);cursor:pointer;transition:background .2s,opacity .4s}
     .visor-ruta__cerrar:hover{background:rgba(6,18,46,.92)}
     .visor-ruta__cerrar.oculto{opacity:0;pointer-events:none}
