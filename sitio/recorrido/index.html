@@ -275,17 +275,19 @@
     .altimetro__cifra small{font-size:15px}
     .altimetro__texto{margin-top:6px;font-size:14px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
     /* la misma barra de puntos, mas chica y abajo a la derecha */
-    .altimetro{right:calc(16px + var(--sa-r));top:auto;bottom:calc(74px + var(--sa-b));width:150px;height:300px}
+    .altimetro{right:calc(16px + var(--sa-r));top:auto;bottom:calc(28px + var(--sa-b));width:150px;height:380px}
     .altimetro::before{display:none}
     .altimetro__btn{top:-18px;font-size:12px;line-height:36px;padding:0 22px 0 6px;opacity:1;text-shadow:none}
     /* sobre la nieve el texto blanco no se leia: cada nombre va en una pastilla oscura */
     .altimetro__btn span{display:inline-block;padding:0 9px;border-radius:999px;line-height:22px;background:rgba(10,11,13,.58);color:rgba(255,255,255,.82);transition:background-color .3s,color .3s}
     .altimetro__btn[aria-current="step"] span{background:var(--azufre);color:#0A0B0D}
-    .mando{left:12px;right:12px;top:auto;bottom:calc(14px + var(--sa-b))}
+    .mando{left:max(12px,var(--sa-l));right:auto;top:auto;bottom:calc(14px + var(--sa-b))}
     .mando__fila{flex-direction:row;align-items:center;justify-content:space-between;gap:8px}
     /* en el telefono solo Play: el zoom es con los dedos */
     .mando__engranaje,.vuelta,.zoom{display:none}
-    .interruptor{width:auto;flex:1;height:44px;border-radius:22px}
+    /* en el telefono el Play va al centro del mapa (.play-centro); abajo queda libre para la barra */
+    .interruptor{display:none}
+    body:not(.reproduciendo) .play-centro{display:grid}
   }
   @media (max-width:760px),(max-height:500px) and (orientation:landscape){
     .pantalla-movil:not([hidden]){flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:rgba(10,11,13,.66);box-shadow:0 4px 14px rgba(0,0,0,.25);color:#fff}
@@ -297,8 +299,8 @@
   @media (max-height:500px) and (orientation:landscape){
     .altimetro__ficha{left:max(12px,var(--sa-l));right:auto;width:342px}
     .altimetro__texto{-webkit-line-clamp:2}
-    .altimetro{top:calc(16px + var(--sa-t));bottom:calc(74px + var(--sa-b));height:auto}
-    .mando{left:auto;right:max(12px,var(--sa-r));width:170px;bottom:calc(14px + var(--sa-b))}
+    .altimetro{top:calc(16px + var(--sa-t));bottom:calc(24px + var(--sa-b));height:auto}
+    .mando{left:max(12px,var(--sa-l));right:auto;width:auto;bottom:calc(14px + var(--sa-b))}
   }
   /* Telefono en vertical: una pantalla pide girarlo y tapa el recorrido hasta
      que se gira. Queda una salida para quien tiene el giro bloqueado. */
@@ -311,6 +313,12 @@
   @media (max-width:760px) and (orientation:portrait) and (pointer:coarse){.girar:not(.descartado){display:flex}}
   @media (prefers-reduced-motion:reduce){.girar svg{animation:none}}
   /* destello al centro cuando un toque en el mapa pone Play o Pausa */
+  /* Play grande al centro del mapa, solo en el telefono y mientras el recorrido no corre */
+  .play-centro{position:fixed;left:50%;top:50%;z-index:13;display:none;place-items:center;width:84px;height:84px;margin:-42px 0 0 -42px;padding:0;border:0;border-radius:50%;background:var(--lava);color:#fff;cursor:pointer;box-shadow:0 10px 30px rgba(216,18,38,.45)}
+  .play-centro::before{content:"";position:absolute;inset:-9px;border:2px solid rgba(255,255,255,.75);border-radius:50%;animation:play-latido 2.4s ease-out infinite}
+  .play-centro svg{width:36px;height:36px;margin-left:5px;fill:#fff}
+  @keyframes play-latido{0%{opacity:.9;transform:scale(.92)}100%{opacity:0;transform:scale(1.35)}}
+  @media (prefers-reduced-motion:reduce){.play-centro::before{animation:none}}
   .destello{position:fixed;left:50%;top:50%;z-index:14;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;display:grid;place-items:center;background:rgba(10,11,13,.6);color:#fff;opacity:0;pointer-events:none}
   .destello.visible{animation:destello .7s ease-out}
   .destello svg{width:34px;height:34px}
@@ -407,6 +415,8 @@
 
 <div class="girar" id="aviso-girar" role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg><b>Gira el teléfono</b><span>El recorrido del volcán se ve mejor en horizontal.</span><button type="button" id="girar-seguir">Seguir en vertical</button></div>
 
+<button class="play-centro" id="play-centro" type="button" aria-label="Reproducir el recorrido"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+
 <div class="destello" id="destello" data-estado="play" aria-hidden="true"><svg class="d-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="d-pausa" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></div>
 
 <div class="mando" id="mando">
@@ -479,6 +489,6 @@
 <!-- la version en la direccion evita que el navegador use una copia vieja -->
 <!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
 <script src="./config.js?v=20261104"></script>
-<script type="module" src="./recorrido.js?v=20261114b"></script>
+<script type="module" src="./recorrido.js?v=20261114c"></script>
 </body>
 </html>

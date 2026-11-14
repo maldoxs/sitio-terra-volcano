@@ -1535,6 +1535,7 @@ window.addEventListener('resize', armarAltimetro);
 function pintarPresentacion() {
   marcarAltimetro(estado.i);
   const corriendo = estado.tocando && !estado.pausado;
+  document.body.classList.toggle('reproduciendo', corriendo);  // esconde el Play del centro
   $('btn-presentar-modo').setAttribute('aria-pressed', String(corriendo));
   $('modo-estado').textContent = corriendo ? 'Pausa' : 'Play';
   if (estado.i < 0) { pres.hidden = true; return; }
@@ -1616,6 +1617,7 @@ btnOpciones.addEventListener('click', () => abrirOpciones(!opciones.classList.co
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') abrirOpciones(false); });
 document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#mando')) abrirOpciones(false); });
 $('btn-presentar-modo').addEventListener('click', alternarPausa);
+$('play-centro').addEventListener('click', alternarPausa);
 $('opc-linea').addEventListener('change', (e) => {
   $('chk-linea').checked = e.target.checked;
   $('chk-linea').dispatchEvent(new Event('change'));

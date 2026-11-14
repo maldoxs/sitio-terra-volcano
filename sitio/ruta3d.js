@@ -39,8 +39,10 @@
     const c = getComputedStyle(sonda);
     marco.contentWindow?.postMessage({ tipo: 'recorrido-seguro', t: parseFloat(c.paddingTop), r: parseFloat(c.paddingRight), b: parseFloat(c.paddingBottom), l: parseFloat(c.paddingLeft) }, location.origin);
   };
+  // La pagina ya ocupa toda la pantalla desde que carga (viewport-fit=cover en su meta):
+  // cambiarlo al abrir el visor no servia, el iPhone no relee ese cambio y quedaban las franjas
   const ocuparTodo = (on) => {
-    metaVista.content = on ? `${vistaNormal}, viewport-fit=cover` : vistaNormal;
+    if (!/viewport-fit=cover/.test(vistaNormal)) metaVista.content = on ? `${vistaNormal}, viewport-fit=cover` : vistaNormal;
     if (on) requestAnimationFrame(mandarSeguro);
   };
   addEventListener('resize', () => { if (visor.open) mandarSeguro(); });
