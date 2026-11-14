@@ -144,7 +144,10 @@
   .ruta:focus-visible{outline:2px solid var(--lava);outline-offset:3px}
   /* El fondo es el mismo azul del cargador del recorrido: al abrir no hay destello */
   .visor{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#06112a}
-  .visor::backdrop{background:#06112a}
+  .visor::backdrop{background:#000}
+  /* Chrome en iPhone no deja usar los costados con el telefono girado y pinta esas franjas
+     con el fondo de la pagina: mientras el visor esta abierto el fondo es negro, como el borde del telefono */
+  html.con-visor,html.con-visor body{background:#000}
   .visor iframe{display:block;width:100%;height:100%;border:0;background:#06112a}
   /* Cerrar: pastilla discreta arriba a la derecha; en celular queda solo la X */
   .visor__cerrar{position:absolute;right:16px;top:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border:1px solid rgba(255,255,255,.28);border-radius:22px;background:rgba(6,18,46,.72);color:#fff;font:700 14px/1 var(--texto);cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .2s}
@@ -794,6 +797,7 @@
     document.getElementById('ver-ruta').addEventListener('click', () => {
       marco.src = 'recorrido/index.html?visor';
       visor.showModal();
+      document.documentElement.classList.add('con-visor');
       ocuparTodo(true);
       // en el telefono el recorrido parte a pantalla completa (donde el navegador la permite)
       if (matchMedia('(max-width:760px), (pointer:coarse)').matches) completa(true);
@@ -811,7 +815,7 @@
       if (e.data?.tipo === 'recorrido-pantalla') completa(!document.fullscreenElement);
       if (e.data?.tipo === 'recorrido-pantalla-consulta') avisarPantalla();
     });
-    visor.addEventListener('close', () => { completa(false); ocuparTodo(false); });
+    visor.addEventListener('close', () => { completa(false); ocuparTodo(false); document.documentElement.classList.remove('con-visor'); });
     const apagar = () => marco.removeAttribute('src');
     document.getElementById('cerrar-ruta').addEventListener('click', () => { apagar(); visor.close(); });
     visor.addEventListener('close', apagar);
