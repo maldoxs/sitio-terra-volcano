@@ -5,6 +5,8 @@ export const EN = {
   'Ascenso': 'Ascent', 'Tu día': 'Your day', 'Tours': 'Tours', 'Nosotros': 'About us',
   'Volver a Tours': 'Back to Tours',
   'Volver': 'Back',
+  'Antes de subir': 'Before you climb', 'Recorre la ruta en 3D': 'Explore the route in 3D', '8 paradas, de la Cafetería al cráter.': '8 stops, from the Cafetería to the crater.',
+  'Imagen 3D: Google': '3D image: Google', 'El volcán Villarrica en 3D, con su cono nevado y los bosques alrededor.': 'Villarrica volcano in 3D, with its snowy cone and the forests around it.',
   'Un montañista con casco y piolet en la mochila camina por la nieve hacia la cumbre del Llaima.': 'A climber with a helmet and an ice axe on the backpack walks through the snow toward the summit of Llaima.',
   'Tours anteriores': 'Previous tours', 'Más tours': 'More tours', 'Abrir el menú': 'Open the menu', 'Cerrar el menú': 'Close the menu', 'Ver categorías de tours': 'See tour categories',
   'Un guía cada tres personas, desde Pucón hasta el cráter.': 'One guide for every three people, from Pucón to the crater.',

@@ -98,7 +98,8 @@
     const tour = location.pathname.split('/').pop().replace('.html', '');
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const s = { n: Math.max(2, minimo), fecha: null, mes: new Date(hoy.getFullYear(), hoy.getMonth(), 1) };
+    // parte en el minimo del tour: 1 pasajero en grupo, 2 en los privados (se venden por pareja)
+    const s = { n: minimo, fecha: null, mes: new Date(hoy.getFullYear(), hoy.getMonth(), 1) };
 
     const tipo = aside.querySelector('.reserva__tipo');
     const cabeza = document.createElement('div');
