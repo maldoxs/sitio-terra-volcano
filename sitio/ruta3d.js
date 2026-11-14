@@ -27,6 +27,25 @@
   const cerrar = visor.querySelector('button');
   const marco = visor.querySelector('iframe');
 
+  /* Mientras el visor esta abierto la pagina ocupa toda la pantalla, tambien la
+     zona de la camara del iPhone: si no, con el telefono girado quedan franjas
+     azules a los lados. Al cerrar vuelve a como estaba. */
+  const metaVista = document.querySelector('meta[name=viewport]');
+  const vistaNormal = metaVista.content;
+  const sonda = document.createElement('div');
+  sonda.style.cssText = 'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
+  document.body.append(sonda);
+  const mandarSeguro = () => {
+    const c = getComputedStyle(sonda);
+    marco.contentWindow?.postMessage({ tipo: 'recorrido-seguro', t: parseFloat(c.paddingTop), r: parseFloat(c.paddingRight), b: parseFloat(c.paddingBottom), l: parseFloat(c.paddingLeft) }, location.origin);
+  };
+  const ocuparTodo = (on) => {
+    metaVista.content = on ? `${vistaNormal}, viewport-fit=cover` : vistaNormal;
+    if (on) requestAnimationFrame(mandarSeguro);
+  };
+  addEventListener('resize', () => { if (visor.open) mandarSeguro(); });
+  addEventListener('message', (e) => { if (e.origin === location.origin && e.data?.tipo === 'recorrido-seguro-consulta') mandarSeguro(); });
+
   const completa = (on) => {
     if (!on) { if (document.fullscreenElement) document.exitFullscreen(); return; }
     document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
@@ -42,12 +61,14 @@
   botones.forEach((b) => b.addEventListener('click', () => {
     marco.src = 'recorrido/index.html?visor';
     visor.showModal();
+    ocuparTodo(true);
     if (matchMedia('(max-width:760px), (pointer:coarse)').matches) completa(true);
   }));
   cerrar.addEventListener('click', () => visor.close());
   visor.addEventListener('close', () => {
     marco.removeAttribute('src');
     completa(false);
+    ocuparTodo(false);
     cerrar.classList.remove('oculto');
   });
   // en ingles la X se lee "Close"

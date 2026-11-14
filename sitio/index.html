@@ -77,10 +77,13 @@
   .idioma button:focus-visible{outline:0;outline-offset:2px}
 
   .titular{position:absolute;z-index:2;left:var(--margen);top:clamp(84px,13svh,150px);max-width:min(46vw,760px)}
-  .titular h1{margin:0;font:700 clamp(56px,min(8.3vw,16.5svh),150px)/.9 var(--display);font-stretch:82%;letter-spacing:-.022em;text-wrap:balance}
+  .titular h1{margin:0;font:700 clamp(56px,min(7vw,15svh),140px)/.9 var(--display);font-stretch:82%;letter-spacing:-.022em;text-wrap:balance}
   .titular h1 span{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
   .titular h1 i{display:block;font-style:normal;animation:sube 1.1s cubic-bezier(.16,.84,.24,1) both}
   .titular h1 span+span i{animation-delay:.12s}
+  .titular h1 span+span+span i{animation-delay:.24s}
+  /* en pantalla ancha "Sube el volcan" va en una linea: con tres lineas la ultima caia sobre la nieve */
+  @media (min-width:761px){.titular{max-width:min(64vw,1100px)}.titular h1 span:nth-child(-n+2){display:inline-block}}
   .bajada{margin:0 0 clamp(14px,1.8vw,22px);color:#fff;font:500 clamp(19px,1.75vw,27px)/1.25 var(--texto);animation:aparece .8s .55s both}
 
   .pie{position:absolute;z-index:2;left:var(--margen);right:var(--margen);bottom:clamp(22px,4svh,40px);display:flex;align-items:flex-end;justify-content:space-between;gap:24px;color:var(--obsidiana)}
@@ -161,8 +164,8 @@
   .ruta3d__boton{all:unset;box-sizing:border-box;position:relative;display:block;width:100%;height:clamp(440px,52vw,720px);overflow:hidden;cursor:pointer}
   .ruta3d__boton img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%;transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
   .ruta3d__boton:hover img{transform:scale(1.04)}
-  .ruta3d__boton::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,18,46,.9) 0%,rgba(6,18,46,.45) 34%,rgba(6,18,46,0) 62%)}
-  .ruta3d__texto{position:absolute;z-index:1;left:var(--margen);right:var(--margen);bottom:clamp(30px,5vw,70px);display:flex;align-items:center;gap:clamp(18px,2.4vw,36px)}
+  .ruta3d__boton::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,18,46,.92) 0%,rgba(6,18,46,.55) 42%,rgba(6,18,46,0) 72%)}
+  .ruta3d__texto{position:absolute;z-index:1;left:var(--margen);right:var(--margen);bottom:clamp(90px,11vw,170px);display:flex;align-items:center;gap:clamp(18px,2.4vw,36px)}
   .ruta3d__texto small{display:block;margin-bottom:10px;font:700 14px/1 var(--texto);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.82)}
   .ruta3d__texto b{display:block;font:700 clamp(42px,6.4vw,110px)/.94 var(--display);font-stretch:84%;letter-spacing:-.02em}
   .ruta3d__texto>span:last-child>span{display:block;margin-top:12px;font-size:clamp(17px,1.4vw,21px)}
@@ -171,8 +174,7 @@
   .ruta3d__play svg{width:40%;margin-left:8%;fill:#fff}
   .ruta3d__boton:hover .ruta3d__play{transform:scale(1.07)}
   @keyframes ruta3d-latido{0%{opacity:.9;transform:scale(.92)}100%{opacity:0;transform:scale(1.35)}}
-  .ruta3d__credito{position:absolute;z-index:1;right:12px;bottom:8px;margin:0;font-size:11px;color:rgba(255,255,255,.62);pointer-events:none}
-  @media (max-width:760px){.ruta3d__boton{height:min(78svh,560px)}.ruta3d__boton img{object-position:50% 40%}.ruta3d__texto{flex-direction:column;align-items:flex-start;gap:16px}.ruta3d__play{width:68px}}
+  @media (max-width:760px){.ruta3d__boton{height:min(80svh,600px)}.ruta3d__texto{bottom:64px}.ruta3d__boton img{object-position:50% 40%}.ruta3d__texto{flex-direction:column;align-items:flex-start;gap:16px}.ruta3d__play{width:68px}}
   @media (prefers-reduced-motion:reduce){.ruta3d__play::before{animation:none}.ruta3d__boton img{transition:none}}
   .pasos{position:relative;list-style:none;margin:0;padding:0 0 0 clamp(26px,3vw,44px)}
   .pasos::before,.pasos__avance{content:"";position:absolute;left:4px;top:10px;bottom:10px;width:2px;background:#d9d7d1}
@@ -334,11 +336,20 @@
     .barra nav{display:none}
     .barra .idioma{margin-left:auto}
     .barra img{height:32px}
-    .titular{max-width:none;right:var(--margen);top:84px}
-    .titular h1{font-size:clamp(50px,15.5vw,84px)}
-    .escenario__velo{height:52%}
-    .bajada{font-size:18px}
-    .nota{display:none}
+    /* Celular (opcion B, 2026-11-14): el cielo y la fumarola quedan libres. El titulo
+       baja y queda justo encima de los datos y el boton; sin bajada ni "Aqui vas tu" */
+    .titular{max-width:none;right:var(--margen);top:auto;bottom:calc(var(--alto-pie,190px) + clamp(22px,4svh,40px) + 16px)}
+    .titular h1{font-size:clamp(40px,12.2vw,54px)}
+    .titular h1 span:nth-child(-n+2){display:inline-block}
+    .escenario__velo{height:62%}
+    .bajada{display:none}
+    /* las dos notas tambien en el celular, ubicadas sobre la foto vertical:
+       el crater junto al humo, contra el cielo, y la cordada en la nieve de la izquierda */
+    .nota{font-size:14px}
+    .nota--crater,.nota--tu{padding-left:30px}
+    .nota--crater::before,.nota--tu::before{width:22px}
+    .nota--crater{left:58%;top:30%;width:36%;white-space:normal}
+    .nota--tu{display:none}
     .pie{flex-direction:column;align-items:stretch;gap:14px}
     .datos{justify-content:space-between}
     .datos div+div{margin-left:10px;padding-left:10px}
@@ -440,7 +451,7 @@
       </header>
 
       <div class="titular">
-        <h1><span><i>Sube el</i></span><span><i>Villarrica.</i></span></h1>
+        <h1><span><i>Sube el</i></span> <span><i>volcán</i></span><span><i>Villarrica.</i></span></h1>
       </div>
 
       <div class="escenario__velo"></div>
@@ -524,7 +535,6 @@
       <img loading="lazy" decoding="async" src="media/ruta/ruta3d.webp" width="2400" height="1100" alt="El volcán Villarrica en 3D, con su cono nevado y los bosques alrededor.">
       <span class="ruta3d__texto"><span class="ruta3d__play" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><span><small>Antes de subir</small><b>Recorre la ruta en 3D</b><span>8 paradas, de la Cafetería al cráter.</span></span></span>
     </button>
-    <p class="ruta3d__credito">Imagen 3D: Google</p>
   </section>
 
   <section class="rumbo" id="rumbo" aria-label="Tours por categoría">
@@ -727,6 +737,18 @@
 <script>
   const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Portada en celular: el titulo va justo encima del pie (datos y boton), que
+     cambia de alto segun el idioma; se mide y se guarda en --alto-pie */
+  {
+    const pie = document.querySelector('.ascenso .pie');
+    const escenario = pie?.closest('.escenario');
+    if (pie && escenario && window.ResizeObserver) {
+      const medir = () => escenario.style.setProperty('--alto-pie', `${pie.offsetHeight}px`);
+      new ResizeObserver(medir).observe(pie);
+      medir();
+    }
+  }
+
   /* Tu traes e Incluye: en el celular cada bloque es una caja que se abre con el + */
   {
     const incluye = document.querySelector('.incluye');
@@ -746,9 +768,29 @@
   {
     const visor = document.getElementById('visor-ruta');
     const marco = document.getElementById('marco-ruta');
+
+    /* Mientras el visor esta abierto la pagina ocupa toda la pantalla, tambien la
+       zona de la camara del iPhone: si no, con el telefono girado quedan franjas
+       azules a los lados. Al cerrar vuelve a como estaba. */
+    const metaVista = document.querySelector('meta[name=viewport]');
+    const vistaNormal = metaVista.content;
+    const sonda = document.createElement('div');
+    sonda.style.cssText = 'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
+    document.body.append(sonda);
+    const mandarSeguro = () => {
+      const c = getComputedStyle(sonda);
+      marco.contentWindow?.postMessage({ tipo: 'recorrido-seguro', t: parseFloat(c.paddingTop), r: parseFloat(c.paddingRight), b: parseFloat(c.paddingBottom), l: parseFloat(c.paddingLeft) }, location.origin);
+    };
+    const ocuparTodo = (on) => {
+      metaVista.content = on ? `${vistaNormal}, viewport-fit=cover` : vistaNormal;
+      if (on) requestAnimationFrame(mandarSeguro);
+    };
+    addEventListener('resize', () => { if (visor.open) mandarSeguro(); });
+    addEventListener('message', (e) => { if (e.origin === location.origin && e.data?.tipo === 'recorrido-seguro-consulta') mandarSeguro(); });
     document.getElementById('ver-ruta').addEventListener('click', () => {
       marco.src = 'recorrido/index.html?visor';
       visor.showModal();
+      ocuparTodo(true);
       // en el telefono el recorrido parte a pantalla completa (donde el navegador la permite)
       if (matchMedia('(max-width:760px), (pointer:coarse)').matches) completa(true);
     });
@@ -765,7 +807,7 @@
       if (e.data?.tipo === 'recorrido-pantalla') completa(!document.fullscreenElement);
       if (e.data?.tipo === 'recorrido-pantalla-consulta') avisarPantalla();
     });
-    visor.addEventListener('close', () => completa(false));
+    visor.addEventListener('close', () => { completa(false); ocuparTodo(false); });
     const apagar = () => marco.removeAttribute('src');
     document.getElementById('cerrar-ruta').addEventListener('click', () => { apagar(); visor.close(); });
     visor.addEventListener('close', apagar);

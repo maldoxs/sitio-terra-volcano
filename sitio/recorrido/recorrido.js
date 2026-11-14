@@ -1861,6 +1861,14 @@ function aparecerPuntos() {
    index.html); el enlace "Seguir en vertical" la cierra. */
 function avisarGiro() {}
 $('girar-seguir').addEventListener('click', () => $('aviso-girar').classList.add('descartado'));
+/* La pagina que abre el recorrido en su visor manda la zona segura del telefono
+   (la camara y las esquinas), para que los mandos no queden debajo. */
+addEventListener('message', (e) => {
+  if (e.origin !== location.origin || e.data?.tipo !== 'recorrido-seguro') return;
+  const raiz = document.documentElement.style;
+  ['t', 'r', 'b', 'l'].forEach((k) => raiz.setProperty(`--sa-${k}`, `${Number(e.data[k]) || 0}px`));
+});
+if (parent !== window) parent.postMessage({ tipo: 'recorrido-seguro-consulta' }, location.origin);
 setTimeout(aparecerPuntos, 25000);
 let empezo = false;
 let espera = null;

@@ -19,6 +19,10 @@
     /* colores de la agencia, docs/paleta.md: azufre para cifras y avance sobre
        oscuro, lava solo para la accion, obsidiana de fondo */
     --azufre:#DAAD25; --lava:#D81226; --obsidiana:#0A0B0D; --nieve:#F5F4F1;
+    /* Zona segura del telefono (camara, esquinas). Dentro del visor del sitio el
+       iframe no la conoce, asi que la pagina de afuera la manda por mensaje. */
+    --sa-t:env(safe-area-inset-top); --sa-r:env(safe-area-inset-right);
+    --sa-b:env(safe-area-inset-bottom); --sa-l:env(safe-area-inset-left);
     font-family:Roboto,system-ui,sans-serif;
   }
   *{box-sizing:border-box}
@@ -37,10 +41,10 @@
     body.en-visor .altimetro{top:84px}
   }
   @media (max-width:760px),(max-height:500px){
-    body.en-visor .altimetro__ficha{right:calc(68px + env(safe-area-inset-right))}
+    body.en-visor .altimetro__ficha{right:calc(68px + var(--sa-r))}
   }
   @media (max-height:500px) and (orientation:landscape){
-    body.en-visor .altimetro{top:calc(76px + env(safe-area-inset-top))}
+    body.en-visor .altimetro{top:calc(76px + var(--sa-t))}
   }
   /* Creditos ocultos por decision del proyecto. Las condiciones de Google Map Tiles
      piden su logo y atribucion: antes de publicar hay que devolverlos. */
@@ -262,7 +266,7 @@
     /* Celular primero. Abajo: barra de puntos reducida y Play */
     .estado{display:none}
     .capas{left:12px;top:72px}
-    .altimetro__ficha{left:12px;right:12px;top:calc(10px + env(safe-area-inset-top));width:auto}
+    .altimetro__ficha{left:12px;right:12px;top:calc(10px + var(--sa-t));width:auto}
     /* el nombre de la parada y "4 de 8" van arriba, la altura debajo y el texto al final */
     .altimetro__ficha-in{padding:10px 14px 12px;display:flex;flex-direction:column}
     .altimetro__rotulo{display:none}
@@ -271,13 +275,13 @@
     .altimetro__cifra small{font-size:15px}
     .altimetro__texto{margin-top:6px;font-size:14px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
     /* la misma barra de puntos, mas chica y abajo a la derecha */
-    .altimetro{right:calc(16px + env(safe-area-inset-right));top:auto;bottom:calc(74px + env(safe-area-inset-bottom));width:150px;height:300px}
+    .altimetro{right:calc(16px + var(--sa-r));top:auto;bottom:calc(74px + var(--sa-b));width:150px;height:300px}
     .altimetro::before{display:none}
     .altimetro__btn{top:-18px;font-size:12px;line-height:36px;padding:0 22px 0 6px;opacity:1;text-shadow:none}
     /* sobre la nieve el texto blanco no se leia: cada nombre va en una pastilla oscura */
     .altimetro__btn span{display:inline-block;padding:0 9px;border-radius:999px;line-height:22px;background:rgba(10,11,13,.58);color:rgba(255,255,255,.82);transition:background-color .3s,color .3s}
     .altimetro__btn[aria-current="step"] span{background:var(--azufre);color:#0A0B0D}
-    .mando{left:12px;right:12px;top:auto;bottom:calc(14px + env(safe-area-inset-bottom))}
+    .mando{left:12px;right:12px;top:auto;bottom:calc(14px + var(--sa-b))}
     .mando__fila{flex-direction:row;align-items:center;justify-content:space-between;gap:8px}
     /* en el telefono solo Play: el zoom es con los dedos */
     .mando__engranaje,.vuelta,.zoom{display:none}
@@ -291,10 +295,10 @@
   }
   /* telefono girado: la barra usa todo el alto disponible */
   @media (max-height:500px) and (orientation:landscape){
-    .altimetro__ficha{left:max(12px,env(safe-area-inset-left));right:auto;width:342px}
+    .altimetro__ficha{left:max(12px,var(--sa-l));right:auto;width:342px}
     .altimetro__texto{-webkit-line-clamp:2}
-    .altimetro{top:calc(16px + env(safe-area-inset-top));bottom:calc(74px + env(safe-area-inset-bottom));height:auto}
-    .mando{left:auto;right:max(12px,env(safe-area-inset-right));width:170px;bottom:calc(14px + env(safe-area-inset-bottom))}
+    .altimetro{top:calc(16px + var(--sa-t));bottom:calc(74px + var(--sa-b));height:auto}
+    .mando{left:auto;right:max(12px,var(--sa-r));width:170px;bottom:calc(14px + var(--sa-b))}
   }
   /* Telefono en vertical: una pantalla pide girarlo y tapa el recorrido hasta
      que se gira. Queda una salida para quien tiene el giro bloqueado. */
@@ -475,6 +479,6 @@
 <!-- la version en la direccion evita que el navegador use una copia vieja -->
 <!-- clave de la Map Tiles API de Google; sin ella se usan las fotos de Esri -->
 <script src="./config.js?v=20261104"></script>
-<script type="module" src="./recorrido.js?v=20261114a"></script>
+<script type="module" src="./recorrido.js?v=20261114b"></script>
 </body>
 </html>
