@@ -80,7 +80,7 @@
   panel.className = 'menu-panel';
   panel.setAttribute('aria-label', 'Menú');
   panel.innerHTML = `
-    <div class="menu-panel__cabeza">${logo ? `<img src="media/logo-blanco.png" width="191" height="50" alt="Terra Volcano">` : '<span></span>'}<button type="button" data-cerrar aria-label="Cerrar el menú">${cruz}</button></div>
+    <div class="menu-panel__cabeza">${logo ? `<img src="media/logo-blanco.webp" width="191" height="50" alt="Terra Volcano">` : '<span></span>'}<button type="button" data-cerrar aria-label="Cerrar el menú">${cruz}</button></div>
     <ul class="menu-panel__lista">${filas}</ul>
     <div class="menu-panel__pie"><a class="reservar" href="https://wa.me/56983388317">Reservar por WhatsApp</a></div>`;
   document.body.append(panel);

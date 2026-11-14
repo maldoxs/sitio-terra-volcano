@@ -1342,6 +1342,13 @@ function ciclo(i) {
   });
 }
 
+/* La camara ya esta en esa toma (misma posicion, distancia y angulos)? */
+function yaEn(v, w) {
+  if (!v || !w) return false;
+  const giro = Math.abs(((((w.h - v.h) % 360) + 540) % 360) - 180);
+  return metros(v, w) < 25 && Math.abs(v.r - w.r) < w.r * 0.05 && giro < 3 && Math.abs(v.t - w.t) < 3;
+}
+
 function presentar(desde) {
   estado.tocando = true;
   document.body.classList.toggle('sin-panel', true);
@@ -1349,7 +1356,16 @@ function presentar(desde) {
   btnPanel.setAttribute('aria-pressed', 'false');
   pintarPresentacion();
   esperarInmersivo();
-  ciclo(desde ?? (estado.i < 0 || estado.i >= PARADAS.length - 1 ? 0 : estado.i));
+  const i = desde ?? (estado.i < 0 || estado.i >= PARADAS.length - 1 ? 0 : estado.i);
+  // Si la camara ya esta en esa parada (al inicio, o despues de elegir una a mano),
+  // Play sale de inmediato hacia la siguiente: antes volaba 2 a 3 s al mismo lugar
+  // y esperaba otros 2 s, y parecia que no habia pasado nada.
+  if (i < PARADAS.length - 1 && yaEn(estado.vista, vistaDe(i))) {
+    if (estado.i !== i) seleccionar(i);
+    ciclo(i + 1);
+    return;
+  }
+  ciclo(i);
 }
 
 /* Desde que el recorrido parte (Play, 360 o una parada elegida a mano), a los
@@ -1449,7 +1465,9 @@ function armarAltimetro() {
     li.style.transform = `translateY(${(1 - fraccion(i)) * alto}px)`;
     const b = document.createElement('button');
     b.className = 'altimetro__btn';
-    b.textContent = p.nombre;
+    const nombre = document.createElement('span');
+    nombre.textContent = p.nombre;
+    b.appendChild(nombre);
     b.addEventListener('click', () => { pausar(); irA(i); });
     li.appendChild(b);
     alti.lista.appendChild(li);
@@ -1839,8 +1857,10 @@ function aparecerPuntos() {
 }
 
 /* Sugerencia de girar el telefono: solo en vertical, se va sola o al primer toque. */
-/* El aviso de girar el telefono se quito: el recorrido se ve en vertical. */
+/* La pantalla de girar el telefono se muestra sola en vertical (ver .girar en
+   index.html); el enlace "Seguir en vertical" la cierra. */
 function avisarGiro() {}
+$('girar-seguir').addEventListener('click', () => $('aviso-girar').classList.add('descartado'));
 setTimeout(aparecerPuntos, 25000);
 let empezo = false;
 let espera = null;
